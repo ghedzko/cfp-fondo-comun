@@ -7,9 +7,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000, // 1 minute
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: unknown) => {
         // Don't retry on 4xx errors except 401 (handled by axios interceptor)
-        if (error?.response?.status >= 400 && error?.response?.status < 500 && error?.response?.status !== 401) {
+        const axiosError = error as { response?: { status?: number } };
+        const status = axiosError?.response?.status;
+        if (status && status >= 400 && status < 500 && status !== 401) {
           return false;
         }
         return failureCount < 3;
