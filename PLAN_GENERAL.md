@@ -5,7 +5,7 @@
 **Proyecto**: CFP Fondo Común – Lago Puelo (MVP escalable)  
 **Tech Stack**: Next.js (App Router) + TypeScript + Prisma + PostgreSQL + TanStack Query + Axios + shadcn/ui + SASS/SCSS + next-themes  
 **Fecha de inicio**: 14 de septiembre de 2025  
-**Estado actual**: FASE 1 completada ✅ (15/09/2025)
+**Estado actual**: FASE 2 completada ✅ (15/09/2025)
 
 ---
 
@@ -58,6 +58,9 @@
 - [x] Resolución de errores de hidratación de Next.js
 - [x] Sistema de autenticación completamente funcional
 - [x] Corrección de nombre: "Lagopuelo" → "Lago Puelo"
+- [x] Accesibilidad WCAG 2.1 implementada completamente
+- [x] RBAC mejorado: Admin accede a funciones de preceptor
+- [x] Build de producción funcionando sin errores
 
 #### ✅ Criterios de Aceptación Cumplidos:
 - [x] RBAC implementado (ADMIN/PRECEPTOR roles)
@@ -231,7 +234,7 @@
 **Pendiente**: 7/9 fases  
 
 ### Próximo Milestone:
-🎯 **FASE 2 - Modelado de Dominio**
+🎯 **FASE 3 - Gestión de Estudiantes y Matrículas**
 
 ---
 

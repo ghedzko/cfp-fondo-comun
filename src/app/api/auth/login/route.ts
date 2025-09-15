@@ -6,7 +6,6 @@ import {
   generateAccessToken, 
   generateRefreshToken, 
   getTokenExpirationDate,
-  COOKIE_CONFIG,
   ACCESS_TOKEN_COOKIE,
   REFRESH_TOKEN_COOKIE
 } from '@/lib/auth';

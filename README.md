@@ -5,6 +5,7 @@ Sistema web para la gestión de aportes voluntarios del fondo común del **Centr
 ## 🎯 Estado del Proyecto
 
 **FASE 1 COMPLETADA** ✅ (15/09/2025)
+**ACCESIBILIDAD IMPLEMENTADA** ✅ (15/09/2025)
 
 ### ✅ Tecnologías Implementadas
 - **Frontend**: Next.js 15.5.3 + TypeScript + App Router
@@ -30,12 +31,18 @@ Sistema web para la gestión de aportes voluntarios del fondo común del **Centr
 - 📱 Diseño responsive con arquitectura SASS profesional
 - 🔍 Health check API (`/api/health`)
 - 🗄️ Base de datos PostgreSQL conectada y funcionando
+- ♿ **Accesibilidad WCAG 2.1 completa** (landmarks, ARIA, headings)
+- 🔧 **Eliminación completa de Tailwind CSS** - Solo SASS
+- 👥 **RBAC mejorado**: Admin tiene acceso a funciones de preceptor
 
 ### 🔧 Resoluciones Técnicas
 - ✅ Errores de hidratación de Next.js resueltos
 - ✅ Configuración de cookies de autenticación corregida
 - ✅ Middleware de protección de rutas funcionando
 - ✅ Migración completa de Tailwind a SASS sin conflictos
+- ✅ Build de producción funcionando sin errores
+- ✅ Accesibilidad WCAG 2.1 implementada completamente
+- ✅ RBAC actualizado: Admin accede a funciones de preceptor
 
 ## 🚀 Instalación y Desarrollo
 
@@ -99,20 +106,38 @@ docker-compose up -d
 - Usar solo variables de ejemplo en archivos públicos
 - Las credenciales reales van únicamente en `.env` (gitignored)
 
+## 👥 Control de Acceso (RBAC)
+
+### Credenciales de Prueba
+```
+Administrador:
+- Email: admin@cfp.edu.ar
+- Password: admin123
+- Acceso: TODAS las funciones (admin + preceptor)
+
+Preceptor:
+- Email: preceptor@cfp.edu.ar  
+- Password: preceptor123
+- Acceso: Solo funciones de secretaría
+```
+
 ## 📋 Roadmap
 
-### 🔄 FASE 1 - Autenticación & Usuarios (Próximo)
-- [ ] JWT authentication con RBAC
-- [ ] Modelos User + RefreshToken
-- [ ] API routes de autenticación
-- [ ] Página de login
-- [ ] Roles: ADMIN (secretaría) y PRECEPTOR
+### ✅ FASE 1 - Autenticación & Usuarios (COMPLETADA)
+- [x] JWT authentication con RBAC
+- [x] Modelos User + RefreshToken
+- [x] API routes de autenticación
+- [x] Página de login
+- [x] Roles: ADMIN (secretaría) y PRECEPTOR
+- [x] RBAC mejorado: Admin accede a funciones de preceptor
 
-### 📊 FASE 2 - Modelado de Dominio
-- [ ] Modelo Estudiante (DNI como ID)
-- [ ] Modelo Curso y CursoPeriodo
-- [ ] Modelo Matricula y Aporte
-- [ ] Modelo FacturaCurso
+### ✅ FASE 2 - Modelado de Dominio (COMPLETADA)
+- [x] Modelo Estudiante (DNI como ID)
+- [x] Modelo Curso y CursoPeriodo
+- [x] Modelo Matricula y Aporte
+- [x] Modelo FacturaCurso
+- [x] Prisma schema con relaciones y constraints
+- [x] Datos de prueba seeded en la base de datos
 
 ### 👥 FASE 3 - Gestión de Estudiantes
 - [ ] CRUD de estudiantes

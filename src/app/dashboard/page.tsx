@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/providers/auth-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserRole } from '@/providers/auth-provider';
@@ -15,10 +15,10 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Cargando...</h1>
-          <p className="text-gray-600">Verificando autenticación...</p>
+      <div className="loading-container">
+        <div className="loading-content">
+          <h1>Cargando...</h1>
+          <p>Verificando autenticación...</p>
         </div>
       </div>
     );
@@ -107,7 +107,7 @@ export default function DashboardPage() {
             </>
           )}
 
-          {isPreceptor && (
+          {(isPreceptor || isAdmin) && (
             <>
               <Card className="feature-card">
                 <CardHeader>
@@ -128,10 +128,10 @@ export default function DashboardPage() {
                   <CardDescription>Inscribir estudiantes a cursos</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p>
                     Gestionar inscripciones de estudiantes
                   </p>
-                  <Button disabled className="w-full" aria-label="Gestión de matrículas - Próximamente disponible">
+                  <Button disabled aria-label="Gestión de matrículas - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -143,10 +143,10 @@ export default function DashboardPage() {
                   <CardDescription>Registrar aportes mensuales</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p>
                     Cargar aportes voluntarios de estudiantes
                   </p>
-                  <Button disabled className="w-full" aria-label="Gestión de aportes voluntarios - Próximamente disponible">
+                  <Button disabled aria-label="Gestión de aportes voluntarios - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -161,28 +161,35 @@ export default function DashboardPage() {
               <CardDescription>Información del sistema</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="system-info">
                 <div>
-                  <span className="font-medium">Fase Actual:</span>
-                  <p className="text-sm text-muted-foreground">FASE 1 - Autenticación</p>
+                  <span><strong>Fase Actual:</strong></span>
+                  <p>FASE 1 - Autenticación</p>
                 </div>
                 <div>
-                  <span className="font-medium">Próxima Fase:</span>
-                  <p className="text-sm text-muted-foreground">FASE 2 - Modelado de Dominio</p>
+                  <span><strong>Próxima Fase:</strong></span>
+                  <p>FASE 2 - Modelado de Dominio</p>
                 </div>
-                <div className="flex items-center gap-2 mt-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-muted-foreground">Sistema Operativo</span>
+                <div className="status-indicator">
+                  <div className="status-dot"></div>
+                  <span>Sistema Operativo</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </section>
 
+        {isAdmin && (
+          <section className="dashboard-grid" aria-labelledby="preceptor-functions-heading">
+            <h2 id="preceptor-functions-heading" className="section-title">Funciones de Secretaría</h2>
+            <p className="section-description">Como administrador, también tienes acceso a todas las funciones de secretaría</p>
+          </section>
+        )}
+
         <section className="development-notice" aria-labelledby="dev-notice-heading">
-          <div className="mt-8 p-4 bg-muted rounded-lg">
-            <h3 id="dev-notice-heading" className="font-semibold mb-2">🚧 En Desarrollo</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="development-notice-content">
+            <h3 id="dev-notice-heading">🚧 En Desarrollo</h3>
+            <p>
               Este sistema está en desarrollo activo. Las funcionalidades se irán habilitando 
               progresivamente según el plan de fases establecido. Actualmente se encuentra 
               completada la FASE 1 (Autenticación y Usuarios).

@@ -6,25 +6,22 @@ import { useAuth } from '@/providers/auth-provider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 // Login form validation schema
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(1, 'Password requerido'),
+  password: z.string().min(8, 'Password debe tener al menos 8 caracteres'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { refreshAuth } = useAuth();
 
@@ -38,7 +35,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    setError(null);
+    setError('');
 
     try {
       const response = await fetch('/api/auth/login', {
