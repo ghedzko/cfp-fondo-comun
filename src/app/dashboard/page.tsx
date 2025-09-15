@@ -27,99 +27,79 @@ export default function DashboardPage() {
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
-        <div className="header-container">
+        <nav className="header-container" role="navigation" aria-label="Navegación del dashboard">
           <div className="header-info">
             <h1 className="header-title">CFP Fondo Común</h1>
             <p className="header-subtitle">Sistema de Gestión - Lago Puelo</p>
           </div>
           <div className="header-actions">
             <ThemeToggle />
-            <Button variant="outline" onClick={handleLogout}>
+            <Button variant="outline" onClick={handleLogout} aria-label="Cerrar sesión del usuario">
               Cerrar Sesión
             </Button>
           </div>
-        </div>
+        </nav>
       </header>
 
-      <main className="dashboard-main">
-        <div className="welcome-section">
-          <h2 className="welcome-title">
+      <main className="dashboard-main" role="main">
+        <section className="welcome-section" aria-labelledby="welcome-heading">
+          <h2 id="welcome-heading" className="welcome-title">
             Bienvenido, {user.name}
           </h2>
           <p className="welcome-subtitle">
             Rol: {user.role === UserRole.ADMIN ? 'Administrador' : 'Preceptor'}
           </p>
-        </div>
+        </section>
 
-        <div className="dashboard-grid">
-          <Card className="dashboard-card">
-            <CardHeader className="card-header">
-              <CardTitle className="card-title">Información del Usuario</CardTitle>
-              <CardDescription className="card-description">Detalles de tu cuenta</CardDescription>
+        <section className="dashboard-grid" aria-labelledby="main-features-heading">
+          <h2 id="main-features-heading" className="sr-only">Funciones principales</h2>
+          
+          <Card className="user-info-card">
+            <CardHeader>
+              <h3>Información del Usuario</h3>
+              <CardDescription>Detalles de tu cuenta</CardDescription>
             </CardHeader>
-            <CardContent className="card-content">
-              <div className="info-item">
-                <span className="info-label">Email:</span>
-                <p className="info-value">{user.email}</p>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Rol:</span>
-                <p className="info-value">
-                  {user.role === UserRole.ADMIN ? 'Administrador (Secretaría)' : 'Preceptor'}
-                </p>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Estado:</span>
-                <p className="info-value">
-                  {user.isActive ? 'Activo' : 'Inactivo'}
-                </p>
+            <CardContent>
+              <div className="user-details">
+                <div className="detail-item">
+                  <strong>Email:</strong>
+                  <span>{user.email}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>Rol:</strong>
+                  <span>{user.role === UserRole.ADMIN ? 'Administrador' : 'Preceptor'} (Secretaría)</span>
+                </div>
+                <div className="detail-item">
+                  <strong>Estado:</strong>
+                  <span>{user.isActive ? 'Activo' : 'Inactivo'}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Admin Features */}
           {isAdmin && (
             <>
-              <Card>
+              <Card className="feature-card">
                 <CardHeader>
-                  <CardTitle>Gestión de Usuarios</CardTitle>
+                  <h3>Gestión de Usuarios</h3>
                   <CardDescription>Administrar usuarios del sistema</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Crear y gestionar cuentas de preceptores
-                  </p>
-                  <Button disabled className="w-full">
+                  <p>Crear y gestionar cuentas de preceptores</p>
+                  <Button className="feature-button" disabled aria-label="Gestión de usuarios - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="feature-card">
                 <CardHeader>
-                  <CardTitle>Facturación</CardTitle>
+                  <h3>Facturación</h3>
                   <CardDescription>Generar facturas mensuales</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Crear facturas PDF y exportar CSV
-                  </p>
-                  <Button disabled className="w-full">
-                    Próximamente
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cursos</CardTitle>
-                  <CardDescription>Gestionar cursos y períodos</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Crear cursos y habilitar meses
-                  </p>
-                  <Button disabled className="w-full">
+                  <p>Crear facturas PDF y exportar CSV</p>
+                  <Button className="feature-button" disabled aria-label="Facturación - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -127,19 +107,16 @@ export default function DashboardPage() {
             </>
           )}
 
-          {/* Preceptor Features */}
           {isPreceptor && (
             <>
-              <Card>
+              <Card className="feature-card">
                 <CardHeader>
-                  <CardTitle>Estudiantes</CardTitle>
+                  <h3>Estudiantes</h3>
                   <CardDescription>Gestionar estudiantes</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Registrar y gestionar estudiantes por DNI
-                  </p>
-                  <Button disabled className="w-full">
+                  <p>Registrar y gestionar estudiantes por DNI</p>
+                  <Button className="feature-button" disabled aria-label="Gestión de estudiantes - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -147,14 +124,14 @@ export default function DashboardPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Matrículas</CardTitle>
+                  <h3>Matrículas</h3>
                   <CardDescription>Inscribir estudiantes a cursos</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-4">
                     Gestionar inscripciones de estudiantes
                   </p>
-                  <Button disabled className="w-full">
+                  <Button disabled className="w-full" aria-label="Gestión de matrículas - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -162,14 +139,14 @@ export default function DashboardPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Aportes Voluntarios</CardTitle>
+                  <h3>Aportes Voluntarios</h3>
                   <CardDescription>Registrar aportes mensuales</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-4">
                     Cargar aportes voluntarios de estudiantes
                   </p>
-                  <Button disabled className="w-full">
+                  <Button disabled className="w-full" aria-label="Gestión de aportes voluntarios - Próximamente disponible">
                     Próximamente
                   </Button>
                 </CardContent>
@@ -180,7 +157,7 @@ export default function DashboardPage() {
           {/* System Status Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Estado del Sistema</CardTitle>
+              <h3>Estado del Sistema</h3>
               <CardDescription>Información del sistema</CardDescription>
             </CardHeader>
             <CardContent>
@@ -200,17 +177,18 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </section>
 
-        {/* Development Notice */}
-        <div className="mt-8 p-4 bg-muted rounded-lg">
-          <h3 className="font-semibold mb-2">🚧 En Desarrollo</h3>
-          <p className="text-sm text-muted-foreground">
-            Este sistema está en desarrollo activo. Las funcionalidades se irán habilitando 
-            progresivamente según el plan de fases establecido. Actualmente se encuentra 
-            completada la FASE 1 (Autenticación y Usuarios).
-          </p>
-        </div>
+        <section className="development-notice" aria-labelledby="dev-notice-heading">
+          <div className="mt-8 p-4 bg-muted rounded-lg">
+            <h3 id="dev-notice-heading" className="font-semibold mb-2">🚧 En Desarrollo</h3>
+            <p className="text-sm text-muted-foreground">
+              Este sistema está en desarrollo activo. Las funcionalidades se irán habilitando 
+              progresivamente según el plan de fases establecido. Actualmente se encuentra 
+              completada la FASE 1 (Autenticación y Usuarios).
+            </p>
+          </div>
+        </section>
       </main>
     </div>
   );

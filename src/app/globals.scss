@@ -1,8 +1,27 @@
-// Import SASS styles
-@import '../styles/base.scss';
-@import '../styles/components/button.scss';
-@import '../styles/components/form.scss';
-@import '../styles/components/card.scss';
-@import '../styles/pages/login.scss';
-@import '../styles/pages/home.scss';
-@import '../styles/pages/dashboard.scss';
+// Import all SASS modules
+@import '../styles/variables';
+@import '../styles/mixins';
+@import '../styles/base';
+
+// Import component styles
+@import '../styles/components/button';
+@import '../styles/components/card';
+@import '../styles/components/form';
+
+// Import page styles
+@import '../styles/pages/home';
+@import '../styles/pages/login';
+@import '../styles/pages/dashboard';
+
+// Accessibility utilities
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

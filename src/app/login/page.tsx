@@ -70,22 +70,20 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="login-container">
+      <main className="login-container" role="main">
         <Card className="login-card">
-          <CardHeader className="login-card__header">
-            <div className="logo">
-              CFP
+          <CardHeader className="login-header">
+            <div className="login-logo">
+              <div className="logo-icon" aria-hidden="true">CFP</div>
             </div>
-            <CardTitle className="title">
-              Iniciar Sesión
-            </CardTitle>
-            <CardDescription className="subtitle">
+            <h1 className="login-title">Iniciar Sesión</h1>
+            <p className="login-description">
               Accede a tu cuenta del CFP Fondo Común
-            </CardDescription>
+            </p>
           </CardHeader>
           <CardContent className="login-card__content">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="login-form">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="login-form" noValidate>
                 <FormField
                   control={form.control}
                   name="email"
@@ -96,16 +94,20 @@ export default function LoginPage() {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="tu@email.com"
                           type="email"
+                          placeholder="tu@email.com"
                           {...field}
-                          className={`form-input ${form.formState.errors.email ? 'error' : ''}`}
+                          className="form-input"
+                          required
+                          aria-required="true"
+                          aria-describedby={form.formState.errors.email ? "email-error" : undefined}
                         />
                       </FormControl>
-                      <FormMessage className="error-message" />
+                      <FormMessage className="form-error" id="email-error" role="alert" />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="password"
@@ -116,19 +118,22 @@ export default function LoginPage() {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="••••••••"
                           type="password"
+                          placeholder="••••••••"
                           {...field}
-                          className={`form-input ${form.formState.errors.password ? 'error' : ''}`}
+                          className="form-input"
+                          required
+                          aria-required="true"
+                          aria-describedby={form.formState.errors.password ? "password-error" : undefined}
                         />
                       </FormControl>
-                      <FormMessage className="error-message" />
+                      <FormMessage className="form-error" id="password-error" role="alert" />
                     </FormItem>
                   )}
                 />
 
                 {error && (
-                  <div className="error-message">
+                  <div className="error-message" role="alert" aria-live="polite">
                     {error}
                   </div>
                 )}
@@ -153,7 +158,7 @@ export default function LoginPage() {
             Solo usuarios autorizados pueden acceder
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
