@@ -23,6 +23,8 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
+  isPreceptor: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
@@ -45,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user;
+  const isAdmin = user?.role === UserRole.ADMIN;
+  const isPreceptor = user?.role === UserRole.PRECEPTOR;
 
   // Check authentication status on mount
   useEffect(() => {
@@ -142,6 +146,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     isLoading,
     isAuthenticated,
+    isAdmin,
+    isPreceptor,
     login,
     logout,
     refreshAuth,

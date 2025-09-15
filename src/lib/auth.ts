@@ -32,7 +32,7 @@ export function generateAccessToken(payload: JWTPayload): string {
     expiresIn: JWT_EXPIRES_IN,
     issuer: 'cfp-fondo-comun',
     audience: 'cfp-users',
-  });
+  } as jwt.SignOptions);
 }
 
 export function generateRefreshToken(userId: string): string {
@@ -40,7 +40,7 @@ export function generateRefreshToken(userId: string): string {
     expiresIn: JWT_REFRESH_EXPIRES_IN,
     issuer: 'cfp-fondo-comun',
     audience: 'cfp-users',
-  });
+  } as jwt.SignOptions);
 }
 
 // JWT Token Verification
@@ -51,7 +51,7 @@ export function verifyAccessToken(token: string): JWTPayload | null {
       audience: 'cfp-users',
     }) as JWTPayload;
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -63,7 +63,7 @@ export function verifyRefreshToken(token: string): { userId: string } | null {
       audience: 'cfp-users',
     }) as { userId: string };
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
