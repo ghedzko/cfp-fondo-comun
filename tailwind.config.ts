@@ -1,4 +1,6 @@
 import type { Config } from 'tailwindcss';
+import colors from 'tailwindcss/colors';
+import animate from 'tailwindcss-animate';
 
 const config: Config = {
   darkMode: 'class',
@@ -18,6 +20,9 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Include all default Tailwind colors
+        ...colors,
+        // shadcn/ui custom colors
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -73,7 +78,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [animate],
 };
 
 export default config;

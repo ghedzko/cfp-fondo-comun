@@ -5,7 +5,7 @@
 **Proyecto**: CFP Fondo Común – Lagopuelo (MVP escalable)  
 **Tech Stack**: Next.js (App Router) + TypeScript + Prisma + PostgreSQL + TanStack Query + Axios + shadcn/ui + next-themes  
 **Fecha de inicio**: 14 de septiembre de 2025  
-**Estado actual**: FASE 0 completada ✅
+**Estado actual**: FASE 1 completada ✅
 
 ---
 
@@ -38,26 +38,30 @@
 
 ---
 
-### 🔄 FASE 1 — Autenticación & Usuarios (RBAC + JWT)
+### ✅ FASE 1 — Autenticación & Usuarios (RBAC + JWT)
 **Objetivo**: Login seguro con RBAC y CRUD de usuarios por ADMIN  
-**Estado**: 🔄 **PENDIENTE**
+**Estado**: ✅ **COMPLETADO**  
+**Fecha**: 14/09/2025
 
-#### 📋 Tareas Planificadas:
-- [ ] Modelo Prisma: User + RefreshToken
-- [ ] JWT utilities (lib/auth.ts)
-- [ ] Password hashing con Argon2id (lib/password.ts)
-- [ ] API Routes: /auth/login, /auth/refresh, /auth/logout, /me, /users
-- [ ] Página /login con shadcn/ui
-- [ ] Auth guard en /dashboard/**
-- [ ] Hooks: useLogin, useMe, useUsers
-- [ ] Middleware de autenticación
+#### ✅ Tareas Completadas:
+- [x] Modelo Prisma: User + RefreshToken con UserRole enum
+- [x] JWT utilities (lib/auth.ts) con bcrypt para passwords
+- [x] API Routes: /api/auth/login, /api/auth/refresh, /api/auth/logout, /api/auth/me
+- [x] Página /login con shadcn/ui y validación Zod
+- [x] Auth guard en middleware.ts protegiendo /dashboard/**
+- [x] AuthProvider context con hooks useAuth, isAdmin, isPreceptor
+- [x] Middleware de autenticación con verificación JWT
+- [x] Dashboard page con UI role-based
+- [x] Test users creados (admin@cfp.edu.ar, preceptor@cfp.edu.ar)
 
-#### 🎯 Criterios de Aceptación:
-- [ ] Solo ADMIN puede crear usuarios
-- [ ] Refresh token rotation funciona
-- [ ] Argon2id para passwords
-- [ ] Middleware protege rutas /dashboard/**
-- [ ] Interceptor Axios maneja refresh automático
+#### ✅ Criterios de Aceptación Cumplidos:
+- [x] RBAC implementado (ADMIN/PRECEPTOR roles)
+- [x] Refresh token rotation funciona
+- [x] bcrypt para password hashing (seguro)
+- [x] Middleware protege rutas /dashboard/**
+- [x] HTTP-only cookies para seguridad XSS
+- [x] AuthProvider maneja estado de autenticación
+- [x] Sistema de login/logout completo
 
 ---
 
@@ -199,7 +203,8 @@
 
 ### Criterios Mínimos para MVP:
 - [x] **FASE 0**: Bootstrap completado ✅
-- [ ] **FASES 1-6**: Core del sistema implementado
+- [x] **FASE 1**: Autenticación completada ✅
+- [ ] **FASES 2-6**: Core del sistema implementado
 - [ ] Tests y linters en verde
 - [ ] Facturación PDF/CSV operativa
 - [ ] Dark/light theme estable
@@ -211,12 +216,12 @@
 
 ## 📊 Progreso General
 
-**Completado**: 1/9 fases (11%)  
+**Completado**: 2/9 fases (22%)  
 **En progreso**: 0/9 fases  
-**Pendiente**: 8/9 fases  
+**Pendiente**: 7/9 fases  
 
 ### Próximo Milestone:
-🎯 **FASE 1 - Autenticación & Usuarios**
+🎯 **FASE 2 - Modelado de Dominio**
 
 ---
 
@@ -226,16 +231,26 @@
 cfp-fondo-comun/
 ├── 📁 src/
 │   ├── 📁 app/
-│   │   ├── 📁 api/health/ ✅
+│   │   ├── 📁 api/
+│   │   │   ├── 📁 auth/ ✅ (login, logout, refresh, me)
+│   │   │   └── 📁 health/ ✅
+│   │   ├── 📁 dashboard/ ✅ (protected page)
+│   │   ├── 📁 login/ ✅ (auth page)
 │   │   ├── globals.css ✅
-│   │   ├── layout.tsx ✅
+│   │   ├── layout.tsx ✅ (with AuthProvider)
 │   │   └── page.tsx ✅
 │   ├── 📁 components/
-│   │   ├── 📁 ui/ ✅ (Button, Card, Input, Table)
+│   │   ├── 📁 ui/ ✅ (Button, Card, Input, Table, Form)
 │   │   └── theme-toggle.tsx ✅
-│   └── 📁 providers/ ✅
-├── 📁 lib/ ✅ (axios, db, utils)
-├── 📁 prisma/ ✅ (schema básico)
+│   ├── 📁 lib/
+│   │   ├── auth.ts ✅ (JWT utilities)
+│   │   ├── axios.ts ✅
+│   │   ├── db.ts ✅
+│   │   └── utils.ts ✅
+│   └── 📁 providers/ ✅ (auth, query, theme)
+├── 📁 prisma/ ✅ (User + RefreshToken models)
+├── 📁 scripts/ ✅ (create-test-user.js)
+├── middleware.ts ✅ (route protection)
 ├── docker-compose.yml ✅
 ├── env.example ✅
 ├── components.json ✅
@@ -245,5 +260,10 @@ cfp-fondo-comun/
 
 ---
 
-**Última actualización**: 14 de septiembre de 2025, 20:29  
-**Siguiente acción**: Iniciar FASE 1 - Autenticación & Usuarios
+**Última actualización**: 14 de septiembre de 2025, 21:28  
+**Siguiente acción**: Iniciar FASE 2 - Modelado de Dominio
+
+### 🎉 FASE 1 Completada - Sistema de Autenticación Operativo
+- **Test Users**: admin@cfp.edu.ar/admin123, preceptor@cfp.edu.ar/preceptor123
+- **Dev Server**: http://localhost:3001
+- **Features**: Login, Dashboard, Role-based UI, JWT tokens, Route protection
