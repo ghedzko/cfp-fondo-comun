@@ -1,20 +1,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            CFP Fondo Común - Lagopuelo
+    <div className="home-page">
+      <header className="home-header">
+        <div className="header-container">
+          <h1 className="header-title">
+            CFP Fondo Común - Lago Puelo
           </h1>
-          <ThemeToggle />
+          <div className="header-actions">
+            <ThemeToggle />
+            <Link href="/login">
+              <Button>Iniciar Sesión</Button>
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <main className="home-main">
+        <div className="home-content">
           <Card>
             <CardHeader>
               <CardTitle>Sistema de Gestión de Aportes Voluntarios</CardTitle>
@@ -24,64 +31,64 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Estudiantes</CardTitle>
-                    <CardDescription>
+              <div className="features-grid">
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Estudiantes</CardTitle>
+                    <CardDescription className="feature-description">
                       Gestión global de estudiantes por DNI
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Cursos</CardTitle>
-                    <CardDescription>
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Cursos</CardTitle>
+                    <CardDescription className="feature-description">
                       Administración de cursos y períodos habilitados
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Aportes Voluntarios</CardTitle>
-                    <CardDescription>
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Aportes Voluntarios</CardTitle>
+                    <CardDescription className="feature-description">
                       Registro y seguimiento de contribuciones mensuales
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Matrículas</CardTitle>
-                    <CardDescription>
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Matrículas</CardTitle>
+                    <CardDescription className="feature-description">
                       Inscripción de estudiantes a cursos
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Facturación</CardTitle>
-                    <CardDescription>
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Facturación</CardTitle>
+                    <CardDescription className="feature-description">
                       Emisión de comprobantes mensuales por curso
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Reportes</CardTitle>
-                    <CardDescription>
+                <Card className="feature-card">
+                  <CardHeader className="feature-header">
+                    <CardTitle className="feature-title">Reportes</CardTitle>
+                    <CardDescription className="feature-description">
                       Análisis y exportación de datos
                     </CardDescription>
                   </CardHeader>
                 </Card>
               </div>
 
-              <div className="mt-8 p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground">
+              <div className="info-banner">
+                <p className="info-text">
                   <strong>Nota importante:</strong> Este sistema gestiona <em>aportes voluntarios</em>. 
                   Todas las contribuciones son opcionales y no obligatorias.
                 </p>

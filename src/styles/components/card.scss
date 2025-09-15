@@ -1,0 +1,49 @@
+// Card Component Styles
+@import '../variables';
+@import '../mixins';
+
+.card {
+  @include card;
+
+  &__header {
+    @include card-header;
+    
+    h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+  }
+
+  &__content {
+    @include card-content;
+  }
+
+  &__footer {
+    @include card-footer;
+    @include flex-between;
+  }
+
+  &__title {
+    @include text-heading-3;
+    margin: 0;
+  }
+
+  &__description {
+    @include text-small;
+    margin: $spacing-xs 0 0 0;
+  }
+
+  // Card variants
+  &--elevated {
+    box-shadow: $shadow-lg;
+  }
+
+  &--bordered {
+    border: 2px solid var(--border);
+  }
+
+  &--ghost {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+}

@@ -2,10 +2,10 @@
 
 ## 📋 Estado General del Proyecto
 
-**Proyecto**: CFP Fondo Común – Lagopuelo (MVP escalable)  
-**Tech Stack**: Next.js (App Router) + TypeScript + Prisma + PostgreSQL + TanStack Query + Axios + shadcn/ui + next-themes  
+**Proyecto**: CFP Fondo Común – Lago Puelo (MVP escalable)  
+**Tech Stack**: Next.js (App Router) + TypeScript + Prisma + PostgreSQL + TanStack Query + Axios + shadcn/ui + SASS/SCSS + next-themes  
 **Fecha de inicio**: 14 de septiembre de 2025  
-**Estado actual**: FASE 1 completada ✅
+**Estado actual**: FASE 1 completada ✅ (15/09/2025)
 
 ---
 
@@ -41,7 +41,7 @@
 ### ✅ FASE 1 — Autenticación & Usuarios (RBAC + JWT)
 **Objetivo**: Login seguro con RBAC y CRUD de usuarios por ADMIN  
 **Estado**: ✅ **COMPLETADO**  
-**Fecha**: 14/09/2025
+**Fecha**: 15/09/2025
 
 #### ✅ Tareas Completadas:
 - [x] Modelo Prisma: User + RefreshToken con UserRole enum
@@ -53,6 +53,11 @@
 - [x] Middleware de autenticación con verificación JWT
 - [x] Dashboard page con UI role-based
 - [x] Test users creados (admin@cfp.edu.ar, preceptor@cfp.edu.ar)
+- [x] Migración completa de Tailwind CSS a SASS/SCSS
+- [x] Arquitectura SASS profesional con variables y mixins
+- [x] Resolución de errores de hidratación de Next.js
+- [x] Sistema de autenticación completamente funcional
+- [x] Corrección de nombre: "Lagopuelo" → "Lago Puelo"
 
 #### ✅ Criterios de Aceptación Cumplidos:
 - [x] RBAC implementado (ADMIN/PRECEPTOR roles)

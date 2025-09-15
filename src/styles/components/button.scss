@@ -1,0 +1,74 @@
+// Button Component Styles
+@import '../variables';
+@import '../mixins';
+
+.btn {
+  @include button-base;
+
+  // Variants
+  &--primary {
+    @include button-primary;
+  }
+
+  &--secondary {
+    @include button-secondary;
+  }
+
+  &--ghost {
+    @include button-ghost;
+  }
+
+  &--destructive {
+    @include button-base;
+    background-color: var(--error);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+    
+    &:active:not(:disabled) {
+      background-color: #b91c1c;
+    }
+  }
+
+  // Sizes
+  &--sm {
+    @include button-sm;
+  }
+
+  &--md {
+    @include button-md;
+  }
+
+  &--lg {
+    @include button-lg;
+  }
+
+  // Loading state
+  &--loading {
+    position: relative;
+    color: transparent;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

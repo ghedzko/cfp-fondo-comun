@@ -50,8 +50,10 @@ export function verifyAccessToken(token: string): JWTPayload | null {
       issuer: 'cfp-fondo-comun',
       audience: 'cfp-users',
     }) as JWTPayload;
+    console.log('JWT verification successful for user:', decoded.email);
     return decoded;
-  } catch {
+  } catch (error) {
+    console.error('JWT verification failed:', error);
     return null;
   }
 }
@@ -106,8 +108,8 @@ export function hasPermission(userRole: UserRole, requiredRole: UserRole): boole
 // Cookie Configuration
 export const COOKIE_CONFIG = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: (process.env.COOKIE_SAME_SITE as 'strict' | 'lax' | 'none') || 'lax',
+  secure: false, // Set to false for development
+  sameSite: 'lax' as const,
   path: '/',
 } as const;
 

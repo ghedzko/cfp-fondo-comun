@@ -17,23 +17,22 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Cargando...</h1>
-          <p className="text-muted-foreground">Verificando autenticación...</p>
+          <h1 className="text-2xl font-bold mb-2">Cargando...</h1>
+          <p className="text-gray-600">Verificando autenticación...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">CFP Fondo Común</h1>
-            <p className="text-sm text-muted-foreground">Sistema de Gestión - Lagopuelo</p>
+    <div className="dashboard-page">
+      <header className="dashboard-header">
+        <div className="header-container">
+          <div className="header-info">
+            <h1 className="header-title">CFP Fondo Común</h1>
+            <p className="header-subtitle">Sistema de Gestión - Lago Puelo</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="header-actions">
             <ThemeToggle />
             <Button variant="outline" onClick={handleLogout}>
               Cerrar Sesión
@@ -42,44 +41,38 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">
+      <main className="dashboard-main">
+        <div className="welcome-section">
+          <h2 className="welcome-title">
             Bienvenido, {user.name}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="welcome-subtitle">
             Rol: {user.role === UserRole.ADMIN ? 'Administrador' : 'Preceptor'}
           </p>
         </div>
 
-        {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* User Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Información del Usuario</CardTitle>
-              <CardDescription>Detalles de tu cuenta</CardDescription>
+        <div className="dashboard-grid">
+          <Card className="dashboard-card">
+            <CardHeader className="card-header">
+              <CardTitle className="card-title">Información del Usuario</CardTitle>
+              <CardDescription className="card-description">Detalles de tu cuenta</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div>
-                  <span className="font-medium">Email:</span>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
-                </div>
-                <div>
-                  <span className="font-medium">Rol:</span>
-                  <p className="text-sm text-muted-foreground">
-                    {user.role === UserRole.ADMIN ? 'Administrador (Secretaría)' : 'Preceptor'}
-                  </p>
-                </div>
-                <div>
-                  <span className="font-medium">Estado:</span>
-                  <p className="text-sm text-muted-foreground">
-                    {user.isActive ? 'Activo' : 'Inactivo'}
-                  </p>
-                </div>
+            <CardContent className="card-content">
+              <div className="info-item">
+                <span className="info-label">Email:</span>
+                <p className="info-value">{user.email}</p>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Rol:</span>
+                <p className="info-value">
+                  {user.role === UserRole.ADMIN ? 'Administrador (Secretaría)' : 'Preceptor'}
+                </p>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Estado:</span>
+                <p className="info-value">
+                  {user.isActive ? 'Activo' : 'Inactivo'}
+                </p>
               </div>
             </CardContent>
           </Card>

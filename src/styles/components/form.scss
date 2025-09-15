@@ -1,0 +1,84 @@
+// Form Component Styles
+@import '../variables';
+@import '../mixins';
+
+.form {
+  &__group {
+    @include form-group;
+  }
+
+  &__label {
+    @include form-label;
+  }
+
+  &__input {
+    @include input-base;
+    
+    &--error {
+      border-color: var(--error);
+      
+      &:focus {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+      }
+    }
+  }
+
+  &__error {
+    @include form-error;
+  }
+
+  &__help {
+    @include text-muted;
+    margin-top: $spacing-xs;
+  }
+}
+
+// Input variants
+.input {
+  @include input-base;
+
+  &--sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-xs;
+  }
+
+  &--lg {
+    padding: $spacing-md $spacing-lg;
+    font-size: $font-size-base;
+  }
+
+  &--error {
+    border-color: var(--error);
+    
+    &:focus {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+    }
+  }
+}
+
+// Label styles
+.label {
+  @include form-label;
+
+  &--required {
+    &::after {
+      content: ' *';
+      color: var(--error);
+    }
+  }
+}
+
+// Error message styles
+.error-message {
+  @include form-error;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  &::before {
+    content: '⚠';
+    font-size: $font-size-xs;
+  }
+}

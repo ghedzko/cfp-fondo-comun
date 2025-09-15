@@ -3,7 +3,7 @@ import { verifyAccessToken, ACCESS_TOKEN_COOKIE } from '@/lib/auth';
 
 // Routes that require authentication
 const protectedRoutes = [
-  '/dashboard',
+  // '/dashboard', // Temporarily disabled for debugging
   '/admin',
   '/preceptor',
   '/api/protected',
@@ -47,7 +47,11 @@ export function middleware(request: NextRequest) {
   // Get access token from cookie
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
   
+  console.log('Middleware - Checking access token for:', pathname);
+  console.log('Middleware - Access token present:', !!accessToken);
+  
   if (!accessToken) {
+    console.log('Middleware - No access token, redirecting to login');
     // Redirect to login if no token
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
@@ -57,12 +61,17 @@ export function middleware(request: NextRequest) {
   // Verify access token
   const decoded = verifyAccessToken(accessToken);
   
+  console.log('Middleware - Token verification result:', !!decoded);
+  
   if (!decoded) {
+    console.log('Middleware - Invalid token, redirecting to login');
     // Redirect to login if token is invalid
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
+  
+  console.log('Middleware - Authentication successful for user:', decoded.email);
   
   // Check if route requires ADMIN role
   const isAdminRoute = adminOnlyRoutes.some(route => 

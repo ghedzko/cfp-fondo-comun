@@ -1,0 +1,202 @@
+// Login Page Styles
+@import '../variables';
+@import '../mixins';
+
+.login-page {
+  min-height: 100vh;
+  @include flex-center;
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+  padding: $spacing-lg;
+
+  .dark & {
+    background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  }
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  @include slide-up;
+}
+
+.login-card {
+  @include card;
+  box-shadow: $shadow-xl;
+  border: none;
+  
+  &__header {
+    @include card-header;
+    text-align: center;
+    padding: $spacing-2xl $spacing-xl $spacing-lg;
+    
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto $spacing-lg;
+      background: var(--primary-600);
+      border-radius: $radius-xl;
+      @include flex-center;
+      color: white;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+    }
+    
+    .title {
+      @include text-heading-2;
+      margin-bottom: $spacing-sm;
+      color: var(--text-primary);
+    }
+    
+    .subtitle {
+      @include text-small;
+      color: var(--text-secondary);
+    }
+  }
+  
+  &__content {
+    @include card-content;
+    padding: 0 $spacing-xl $spacing-2xl;
+  }
+}
+
+.login-form {
+  .form-group {
+    margin-bottom: $spacing-lg;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .form-label {
+    @include form-label;
+    font-weight: $font-weight-medium;
+  }
+  
+  .form-input {
+    @include input-base;
+    height: 48px;
+    font-size: $font-size-base;
+    
+    &:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1), $shadow-md;
+    }
+    
+    &.error {
+      border-color: var(--error);
+      
+      &:focus {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+      }
+    }
+  }
+  
+  .error-message {
+    @include form-error;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-top: $spacing-sm;
+    
+    &::before {
+      content: '⚠';
+      font-size: $font-size-sm;
+    }
+  }
+  
+  .submit-button {
+    @include button-primary;
+    @include button-lg;
+    width: 100%;
+    margin-top: $spacing-xl;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.025em;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: $shadow-lg;
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    &.loading {
+      position: relative;
+      color: transparent;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 2px solid transparent;
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: $spacing-xl;
+  padding-top: $spacing-lg;
+  border-top: 1px solid var(--border);
+  
+  .footer-text {
+    @include text-small;
+    color: var(--text-muted);
+  }
+  
+  .footer-link {
+    color: var(--primary-600);
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    
+    &:hover {
+      color: var(--primary-700);
+      text-decoration: underline;
+    }
+  }
+}
+
+// Responsive design
+@include mobile-only {
+  .login-page {
+    padding: $spacing-md;
+  }
+  
+  .login-card {
+    &__header {
+      padding: $spacing-xl $spacing-lg $spacing-md;
+      
+      .logo {
+        width: 56px;
+        height: 56px;
+        font-size: $font-size-xl;
+      }
+      
+      .title {
+        font-size: $font-size-xl;
+      }
+    }
+    
+    &__content {
+      padding: 0 $spacing-lg $spacing-xl;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

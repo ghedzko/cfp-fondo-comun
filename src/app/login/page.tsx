@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/providers/auth-provider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -25,6 +26,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { refreshAuth } = useAuth();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -53,9 +55,11 @@ export default function LoginPage() {
         throw new Error(result.error || 'Error en el login');
       }
 
-      // Redirect to dashboard on successful login
-      router.push('/dashboard');
-      router.refresh();
+      // Refresh auth state first
+      await refreshAuth();
+      
+      // Use router.replace for a clean redirect without adding to history
+      router.replace('/dashboard');
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -65,115 +69,66 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'hsl(var(--background))', padding: '1rem' }}>
-      <div style={{ width: '100%', maxWidth: '28rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: 'hsl(var(--foreground))', marginBottom: '0.5rem' }}>
-            CFP Fondo Común
-          </h1>
-          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', marginBottom: '1rem' }}>
-            Sistema de Gestión Escolar
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <ThemeToggle />
-          </div>
-        </div>
-
-        {/* Login Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle style={{ fontSize: '1.5rem', textAlign: 'center', marginBottom: '0.25rem' }}>
+    <div className="login-page">
+      <div className="login-container">
+        <Card className="login-card">
+          <CardHeader className="login-card__header">
+            <div className="logo">
+              CFP
+            </div>
+            <CardTitle className="title">
               Iniciar Sesión
             </CardTitle>
-            <CardDescription style={{ textAlign: 'center' }}>
-              Ingresa tus credenciales para acceder al sistema
+            <CardDescription className="subtitle">
+              Accede a tu cuenta del CFP Fondo Común
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="login-card__content">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="login-form">
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
+                    <FormItem className="form-group">
+                      <FormLabel className="form-label">
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <Input
-                          {...field}
-                          type="email"
                           placeholder="tu@email.com"
-                          disabled={isLoading}
-                          style={{ 
-                            width: '100%',
-                            padding: '0.5rem 0.75rem',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '0.375rem',
-                            backgroundColor: 'hsl(var(--background))',
-                            color: 'hsl(var(--foreground))'
-                          }}
+                          type="email"
+                          {...field}
+                          className={`form-input ${form.formState.errors.email ? 'error' : ''}`}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="error-message" />
                     </FormItem>
                   )}
                 />
-                
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
+                    <FormItem className="form-group">
+                      <FormLabel className="form-label">
+                        Contraseña
+                      </FormLabel>
                       <FormControl>
-                        <div style={{ position: 'relative' }}>
-                          <Input
-                            {...field}
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            disabled={isLoading}
-                            style={{ 
-                              width: '100%',
-                              padding: '0.5rem 0.75rem',
-                              paddingRight: '2.5rem',
-                              border: '1px solid hsl(var(--border))',
-                              borderRadius: '0.375rem',
-                              backgroundColor: 'hsl(var(--background))',
-                              color: 'hsl(var(--foreground))'
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            style={{
-                              position: 'absolute',
-                              right: '0',
-                              top: '0',
-                              height: '100%',
-                              padding: '0 0.75rem',
-                              backgroundColor: 'transparent',
-                              border: 'none'
-                            }}
-                            onClick={() => setShowPassword(!showPassword)}
-                            disabled={isLoading}
-                          >
-                            {showPassword ? (
-                              <EyeOff style={{ height: '1rem', width: '1rem' }} />
-                            ) : (
-                              <Eye style={{ height: '1rem', width: '1rem' }} />
-                            )}
-                          </Button>
-                        </div>
+                        <Input
+                          placeholder="••••••••"
+                          type="password"
+                          {...field}
+                          className={`form-input ${form.formState.errors.password ? 'error' : ''}`}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="error-message" />
                     </FormItem>
                   )}
                 />
 
                 {error && (
-                  <div style={{ padding: '0.5rem', backgroundColor: 'hsl(var(--error-background))', color: 'hsl(var(--error-foreground))', borderRadius: '0.375rem' }}>
+                  <div className="error-message">
                     {error}
                   </div>
                 )}
@@ -181,43 +136,20 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 1rem',
-                    backgroundColor: 'hsl(var(--primary))',
-                    color: 'hsl(var(--primary-foreground))',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    cursor: isLoading ? 'not-allowed' : 'pointer',
-                    opacity: isLoading ? 0.5 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem'
-                  }}
+                  className={`submit-button ${isLoading ? 'loading' : ''}`}
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 style={{ height: '1rem', width: '1rem', animation: 'spin 1s linear infinite' }} />
-                      Iniciando sesión...
-                    </>
-                  ) : (
-                    'Iniciar Sesión'
-                  )}
+                  {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}>
-            CFP Lagopuelo - Sistema de Gestión
+        <div className="login-footer">
+          <p className="footer-text">
+            CFP Lago Puelo - Sistema de Gestión
           </p>
-          <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
+          <p className="footer-text" style={{ fontSize: '0.75rem' }}>
             Solo usuarios autorizados pueden acceder
           </p>
         </div>

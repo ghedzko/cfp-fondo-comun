@@ -95,14 +95,20 @@ export async function POST(request: NextRequest) {
       user: userData,
     });
 
-    // Set HTTP-only cookies
+    // Set cookies with minimal configuration for debugging
     response.cookies.set(ACCESS_TOKEN_COOKIE, accessToken, {
-      ...COOKIE_CONFIG,
+      httpOnly: false, // Temporarily disable httpOnly for debugging
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
       maxAge: 15 * 60, // 15 minutes
     });
 
     response.cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
-      ...COOKIE_CONFIG,
+      httpOnly: false, // Temporarily disable httpOnly for debugging
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
 

@@ -1,0 +1,197 @@
+// Dashboard Page Styles
+@import '../variables';
+@import '../mixins';
+
+.dashboard-page {
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.dashboard-header {
+  border-bottom: 1px solid var(--border);
+  
+  .header-container {
+    @include container;
+    padding: $spacing-lg $spacing-md;
+    @include flex-between;
+  }
+  
+  .header-info {
+    .header-title {
+      @include text-heading-2;
+      color: var(--text-primary);
+      margin-bottom: $spacing-xs;
+    }
+    
+    .header-subtitle {
+      @include text-small;
+      color: var(--text-secondary);
+    }
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+}
+
+.dashboard-main {
+  @include container;
+  padding: $spacing-2xl $spacing-md;
+}
+
+.welcome-section {
+  margin-bottom: $spacing-2xl;
+  
+  .welcome-title {
+    @include text-heading-1;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .welcome-subtitle {
+    @include text-small;
+    color: var(--text-secondary);
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-lg;
+  
+  @include tablet-up {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @include desktop-up {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dashboard-card {
+  @include card;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+  
+  .card-header {
+    @include card-header;
+  }
+  
+  .card-content {
+    @include card-content;
+  }
+  
+  .card-title {
+    @include text-heading-3;
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .card-description {
+    @include text-small;
+    margin-bottom: $spacing-lg;
+  }
+  
+  .info-item {
+    margin-bottom: $spacing-sm;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .info-label {
+      font-weight: $font-weight-medium;
+      color: var(--text-primary);
+    }
+    
+    .info-value {
+      @include text-small;
+      color: var(--text-secondary);
+    }
+  }
+  
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: $radius-full;
+      background-color: var(--success);
+    }
+    
+    .status-text {
+      @include text-small;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.development-notice {
+  margin-top: $spacing-2xl;
+  padding: $spacing-lg;
+  background-color: var(--surface);
+  border-radius: $radius-lg;
+  border: 1px solid var(--border);
+  
+  .notice-title {
+    font-weight: $font-weight-semibold;
+    color: var(--text-primary);
+    margin-bottom: $spacing-sm;
+  }
+  
+  .notice-text {
+    @include text-small;
+    color: var(--text-secondary);
+  }
+}
+
+.loading-state {
+  min-height: 100vh;
+  @include flex-center;
+  
+  .loading-content {
+    text-align: center;
+    
+    .loading-title {
+      @include text-heading-2;
+      margin-bottom: $spacing-md;
+    }
+    
+    .loading-text {
+      @include text-small;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+// Responsive adjustments
+@include mobile-only {
+  .dashboard-header {
+    .header-container {
+      flex-direction: column;
+      gap: $spacing-md;
+      text-align: center;
+    }
+  }
+  
+  .dashboard-main {
+    padding: $spacing-lg $spacing-md;
+  }
+  
+  .welcome-section {
+    text-align: center;
+    
+    .welcome-title {
+      font-size: $font-size-2xl;
+    }
+  }
+}

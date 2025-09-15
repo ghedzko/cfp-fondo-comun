@@ -1,0 +1,120 @@
+// Home Page Styles
+@import '../variables';
+@import '../mixins';
+
+.home-page {
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.home-header {
+  border-bottom: 1px solid var(--border);
+  
+  .header-container {
+    @include container;
+    padding: $spacing-lg $spacing-md;
+    @include flex-between;
+  }
+  
+  .header-title {
+    @include text-heading-2;
+    color: var(--text-primary);
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+}
+
+.home-main {
+  @include container;
+  padding: $spacing-2xl $spacing-md;
+}
+
+.home-content {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-lg;
+  margin-top: $spacing-lg;
+  
+  @include tablet-up {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @include desktop-up {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-card {
+  @include card;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+  
+  .feature-header {
+    @include card-header;
+  }
+  
+  .feature-title {
+    @include text-heading-3;
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .feature-description {
+    @include text-small;
+  }
+}
+
+.info-banner {
+  margin-top: $spacing-2xl;
+  padding: $spacing-lg;
+  background-color: var(--surface);
+  border-radius: $radius-lg;
+  border: 1px solid var(--border);
+  
+  .info-text {
+    @include text-small;
+    
+    strong {
+      font-weight: $font-weight-semibold;
+      color: var(--text-primary);
+    }
+    
+    em {
+      font-style: italic;
+      color: var(--primary-600);
+    }
+  }
+}
+
+// Responsive adjustments
+@include mobile-only {
+  .home-header {
+    .header-container {
+      padding: $spacing-md;
+      flex-direction: column;
+      gap: $spacing-md;
+      text-align: center;
+    }
+    
+    .header-title {
+      font-size: $font-size-xl;
+    }
+  }
+  
+  .home-main {
+    padding: $spacing-lg $spacing-md;
+  }
+}
