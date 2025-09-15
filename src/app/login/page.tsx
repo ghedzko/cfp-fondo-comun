@@ -65,35 +65,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="w-full max-w-md space-y-6">
-        {/* Header with theme toggle */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              CFP Fondo Común
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Sistema de Gestión Escolar
-            </p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'hsl(var(--background))', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '28rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: 'hsl(var(--foreground))', marginBottom: '0.5rem' }}>
+            CFP Fondo Común
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', marginBottom: '1rem' }}>
+            Sistema de Gestión Escolar
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
         </div>
 
-        {/* Login Card */}
-        <Card className="w-full">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
+        {/* Login Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle style={{ fontSize: '1.5rem', textAlign: 'center', marginBottom: '0.25rem' }}>
               Iniciar Sesión
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription style={{ textAlign: 'center' }}>
               Ingresa tus credenciales para acceder al sistema
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                {/* Email Field */}
+              <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <FormField
                   control={form.control}
                   name="email"
@@ -102,18 +101,25 @@ export default function LoginPage() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
+                          {...field}
                           type="email"
                           placeholder="tu@email.com"
                           disabled={isLoading}
-                          {...field}
+                          style={{ 
+                            width: '100%',
+                            padding: '0.5rem 0.75rem',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '0.375rem',
+                            backgroundColor: 'hsl(var(--background))',
+                            color: 'hsl(var(--foreground))'
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                {/* Password Field */}
+                
                 <FormField
                   control={form.control}
                   name="password"
@@ -121,25 +127,42 @@ export default function LoginPage() {
                     <FormItem>
                       <FormLabel>Contraseña</FormLabel>
                       <FormControl>
-                        <div className="relative">
+                        <div style={{ position: 'relative' }}>
                           <Input
+                            {...field}
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
                             disabled={isLoading}
-                            {...field}
+                            style={{ 
+                              width: '100%',
+                              padding: '0.5rem 0.75rem',
+                              paddingRight: '2.5rem',
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '0.375rem',
+                              backgroundColor: 'hsl(var(--background))',
+                              color: 'hsl(var(--foreground))'
+                            }}
                           />
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            style={{
+                              position: 'absolute',
+                              right: '0',
+                              top: '0',
+                              height: '100%',
+                              padding: '0 0.75rem',
+                              backgroundColor: 'transparent',
+                              border: 'none'
+                            }}
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
                           >
                             {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
+                              <EyeOff style={{ height: '1rem', width: '1rem' }} />
                             ) : (
-                              <Eye className="h-4 w-4" />
+                              <Eye style={{ height: '1rem', width: '1rem' }} />
                             )}
                           </Button>
                         </div>
@@ -149,22 +172,35 @@ export default function LoginPage() {
                   )}
                 />
 
-                {/* Error Message */}
                 {error && (
-                  <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-md">
+                  <div style={{ padding: '0.5rem', backgroundColor: 'hsl(var(--error-background))', color: 'hsl(var(--error-foreground))', borderRadius: '0.375rem' }}>
                     {error}
                   </div>
                 )}
 
-                {/* Submit Button */}
                 <Button
                   type="submit"
-                  className="w-full"
                   disabled={isLoading}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: 'hsl(var(--primary))',
+                    color: 'hsl(var(--primary-foreground))',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    opacity: isLoading ? 0.5 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 style={{ height: '1rem', width: '1rem', animation: 'spin 1s linear infinite' }} />
                       Iniciando sesión...
                     </>
                   ) : (
@@ -177,9 +213,11 @@ export default function LoginPage() {
         </Card>
 
         {/* Footer */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>CFP Lagopuelo - Sistema de Gestión</p>
-          <p className="mt-1">
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}>
+            CFP Lagopuelo - Sistema de Gestión
+          </p>
+          <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))' }}>
             Solo usuarios autorizados pueden acceder
           </p>
         </div>
