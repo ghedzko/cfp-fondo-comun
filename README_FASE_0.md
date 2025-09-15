@@ -7,16 +7,16 @@ Configuración inicial del proyecto con todas las dependencias y herramientas ne
 
 ### 1. Dependencias Instaladas
 - ✅ @prisma/client, @tanstack/react-query, axios
-- ✅ next-themes, class-variance-authority, clsx, tailwind-merge, lucide-react
+- ✅ next-themes, class-variance-authority, clsx, lucide-react
 - ✅ prisma, prettier, husky, @types/bcryptjs (dev dependencies)
-- ✅ tailwindcss-animate
+- ✅ sass (migrado desde Tailwind CSS)
 
 ### 2. Configuración de Archivos
 - ✅ `env.example` - Template de variables de entorno
 - ✅ `.prettierrc` - Configuración de Prettier
 - ✅ `components.json` - Configuración de shadcn/ui
-- ✅ `tailwind.config.ts` - Configuración completa de Tailwind CSS
-- ✅ `src/app/globals.css` - Variables CSS para dark/light theme
+- ✅ `src/app/globals.scss` - Estilos globales SASS (migrado desde CSS)
+- ✅ `src/styles/` - Arquitectura SASS completa (variables, mixins, componentes)
 
 ### 3. Providers y Utilidades
 - ✅ `src/providers/theme-provider.tsx` - Provider de next-themes
