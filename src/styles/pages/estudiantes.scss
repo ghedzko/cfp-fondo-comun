@@ -1,0 +1,240 @@
+// Estudiantes page styles
+.estudiantes-page {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+
+    .header-content {
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--foreground);
+      }
+
+      .subtitle {
+        color: var(--muted-foreground);
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .search-section {
+    margin-bottom: 2rem;
+
+    .search-content {
+      padding: 1.5rem;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      .search-input-group {
+        flex: 1;
+        position: relative;
+
+        .search-icon {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--muted-foreground);
+          z-index: 1;
+        }
+
+        .search-input {
+          padding-left: 2.5rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  }
+
+  .results-section {
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+
+      .empty-icon {
+        color: var(--muted-foreground);
+        margin: 0 auto 1rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--foreground);
+      }
+
+      p {
+        color: var(--muted-foreground);
+        margin-bottom: 1.5rem;
+      }
+    }
+
+    .students-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .student-card {
+      transition: all 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .student-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+
+        .student-name {
+          font-size: 1.125rem;
+          font-weight: 600;
+          flex: 1;
+        }
+
+        .dni-badge {
+          flex-shrink: 0;
+          font-size: 0.75rem;
+        }
+      }
+
+      .student-info {
+        margin-bottom: 1.5rem;
+
+        .info-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+
+          .label {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+          }
+
+          .matriculas-count,
+          .aportes-count {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--foreground);
+          }
+        }
+
+        .current-courses {
+          margin-top: 1rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+
+          .course-badge {
+            font-size: 0.75rem;
+          }
+
+          .more-courses {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+          }
+        }
+      }
+
+      .student-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+
+        @media (max-width: 480px) {
+          flex-direction: column;
+        }
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+
+      .pagination-info {
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+      }
+
+      .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .page-indicator {
+          font-size: 0.875rem;
+          color: var(--foreground);
+          white-space: nowrap;
+        }
+      }
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+
+        .pagination-controls {
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.125rem;
+    color: var(--muted-foreground);
+  }
+}
+
+// Dark mode adjustments
+.dark {
+  .estudiantes-page {
+    .student-card {
+      &:hover {
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}

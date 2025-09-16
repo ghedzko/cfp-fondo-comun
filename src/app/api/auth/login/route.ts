@@ -94,9 +94,9 @@ export async function POST(request: NextRequest) {
       user: userData,
     });
 
-    // Set cookies with minimal configuration for debugging
+    // Set secure HTTP-only cookies
     response.cookies.set(ACCESS_TOKEN_COOKIE, accessToken, {
-      httpOnly: false, // Temporarily disable httpOnly for debugging
+      httpOnly: true,
       secure: false,
       sameSite: 'lax',
       path: '/',
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     });
 
     response.cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
-      httpOnly: false, // Temporarily disable httpOnly for debugging
+      httpOnly: true,
       secure: false,
       sameSite: 'lax',
       path: '/',

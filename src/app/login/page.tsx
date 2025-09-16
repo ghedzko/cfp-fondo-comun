@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 // Login form validation schema
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Password debe tener al menos 8 caracteres'),
+  password: z.string().min(1, 'Password requerido'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -23,7 +23,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const searchParams = useSearchParams();
+  const { refreshAuth, isAuthenticated } = useAuth();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -34,36 +35,58 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('Form submitted with data:', data);
     setIsLoading(true);
     setError('');
 
     try {
+      console.log('Sending login request...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
 
+      console.log('Response status:', response.status);
       const result = await response.json();
+      console.log('Response data:', result);
 
       if (!response.ok) {
         throw new Error(result.error || 'Error en el login');
       }
 
-      // Refresh auth state first
-      await refreshAuth();
-      
-      // Use router.replace for a clean redirect without adding to history
-      router.replace('/dashboard');
+      // Try to refresh auth state (ignore failure to allow middleware to handle)
+      try {
+        console.log('Refreshing auth state...');
+        await refreshAuth();
+      } catch (authError) {
+        console.log('Auth refresh failed:', authError);
+      }
+
+      // Redirect to requested path or dashboard
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      console.log('Redirecting to:', redirect);
+      router.replace(redirect);
 
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
       setIsLoading(false);
     }
   };
+
+  // If already authenticated, redirect away from login
+  // Use effect to avoid calling router in render
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      router.replace(redirect);
+    }
+  }, [isAuthenticated, router, searchParams]);
 
   return (
     <div className="login-page">

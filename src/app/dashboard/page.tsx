@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/providers/auth-provider';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -78,33 +79,51 @@ export default function DashboardPage() {
           </Card>
 
           {isAdmin && (
-            <>
-              <Card className="feature-card">
-                <CardHeader>
-                  <h3>Gestión de Usuarios</h3>
-                  <CardDescription>Administrar usuarios del sistema</CardDescription>
-                </CardHeader>
+            <div className="dashboard-cards">
+              <Card className="dashboard-card">
                 <CardContent>
-                  <p>Crear y gestionar cuentas de preceptores</p>
-                  <Button className="feature-button" disabled aria-label="Gestión de usuarios - Próximamente disponible">
-                    Próximamente
+                  <h3>Gestión de Estudiantes</h3>
+                  <p>Administrar estudiantes y matrículas</p>
+                  <Link href="/dashboard/estudiantes">
+                    <Button variant="outline" size="sm">
+                      Ver Estudiantes
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="dashboard-card">
+                <CardContent>
+                  <h3>Cursos y Períodos</h3>
+                  <p>Gestionar cursos y períodos académicos</p>
+                  <Link href="/dashboard/cursos">
+                    <Button variant="outline" size="sm">
+                      Ver Cursos
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="dashboard-card">
+                <CardContent>
+                  <h3>Usuarios del Sistema</h3>
+                  <p>Gestionar usuarios y permisos</p>
+                  <Button variant="outline" size="sm">
+                    Ver Usuarios
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="feature-card">
-                <CardHeader>
-                  <h3>Facturación</h3>
-                  <CardDescription>Generar facturas mensuales</CardDescription>
-                </CardHeader>
+              <Card className="dashboard-card">
                 <CardContent>
-                  <p>Crear facturas PDF y exportar CSV</p>
-                  <Button className="feature-button" disabled aria-label="Facturación - Próximamente disponible">
-                    Próximamente
+                  <h3>Configuración</h3>
+                  <p>Ajustes del sistema</p>
+                  <Button variant="outline" size="sm">
+                    Configurar
                   </Button>
                 </CardContent>
               </Card>
-            </>
+            </div>
           )}
 
           {(isPreceptor || isAdmin) && (

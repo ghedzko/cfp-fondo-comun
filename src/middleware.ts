@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken, ACCESS_TOKEN_COOKIE } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+
 // Routes that require authentication
 const protectedRoutes = [
-  // '/dashboard', // Temporarily disabled for debugging
+  '/dashboard',
   '/admin',
   '/preceptor',
   '/api/protected',
+  '/api/estudiantes',
+  '/api/cursos',
 ];
 
 // Routes that require ADMIN role
@@ -30,7 +34,20 @@ export function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some(route => 
     pathname === route || pathname.startsWith(route + '/')
   );
-  
+
+  // If on login and already authenticated, redirect to requested page or dashboard
+  if (pathname === '/login') {
+    const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+    if (accessToken) {
+      const decoded = verifyAccessToken(accessToken);
+      if (decoded) {
+        const redirect = request.nextUrl.searchParams.get('redirect') || '/dashboard';
+        return NextResponse.redirect(new URL(redirect, request.url));
+      }
+    }
+    return NextResponse.next();
+  }
+
   if (isPublicRoute) {
     return NextResponse.next();
   }
