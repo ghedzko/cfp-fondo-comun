@@ -47,151 +47,151 @@ model RefreshToken {
 
 // FASE 2: Domain Models - Educational System
 
-// Estudiante - Student information
-model Estudiante {
-  id        String   @id @default(cuid())
-  dni       String   @unique
-  nombre    String
-  apellido  String
-  email     String?  @unique
-  telefono  String?
-  direccion String?
-  fechaNacimiento DateTime?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  matriculas Matricula[]
-  aportes    Aporte[]
-
-  @@map("estudiantes")
-}
-
-// Curso - Course definition
-model Curso {
+// Student - Student information
+model Student {
   id          String   @id @default(cuid())
-  nombre      String
-  descripcion String?
-  duracion    Int      // duration in months
-  precio      Decimal  @db.Decimal(10, 2)
+  dni         String   @unique
+  firstName   String
+  lastName    String
+  email       String?  @unique
+  phone       String?
+  address     String?
+  birthDate   DateTime?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  periodos CursoPeriodo[]
+  enrollments Enrollment[]
+  contributions Contribution[]
 
-  @@map("cursos")
+  @@map("students")
 }
 
-// CursoPeriodo - Course instance for a specific period
-model CursoPeriodo {
-  id              String   @id @default(cuid())
-  cursoId         String
-  nombre          String   // e.g., "Curso Básico - Marzo 2025"
-  fechaInicio     DateTime
-  fechaFin        DateTime
-  precioMensual   Decimal @db.Decimal(10, 2)
-  mesesHabilitados Int[]   // Array of enabled months (1-12)
-  anio            Int      // Year for this period
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+// Course - Course definition
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  duration    Int      // duration in months
+  price       Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
-  curso      Curso       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
-  matriculas Matricula[]
-  aportes    Aporte[]
-  facturas   FacturaCurso[]
+  periods CoursePeriod[]
 
-  @@map("curso_periodos")
+  @@map("courses")
 }
 
-// Matricula - Student enrollment in a course period
-model Matricula {
+// CoursePeriod - Course instance for a specific period
+model CoursePeriod {
   id             String   @id @default(cuid())
-  estudianteId   String
-  cursoPeriodoId String
-  fechaMatricula DateTime @default(now())
-  estado         EstadoMatricula @default(ACTIVA)
-  observaciones  String?
+  courseId       String
+  name           String   // e.g., "Basic Course - March 2025"
+  startDate      DateTime
+  endDate        DateTime
+  monthlyPrice   Decimal @db.Decimal(10, 2)
+  enabledMonths  Int[]   // Array of enabled months (1-12)
+  year           Int      // Year for this period
+  isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   // Relations
-  estudiante    Estudiante   @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
-  cursoPeriodo  CursoPeriodo @relation(fields: [cursoPeriodoId], references: [id], onDelete: Cascade)
+  course        Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollments   Enrollment[]
+  contributions Contribution[]
+  invoices      CourseInvoice[]
+
+  @@map("course_periods")
+}
+
+// Enrollment - Student enrollment in a course period
+model Enrollment {
+  id               String           @id @default(cuid())
+  studentId        String
+  coursePeriodId   String
+  enrollmentDate   DateTime         @default(now())
+  status           EnrollmentStatus @default(ACTIVE)
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  // Relations
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  coursePeriod  CoursePeriod  @relation(fields: [coursePeriodId], references: [id], onDelete: Cascade)
 
   // Unique constraint: one enrollment per student per course period
-  @@unique([estudianteId, cursoPeriodoId])
-  @@map("matriculas")
+  @@unique([studentId, coursePeriodId])
+  @@map("enrollments")
 }
 
-// Aporte - Individual payment from student for a specific course period and month
-model Aporte {
-  id             String      @id @default(cuid())
-  estudianteId   String
-  cursoPeriodoId String
-  mes            Int         // 1-12 (month of the contribution)
-  anio           Int         // year of the contribution
-  monto          Decimal     @db.Decimal(10, 2)
-  concepto       String      // description of payment
-  fechaPago      DateTime    @default(now())
-  metodoPago     MetodoPago  @default(EFECTIVO)
-  comprobante    String?     // receipt number or reference
-  observaciones  String?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+// Contribution - Individual payment from student for a specific course period and month
+model Contribution {
+  id               String        @id @default(cuid())
+  studentId        String
+  coursePeriodId   String
+  month            Int           // 1-12 (month of the contribution)
+  year             Int           // year of the contribution
+  amount           Decimal       @db.Decimal(10, 2)
+  concept          String        // description of payment
+  paymentDate      DateTime      @default(now())
+  paymentMethod    PaymentMethod @default(CASH)
+  receipt          String?       // receipt number or reference
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   // Relations
-  estudiante    Estudiante   @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
-  cursoPeriodo  CursoPeriodo @relation(fields: [cursoPeriodoId], references: [id], onDelete: Cascade)
+  student       Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  coursePeriod  CoursePeriod  @relation(fields: [coursePeriodId], references: [id], onDelete: Cascade)
 
   // Unique constraint: one contribution per student per course period per month/year
-  @@unique([estudianteId, cursoPeriodoId, mes, anio])
-  @@map("aportes")
+  @@unique([studentId, coursePeriodId, month, year])
+  @@map("contributions")
 }
 
-// FacturaCurso - Monthly invoice for course period
-model FacturaCurso {
-  id             String   @id @default(cuid())
-  cursoPeriodoId String
-  mes            Int      // 1-12
-  anio           Int      // year
-  montoTotal     Decimal  @db.Decimal(10, 2)
-  fechaVencimiento DateTime
-  estado         EstadoFactura @default(PENDIENTE)
-  observaciones  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+// CourseInvoice - Monthly invoice for course period
+model CourseInvoice {
+  id             String        @id @default(cuid())
+  coursePeriodId String
+  month          Int           // 1-12
+  year           Int           // year
+  totalAmount    Decimal       @db.Decimal(10, 2)
+  dueDate        DateTime
+  status         InvoiceStatus @default(PENDING)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   // Relations
-  cursoPeriodo CursoPeriodo @relation(fields: [cursoPeriodoId], references: [id], onDelete: Cascade)
+  coursePeriod CoursePeriod @relation(fields: [coursePeriodId], references: [id], onDelete: Cascade)
 
   // Unique constraint: one invoice per course period per month/year
-  @@unique([cursoPeriodoId, mes, anio])
-  @@map("facturas_curso")
+  @@unique([coursePeriodId, month, year])
+  @@map("course_invoices")
 }
 
 // Enums
-enum EstadoMatricula {
-  ACTIVA
-  SUSPENDIDA
-  FINALIZADA
-  CANCELADA
+enum EnrollmentStatus {
+  ACTIVE
+  SUSPENDED
+  COMPLETED
+  CANCELLED
 }
 
-enum MetodoPago {
-  EFECTIVO
-  TRANSFERENCIA
-  TARJETA
-  OTRO
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  CARD
+  OTHER
 }
 
-enum EstadoFactura {
-  PENDIENTE
-  PAGADA
-  VENCIDA
-  CANCELADA
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
 }

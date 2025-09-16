@@ -3,14 +3,14 @@ import { db } from '@/lib/db';
 import { z } from 'zod';
 
 // Schema for student creation/update
-const EstudianteSchema = z.object({
+const StudentSchema = z.object({
   dni: z.string().min(7, 'DNI debe tener al menos 7 dígitos').max(8, 'DNI debe tener máximo 8 dígitos'),
-  nombre: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
-  apellido: z.string().min(2, 'Apellido debe tener al menos 2 caracteres'),
+  firstName: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
+  lastName: z.string().min(2, 'Apellido debe tener al menos 2 caracteres'),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
-  telefono: z.string().optional(),
-  direccion: z.string().optional(),
-  fechaNacimiento: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  birthDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 // GET /api/estudiantes - List students with search
@@ -26,43 +26,43 @@ export async function GET(request: NextRequest) {
     const whereClause = search ? {
       OR: [
         { dni: { contains: search } },
-        { nombre: { contains: search, mode: 'insensitive' as const } },
-        { apellido: { contains: search, mode: 'insensitive' as const } },
+        { firstName: { contains: search, mode: 'insensitive' as const } },
+        { lastName: { contains: search, mode: 'insensitive' as const } },
         { email: { contains: search, mode: 'insensitive' as const } },
       ],
     } : {};
 
     // Get students with pagination
-    const [estudiantes, total] = await Promise.all([
-      db.estudiante.findMany({
+    const [students, total] = await Promise.all([
+      db.student.findMany({
         where: {
           isActive: true,
           ...whereClause,
         },
         orderBy: [
-          { apellido: 'asc' },
-          { nombre: 'asc' },
+          { lastName: 'asc' },
+          { firstName: 'asc' },
         ],
         skip,
         take: limit,
         include: {
-          matriculas: {
+          enrollments: {
             include: {
-              cursoPeriodo: {
+              coursePeriod: {
                 include: {
-                  curso: true,
+                  course: true,
                 },
               },
             },
           },
           _count: {
             select: {
-              aportes: true,
+              contributions: true,
             },
           },
         },
       }),
-      db.estudiante.count({
+      db.student.count({
         where: {
           isActive: true,
           ...whereClause,
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
-      estudiantes,
+      students,
       pagination: {
         page,
         limit,
@@ -92,51 +92,51 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = EstudianteSchema.parse(body);
+    const validatedData = StudentSchema.parse(body);
 
     // Convert empty email to null
     const emailValue = validatedData.email === '' ? null : validatedData.email;
 
     // Upsert student by DNI
-    const estudiante = await db.estudiante.upsert({
+    const student = await db.student.upsert({
       where: { dni: validatedData.dni },
       update: {
-        nombre: validatedData.nombre,
-        apellido: validatedData.apellido,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
         email: emailValue,
-        telefono: validatedData.telefono,
-        direccion: validatedData.direccion,
-        fechaNacimiento: validatedData.fechaNacimiento,
+        phone: validatedData.phone,
+        address: validatedData.address,
+        birthDate: validatedData.birthDate,
         isActive: true,
       },
       create: {
         dni: validatedData.dni,
-        nombre: validatedData.nombre,
-        apellido: validatedData.apellido,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
         email: emailValue,
-        telefono: validatedData.telefono,
-        direccion: validatedData.direccion,
-        fechaNacimiento: validatedData.fechaNacimiento,
+        phone: validatedData.phone,
+        address: validatedData.address,
+        birthDate: validatedData.birthDate,
       },
       include: {
-        matriculas: {
+        enrollments: {
           include: {
-            cursoPeriodo: {
+            coursePeriod: {
               include: {
-                curso: true,
+                course: true,
               },
             },
           },
         },
         _count: {
           select: {
-            aportes: true,
+            contributions: true,
           },
         },
       },
     });
 
-    return NextResponse.json(estudiante, { status: 201 });
+    return NextResponse.json(student, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

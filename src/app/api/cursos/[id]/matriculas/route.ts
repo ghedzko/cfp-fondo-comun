@@ -3,23 +3,23 @@ import { db } from '@/lib/db';
 import { z } from 'zod';
 
 // Schema for enrollment
-const MatriculaSchema = z.object({
-  estudianteId: z.string().cuid('ID de estudiante inválido'),
-  observaciones: z.string().optional(),
+const EnrollmentSchema = z.object({
+  studentId: z.string().cuid('ID de estudiante inválido'),
+  notes: z.string().optional(),
 });
 
 // Schema for batch enrollment
-const BatchMatriculaSchema = z.object({
-  estudiantes: z.array(z.object({
+const BatchEnrollmentSchema = z.object({
+  students: z.array(z.object({
     dni: z.string().min(7).max(8),
-    nombre: z.string().min(2),
-    apellido: z.string().min(2),
+    firstName: z.string().min(2),
+    lastName: z.string().min(2),
     email: z.string().email().optional().or(z.literal('')),
-    telefono: z.string().optional(),
-    direccion: z.string().optional(),
-    fechaNacimiento: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+    birthDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
   })),
-  observaciones: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 // GET /api/cursos/[id]/matriculas - Get enrollments for a course period
@@ -29,23 +29,23 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const matriculas = await db.matricula.findMany({
-      where: { cursoPeriodoId: id },
+    const enrollments = await db.enrollment.findMany({
+      where: { coursePeriodId: id },
       include: {
-        estudiante: true,
-        cursoPeriodo: {
+        student: true,
+        coursePeriod: {
           include: {
-            curso: true,
+            course: true,
           },
         },
       },
       orderBy: [
-        { estudiante: { apellido: 'asc' } },
-        { estudiante: { nombre: 'asc' } },
+        { student: { lastName: 'asc' } },
+        { student: { firstName: 'asc' } },
       ],
     });
 
-    return NextResponse.json(matriculas);
+    return NextResponse.json(enrollments);
   } catch (error) {
     console.error('Error fetching enrollments:', error);
     return NextResponse.json(
@@ -65,16 +65,16 @@ export async function POST(
     const { id } = await params;
     
     // Check if it's batch enrollment
-    if (body.estudiantes && Array.isArray(body.estudiantes)) {
-      const validatedData = BatchMatriculaSchema.parse(body);
+    if (body.students && Array.isArray(body.students)) {
+      const validatedData = BatchEnrollmentSchema.parse(body);
       
       // Verify course period exists
-      const cursoPeriodo = await db.cursoPeriodo.findUnique({
+      const coursePeriod = await db.coursePeriod.findUnique({
         where: { id },
-        include: { curso: true },
+        include: { course: true },
       });
 
-      if (!cursoPeriodo) {
+      if (!coursePeriod) {
         return NextResponse.json(
           { error: 'Período de curso no encontrado' },
           { status: 404 }
@@ -85,60 +85,60 @@ export async function POST(
       const errors = [];
 
       // Process each student
-      for (const estudianteData of validatedData.estudiantes) {
+      for (const studentData of validatedData.students) {
         try {
           // Upsert student
-          const emailValue = estudianteData.email === '' ? null : estudianteData.email;
+          const emailValue = studentData.email === '' ? null : studentData.email;
           
-          const estudiante = await db.estudiante.upsert({
-            where: { dni: estudianteData.dni },
+          const student = await db.student.upsert({
+            where: { dni: studentData.dni },
             update: {
-              nombre: estudianteData.nombre,
-              apellido: estudianteData.apellido,
+              firstName: studentData.firstName,
+              lastName: studentData.lastName,
               email: emailValue,
-              telefono: estudianteData.telefono,
-              direccion: estudianteData.direccion,
-              fechaNacimiento: estudianteData.fechaNacimiento,
+              phone: studentData.phone,
+              address: studentData.address,
+              birthDate: studentData.birthDate,
               isActive: true,
             },
             create: {
-              dni: estudianteData.dni,
-              nombre: estudianteData.nombre,
-              apellido: estudianteData.apellido,
+              dni: studentData.dni,
+              firstName: studentData.firstName,
+              lastName: studentData.lastName,
               email: emailValue,
-              telefono: estudianteData.telefono,
-              direccion: estudianteData.direccion,
-              fechaNacimiento: estudianteData.fechaNacimiento,
+              phone: studentData.phone,
+              address: studentData.address,
+              birthDate: studentData.birthDate,
             },
           });
 
           // Create enrollment
-          const matricula = await db.matricula.create({
+          const enrollment = await db.enrollment.create({
             data: {
-              estudianteId: estudiante.id,
-              cursoPeriodoId: id,
-              observaciones: validatedData.observaciones,
+              studentId: student.id,
+              coursePeriodId: id,
+              notes: validatedData.notes,
             },
             include: {
-              estudiante: true,
-              cursoPeriodo: {
+              student: true,
+              coursePeriod: {
                 include: {
-                  curso: true,
+                  course: true,
                 },
               },
             },
           });
 
-          results.push(matricula);
+          results.push(enrollment);
         } catch (error: unknown) {
           if ((error as any).code === 'P2002') {
             errors.push({
-              dni: estudianteData.dni,
+              dni: studentData.dni,
               error: 'El estudiante ya está matriculado en este curso',
             });
           } else {
             errors.push({
-              dni: estudianteData.dni,
+              dni: studentData.dni,
               error: 'Error al procesar matrícula',
             });
           }
@@ -149,21 +149,21 @@ export async function POST(
         success: results,
         errors,
         summary: {
-          total: validatedData.estudiantes.length,
+          total: validatedData.students.length,
           successful: results.length,
           failed: errors.length,
         },
       });
     } else {
       // Single enrollment
-      const validatedData = MatriculaSchema.parse(body);
+      const validatedData = EnrollmentSchema.parse(body);
 
       // Verify course period exists
-      const cursoPeriodo = await db.cursoPeriodo.findUnique({
+      const coursePeriod = await db.coursePeriod.findUnique({
         where: { id },
       });
 
-      if (!cursoPeriodo) {
+      if (!coursePeriod) {
         return NextResponse.json(
           { error: 'Período de curso no encontrado' },
           { status: 404 }
@@ -171,11 +171,11 @@ export async function POST(
       }
 
       // Verify student exists
-      const estudiante = await db.estudiante.findUnique({
-        where: { id: validatedData.estudianteId },
+      const student = await db.student.findUnique({
+        where: { id: validatedData.studentId },
       });
 
-      if (!estudiante) {
+      if (!student) {
         return NextResponse.json(
           { error: 'Estudiante no encontrado' },
           { status: 404 }
@@ -183,23 +183,23 @@ export async function POST(
       }
 
       // Create enrollment
-      const matricula = await db.matricula.create({
+      const enrollment = await db.enrollment.create({
         data: {
-          estudianteId: validatedData.estudianteId,
-          cursoPeriodoId: id,
-          observaciones: validatedData.observaciones,
+          studentId: validatedData.studentId,
+          coursePeriodId: id,
+          notes: validatedData.notes,
         },
         include: {
-          estudiante: true,
-          cursoPeriodo: {
+          student: true,
+          coursePeriod: {
             include: {
-              curso: true,
+              course: true,
             },
           },
         },
       });
 
-      return NextResponse.json(matricula, { status: 201 });
+      return NextResponse.json(enrollment, { status: 201 });
     }
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {

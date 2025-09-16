@@ -41,128 +41,132 @@ async function main() {
   // 2. Create courses
   console.log('📚 Creating courses...');
   
-  const cursoBasico = await prisma.curso.create({
+  const cursoBasico = await prisma.course.create({
     data: {
-      nombre: 'Curso Básico de Computación',
-      descripcion: 'Introducción a la informática y herramientas básicas de oficina',
-      duracion: 3, // 3 months
-      precio: 15000.00,
+      name: 'Curso Básico de Computación',
+      description: 'Introducción a la informática y herramientas básicas de oficina',
+      duration: 3, // 3 months
+      price: 15000.00,
       isActive: true,
     },
   });
 
-  const cursoAvanzado = await prisma.curso.create({
+  const cursoAvanzado = await prisma.course.create({
     data: {
-      nombre: 'Curso Avanzado de Programación',
-      descripcion: 'Desarrollo web con tecnologías modernas',
-      duracion: 6, // 6 months
-      precio: 25000.00,
+      name: 'Curso Avanzado de Programación',
+      description: 'Desarrollo web con tecnologías modernas',
+      duration: 6, // 6 months
+      price: 25000.00,
       isActive: true,
     },
   });
 
-  console.log(`✅ Courses created: ${cursoBasico.nombre}, ${cursoAvanzado.nombre}`);
+  console.log(`✅ Courses created: ${cursoBasico.name}, ${cursoAvanzado.name}`);
 
   // 3. Create course periods
   console.log('📅 Creating course periods...');
   
-  const periodoBasicoMarzo = await prisma.cursoPeriodo.create({
+  const periodoBasicoMarzo = await prisma.coursePeriod.create({
     data: {
-      cursoId: cursoBasico.id,
-      nombre: 'Curso Básico - Marzo 2025',
-      fechaInicio: new Date('2025-03-01'),
-      fechaFin: new Date('2025-05-31'),
-      precioMensual: 5000.00,
+      courseId: cursoBasico.id,
+      name: 'Curso Básico - Marzo 2025',
+      startDate: new Date('2025-03-01'),
+      endDate: new Date('2025-05-31'),
+      monthlyPrice: 5000.00,
+      enabledMonths: [3, 4, 5],
+      year: 2025,
       isActive: true,
     },
   });
 
-  const periodoAvanzadoAbril = await prisma.cursoPeriodo.create({
+  const periodoAvanzadoAbril = await prisma.coursePeriod.create({
     data: {
-      cursoId: cursoAvanzado.id,
-      nombre: 'Curso Avanzado - Abril 2025',
-      fechaInicio: new Date('2025-04-01'),
-      fechaFin: new Date('2025-09-30'),
-      precioMensual: 4200.00,
+      courseId: cursoAvanzado.id,
+      name: 'Curso Avanzado - Abril 2025',
+      startDate: new Date('2025-04-01'),
+      endDate: new Date('2025-09-30'),
+      monthlyPrice: 4200.00,
+      enabledMonths: [4, 5, 6, 7, 8, 9],
+      year: 2025,
       isActive: true,
     },
   });
 
-  console.log(`✅ Course periods created: ${periodoBasicoMarzo.nombre}, ${periodoAvanzadoAbril.nombre}`);
+  console.log(`✅ Course periods created: ${periodoBasicoMarzo.name}, ${periodoAvanzadoAbril.name}`);
 
   // 4. Create students
   console.log('👨‍🎓 Creating students...');
   
-  const estudiante1 = await prisma.estudiante.create({
+  const estudiante1 = await prisma.student.create({
     data: {
       dni: '12345678',
-      nombre: 'Juan Carlos',
-      apellido: 'González',
+      firstName: 'Juan Carlos',
+      lastName: 'González',
       email: 'juan.gonzalez@email.com',
-      telefono: '+54 294 123-4567',
-      direccion: 'Av. San Martín 123, Lago Puelo',
-      fechaNacimiento: new Date('1995-06-15'),
+      phone: '+54 294 123-4567',
+      address: 'Av. San Martín 123, Lago Puelo',
+      birthDate: new Date('1995-06-15'),
       isActive: true,
     },
   });
 
-  const estudiante2 = await prisma.estudiante.create({
+  const estudiante2 = await prisma.student.create({
     data: {
       dni: '87654321',
-      nombre: 'María Elena',
-      apellido: 'Rodríguez',
+      firstName: 'María Elena',
+      lastName: 'Rodríguez',
       email: 'maria.rodriguez@email.com',
-      telefono: '+54 294 987-6543',
-      direccion: 'Calle Rivadavia 456, Lago Puelo',
-      fechaNacimiento: new Date('1988-11-22'),
+      phone: '+54 294 987-6543',
+      address: 'Calle Rivadavia 456, Lago Puelo',
+      birthDate: new Date('1988-11-22'),
       isActive: true,
     },
   });
 
-  const estudiante3 = await prisma.estudiante.create({
+  const estudiante3 = await prisma.student.create({
     data: {
       dni: '11223344',
-      nombre: 'Carlos Alberto',
-      apellido: 'Fernández',
+      firstName: 'Carlos Alberto',
+      lastName: 'Fernández',
       email: 'carlos.fernandez@email.com',
-      telefono: '+54 294 555-1234',
-      direccion: 'Barrio Centro, Lago Puelo',
-      fechaNacimiento: new Date('1992-03-08'),
+      phone: '+54 294 555-1234',
+      address: 'Barrio Centro, Lago Puelo',
+      birthDate: new Date('1992-03-08'),
       isActive: true,
     },
   });
 
-  console.log(`✅ Students created: ${estudiante1.nombre} ${estudiante1.apellido}, ${estudiante2.nombre} ${estudiante2.apellido}, ${estudiante3.nombre} ${estudiante3.apellido}`);
+  console.log(`✅ Students created: ${estudiante1.firstName} ${estudiante1.lastName}, ${estudiante2.firstName} ${estudiante2.lastName}, ${estudiante3.firstName} ${estudiante3.lastName}`);
 
   // 5. Create enrollments (matriculas)
   console.log('📝 Creating enrollments...');
   
-  const matricula1 = await prisma.matricula.create({
+  const matricula1 = await prisma.enrollment.create({
     data: {
-      estudianteId: estudiante1.id,
-      cursoPeriodoId: periodoBasicoMarzo.id,
-      fechaMatricula: new Date('2025-02-15'),
-      estado: 'ACTIVA',
-      observaciones: 'Estudiante muy interesado en aprender',
+      studentId: estudiante1.id,
+      coursePeriodId: periodoBasicoMarzo.id,
+      enrollmentDate: new Date('2025-02-15'),
+      status: 'ACTIVE',
+      notes: 'Estudiante muy interesado en aprender',
     },
   });
 
-  const matricula2 = await prisma.matricula.create({
+  const matricula2 = await prisma.enrollment.create({
     data: {
-      estudianteId: estudiante2.id,
-      cursoPeriodoId: periodoAvanzadoAbril.id,
-      fechaMatricula: new Date('2025-03-20'),
-      estado: 'ACTIVA',
-      observaciones: 'Tiene experiencia previa en programación',
+      studentId: estudiante2.id,
+      coursePeriodId: periodoAvanzadoAbril.id,
+      enrollmentDate: new Date('2025-03-20'),
+      status: 'ACTIVE',
+      notes: 'Tiene experiencia previa en programación',
     },
   });
 
-  const matricula3 = await prisma.matricula.create({
+  const matricula3 = await prisma.enrollment.create({
     data: {
-      estudianteId: estudiante3.id,
-      cursoPeriodoId: periodoBasicoMarzo.id,
-      fechaMatricula: new Date('2025-02-28'),
-      estado: 'ACTIVA',
+      studentId: estudiante3.id,
+      coursePeriodId: periodoBasicoMarzo.id,
+      enrollmentDate: new Date('2025-02-28'),
+      status: 'ACTIVE',
     },
   });
 
@@ -171,38 +175,47 @@ async function main() {
   // 6. Create payments (aportes)
   console.log('💰 Creating payments...');
   
-  await prisma.aporte.create({
+  await prisma.contribution.create({
     data: {
-      estudianteId: estudiante1.id,
-      monto: 5000.00,
-      concepto: 'Cuota mensual Marzo 2025',
-      fechaPago: new Date('2025-03-05'),
-      metodoPago: 'EFECTIVO',
-      comprobante: 'REC-001',
-      observaciones: 'Pago puntual',
+      studentId: estudiante1.id,
+      coursePeriodId: periodoBasicoMarzo.id,
+      month: 3,
+      year: 2025,
+      amount: 5000.00,
+      concept: 'Cuota mensual Marzo 2025',
+      paymentDate: new Date('2025-03-05'),
+      paymentMethod: 'CASH',
+      receipt: 'REC-001',
+      notes: 'Pago puntual',
     },
   });
 
-  await prisma.aporte.create({
+  await prisma.contribution.create({
     data: {
-      estudianteId: estudiante2.id,
-      monto: 4200.00,
-      concepto: 'Cuota mensual Abril 2025',
-      fechaPago: new Date('2025-04-10'),
-      metodoPago: 'TRANSFERENCIA',
-      comprobante: 'TRANS-123456',
+      studentId: estudiante2.id,
+      coursePeriodId: periodoAvanzadoAbril.id,
+      month: 4,
+      year: 2025,
+      amount: 4200.00,
+      concept: 'Cuota mensual Abril 2025',
+      paymentDate: new Date('2025-04-10'),
+      paymentMethod: 'TRANSFER',
+      receipt: 'TRANS-123456',
     },
   });
 
-  await prisma.aporte.create({
+  await prisma.contribution.create({
     data: {
-      estudianteId: estudiante3.id,
-      monto: 2500.00,
-      concepto: 'Pago parcial Marzo 2025',
-      fechaPago: new Date('2025-03-15'),
-      metodoPago: 'EFECTIVO',
-      comprobante: 'REC-002',
-      observaciones: 'Pago parcial - resta $2500',
+      studentId: estudiante3.id,
+      coursePeriodId: periodoBasicoMarzo.id,
+      month: 3,
+      year: 2025,
+      amount: 2500.00,
+      concept: 'Pago parcial Marzo 2025',
+      paymentDate: new Date('2025-03-15'),
+      paymentMethod: 'CASH',
+      receipt: 'REC-002',
+      notes: 'Pago parcial - resta $2500',
     },
   });
 
@@ -211,39 +224,39 @@ async function main() {
   // 7. Create course invoices (facturas)
   console.log('🧾 Creating course invoices...');
   
-  await prisma.facturaCurso.create({
+  await prisma.courseInvoice.create({
     data: {
-      cursoPeriodoId: periodoBasicoMarzo.id,
-      mes: 3, // March
-      anio: 2025,
-      montoTotal: 10000.00, // 2 students x $5000
-      fechaVencimiento: new Date('2025-03-31'),
-      estado: 'PAGADA',
-      observaciones: 'Factura de Marzo - 2 estudiantes matriculados',
+      coursePeriodId: periodoBasicoMarzo.id,
+      month: 3, // March
+      year: 2025,
+      totalAmount: 10000.00, // 2 students x $5000
+      dueDate: new Date('2025-03-31'),
+      status: 'PAID',
+      notes: 'Factura de Marzo - 2 estudiantes matriculados',
     },
   });
 
-  await prisma.facturaCurso.create({
+  await prisma.courseInvoice.create({
     data: {
-      cursoPeriodoId: periodoAvanzadoAbril.id,
-      mes: 4, // April
-      anio: 2025,
-      montoTotal: 4200.00, // 1 student x $4200
-      fechaVencimiento: new Date('2025-04-30'),
-      estado: 'PAGADA',
-      observaciones: 'Factura de Abril - 1 estudiante matriculado',
+      coursePeriodId: periodoAvanzadoAbril.id,
+      month: 4, // April
+      year: 2025,
+      totalAmount: 4200.00, // 1 student x $4200
+      dueDate: new Date('2025-04-30'),
+      status: 'PAID',
+      notes: 'Factura de Abril - 1 estudiante matriculado',
     },
   });
 
-  await prisma.facturaCurso.create({
+  await prisma.courseInvoice.create({
     data: {
-      cursoPeriodoId: periodoBasicoMarzo.id,
-      mes: 4, // April
-      anio: 2025,
-      montoTotal: 10000.00,
-      fechaVencimiento: new Date('2025-04-30'),
-      estado: 'PENDIENTE',
-      observaciones: 'Factura de Abril - pendiente de pago',
+      coursePeriodId: periodoBasicoMarzo.id,
+      month: 4, // April
+      year: 2025,
+      totalAmount: 10000.00,
+      dueDate: new Date('2025-04-30'),
+      status: 'PENDING',
+      notes: 'Factura de Abril - pendiente de pago',
     },
   });
 

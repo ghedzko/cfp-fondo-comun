@@ -3,12 +3,12 @@ import { db } from '@/lib/db';
 import { z } from 'zod';
 
 // Schema for course period creation/update
-const CursoPeriodoSchema = z.object({
-  nombre: z.string().min(3, 'Nombre debe tener al menos 3 caracteres'),
-  fechaInicio: z.string().transform((val) => new Date(val)),
-  fechaFin: z.string().transform((val) => new Date(val)),
-  precioMensual: z.number().positive('Precio debe ser mayor a 0'),
-  mesesHabilitados: z.array(z.number().min(1).max(12)).min(1, 'Debe seleccionar al menos un mes'),
+const CoursePeriodSchema = z.object({
+  name: z.string().min(3, 'Nombre debe tener al menos 3 caracteres'),
+  startDate: z.string().transform((val) => new Date(val)),
+  endDate: z.string().transform((val) => new Date(val)),
+  monthlyPrice: z.number().positive('Precio debe ser mayor a 0'),
+  enabledMonths: z.array(z.number().min(1).max(12)).min(1, 'Debe seleccionar al menos un mes'),
 });
 
 // GET /api/cursos/[id]/periodos - Get periods for a course
@@ -19,20 +19,20 @@ export async function GET(
   try {
     const { id } = await params;
     
-    const periodos = await db.cursoPeriodo.findMany({
-      where: { cursoId: id },
-      orderBy: { fechaInicio: 'desc' },
+    const periods = await db.coursePeriod.findMany({
+      where: { courseId: id },
+      orderBy: { startDate: 'desc' },
       include: {
-        curso: true,
+        course: true,
         _count: {
           select: {
-            matriculas: true,
+            enrollments: true,
           },
         },
       },
     });
 
-    return NextResponse.json({ periodos });
+    return NextResponse.json({ periods });
   } catch (error) {
     console.error('Error fetching course periods:', error);
     return NextResponse.json(
@@ -50,14 +50,14 @@ export async function POST(
   try {
     const body = await request.json();
     const { id } = await params;
-    const validatedData = CursoPeriodoSchema.parse(body);
+    const validatedData = CoursePeriodSchema.parse(body);
 
     // Verify course exists
-    const curso = await db.curso.findUnique({
+    const course = await db.course.findUnique({
       where: { id },
     });
 
-    if (!curso) {
+    if (!course) {
       return NextResponse.json(
         { error: 'Curso no encontrado' },
         { status: 404 }
@@ -65,7 +65,7 @@ export async function POST(
     }
 
     // Validate date range
-    if (validatedData.fechaInicio >= validatedData.fechaFin) {
+    if (validatedData.startDate >= validatedData.endDate) {
       return NextResponse.json(
         { error: 'La fecha de inicio debe ser anterior a la fecha de fin' },
         { status: 400 }
@@ -73,27 +73,27 @@ export async function POST(
     }
 
     // Create course period
-    const periodo = await db.cursoPeriodo.create({
+    const period = await db.coursePeriod.create({
       data: {
-        cursoId: id,
-        nombre: validatedData.nombre,
-        fechaInicio: validatedData.fechaInicio,
-        fechaFin: validatedData.fechaFin,
-        precioMensual: validatedData.precioMensual,
-        mesesHabilitados: validatedData.mesesHabilitados || [3, 4, 5, 6],
-        anio: validatedData.fechaInicio.getFullYear(),
+        courseId: id,
+        name: validatedData.name,
+        startDate: validatedData.startDate,
+        endDate: validatedData.endDate,
+        monthlyPrice: validatedData.monthlyPrice,
+        enabledMonths: validatedData.enabledMonths || [3, 4, 5, 6],
+        year: validatedData.startDate.getFullYear(),
       },
       include: {
-        curso: true,
+        course: true,
         _count: {
           select: {
-            matriculas: true,
+            enrollments: true,
           },
         },
       },
     });
 
-    return NextResponse.json(periodo, { status: 201 });
+    return NextResponse.json(period, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

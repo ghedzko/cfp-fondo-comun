@@ -9,36 +9,36 @@ export async function GET(
   try {
     const { id } = await params;
     
-    const curso = await db.curso.findUnique({
+    const course = await db.course.findUnique({
       where: { id },
       include: {
-        periodos: {
+        periods: {
           where: { isActive: true },
-          orderBy: { fechaInicio: 'desc' },
+          orderBy: { startDate: 'desc' },
           include: {
             _count: {
               select: {
-                matriculas: true,
+                enrollments: true,
               },
             },
           },
         },
         _count: {
           select: {
-            periodos: true,
+            periods: true,
           },
         },
       },
     });
 
-    if (!curso) {
+    if (!course) {
       return NextResponse.json(
         { error: 'Curso no encontrado' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(curso);
+    return NextResponse.json(course);
   } catch (error) {
     console.error('Error fetching course:', error);
     return NextResponse.json(

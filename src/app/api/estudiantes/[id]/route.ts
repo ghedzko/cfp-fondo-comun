@@ -3,13 +3,13 @@ import { db } from '@/lib/db';
 import { z } from 'zod';
 
 // Schema for student update
-const EstudianteUpdateSchema = z.object({
-  nombre: z.string().min(2, 'Nombre debe tener al menos 2 caracteres').optional(),
-  apellido: z.string().min(2, 'Apellido debe tener al menos 2 caracteres').optional(),
+const StudentUpdateSchema = z.object({
+  firstName: z.string().min(2, 'Nombre debe tener al menos 2 caracteres').optional(),
+  lastName: z.string().min(2, 'Apellido debe tener al menos 2 caracteres').optional(),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
-  telefono: z.string().optional(),
-  direccion: z.string().optional(),
-  fechaNacimiento: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  birthDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
   isActive: z.boolean().optional(),
 });
 
@@ -20,39 +20,39 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const estudiante = await db.estudiante.findUnique({
+    const student = await db.student.findUnique({
       where: { id },
       include: {
-        matriculas: {
+        enrollments: {
           include: {
-            cursoPeriodo: {
+            coursePeriod: {
               include: {
-                curso: true,
+                course: true,
               },
             },
           },
-          orderBy: { fechaMatricula: 'desc' },
+          orderBy: { enrollmentDate: 'desc' },
         },
-        aportes: {
-          orderBy: { fechaPago: 'desc' },
+        contributions: {
+          orderBy: { paymentDate: 'desc' },
           take: 10, // Last 10 payments
         },
         _count: {
           select: {
-            aportes: true,
+            contributions: true,
           },
         },
       },
     });
 
-    if (!estudiante) {
+    if (!student) {
       return NextResponse.json(
         { error: 'Estudiante no encontrado' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(estudiante);
+    return NextResponse.json(student);
   } catch (error) {
     console.error('Error fetching student:', error);
     return NextResponse.json(
@@ -69,37 +69,37 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const validatedData = EstudianteUpdateSchema.parse(body);
+    const validatedData = StudentUpdateSchema.parse(body);
     const { id } = await params;
 
     // Convert empty email to null
     const emailValue = validatedData.email === '' ? null : validatedData.email;
 
-    const estudiante = await db.estudiante.update({
+    const student = await db.student.update({
       where: { id },
       data: {
         ...validatedData,
         email: emailValue,
       },
       include: {
-        matriculas: {
+        enrollments: {
           include: {
-            cursoPeriodo: {
+            coursePeriod: {
               include: {
-                curso: true,
+                course: true,
               },
             },
           },
         },
         _count: {
           select: {
-            aportes: true,
+            contributions: true,
           },
         },
       },
     });
 
-    return NextResponse.json(estudiante);
+    return NextResponse.json(student);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -123,7 +123,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const estudiante = await db.estudiante.update({
+    const student = await db.student.update({
       where: { id },
       data: { isActive: false },
     });

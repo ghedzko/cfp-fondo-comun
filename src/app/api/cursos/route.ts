@@ -7,23 +7,23 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const includeInactive = searchParams.get('includeInactive') === 'true';
 
-    const cursos = await db.curso.findMany({
+    const courses = await db.course.findMany({
       where: includeInactive ? {} : { isActive: true },
-      orderBy: { nombre: 'asc' },
+      orderBy: { name: 'asc' },
       include: {
-        periodos: {
+        periods: {
           where: { isActive: true },
-          orderBy: { fechaInicio: 'desc' },
+          orderBy: { startDate: 'desc' },
         },
         _count: {
           select: {
-            periodos: true,
+            periods: true,
           },
         },
       },
     });
 
-    return NextResponse.json({ cursos });
+    return NextResponse.json({ courses });
   } catch (error) {
     console.error('Error fetching courses:', error);
     return NextResponse.json(
