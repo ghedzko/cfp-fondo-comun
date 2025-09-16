@@ -115,38 +115,52 @@
 
 ---
 
-### 🔄 FASE 4 — Cursos y Meses Habilitados
+### ✅ FASE 4 — Cursos y Meses Habilitados
 **Objetivo**: Crear cursos y seleccionar meses (con cortes)  
-**Estado**: 🔄 **EN PROGRESO**  
-**Fecha inicio**: 16/09/2025
+**Estado**: ✅ **COMPLETADA**  
+**Fecha**: 16/09/2025
 
-#### 📋 Tareas Planificadas:
-- [ ] API: /cursos, /cursos/:id/periodos
-- [ ] Editor visual de meses (chips Ene-Dic)
-- [ ] Botones rápidos: "Mar-Jun", "Ago-Nov"
-- [ ] Validaciones: solo meses habilitados
+#### ✅ Tareas Completadas:
+- [x] API: /cursos, /cursos/:id/periodos, /cursos/:id
+- [x] Editor visual de meses (chips Ene-Dic)
+- [x] Botones rápidos: "Mar-Jun", "Ago-Nov", "Año Completo", "Semestres"
+- [x] Validaciones: solo meses habilitados
+- [x] MonthSelector component con funcionalidad completa
+- [x] Páginas de gestión de períodos de curso
+- [x] Navegación integrada desde dashboard
+- [x] Pruebas con Puppeteer exitosas
+- [x] Build de producción funcionando
 
-#### 🎯 Criterios de Aceptación:
-- [ ] Editor de meses funcional
-- [ ] Solo meses habilitados en selectores
-- [ ] No aportes en meses no habilitados
+#### ✅ Criterios de Aceptación Cumplidos:
+- [x] Editor de meses funcional
+- [x] Solo meses habilitados en selectores
+- [x] No aportes en meses no habilitados
+- [x] Selección rápida de rangos de meses
+- [x] Validación de al menos un mes seleccionado
 
 ---
 
 ### 🔄 FASE 5 — Aportes Mensuales (Preceptoras)
 **Objetivo**: Carga masiva y validaciones  
-**Estado**: 🔄 **PENDIENTE**
+**Estado**: 🔄 **EN PROGRESO**  
+**Fecha inicio**: 16/09/2025
 
 #### 📋 Tareas Planificadas:
-- [ ] API: /cursos/:id/aportes (batch)
-- [ ] Tabla editable por curso/mes
-- [ ] Resumen: total, #aportantes/#matriculados
-- [ ] Validaciones: duplicados, monto ≥ 0
+- [ ] API: /cursos/:id/aportes (batch), /cursos/:id/periodos/:periodoId/aportes
+- [ ] Tabla editable por curso/mes con estudiantes matriculados
+- [ ] Resumen: total recaudado, #aportantes/#matriculados
+- [ ] Validaciones: duplicados, monto ≥ 0, solo meses habilitados
+- [ ] UI para seleccionar curso/período/mes
+- [ ] Formulario de carga masiva de aportes
+- [ ] Indicadores visuales de estado de aportes
 
 #### 🎯 Criterios de Aceptación:
-- [ ] Tabla editable funcional
-- [ ] Duplicados bloqueados
+- [ ] Tabla editable funcional con estudiantes matriculados
+- [ ] Duplicados bloqueados por (estudiante, curso, período, mes)
 - [ ] Texto "aporte voluntario" destacado
+- [ ] Solo meses habilitados permiten aportes
+- [ ] Resumen estadístico en tiempo real
+- [ ] Validación de montos y datos
 
 ---
 
@@ -231,12 +245,12 @@
 
 ## 📊 Progreso General
 
-**Completado**: 3/9 fases (33%)  
-**En progreso**: 0/9 fases  
-**Pendiente**: 6/9 fases  
+**Completado**: 4/9 fases (44%)  
+**En progreso**: 1/9 fases  
+**Pendiente**: 4/9 fases  
 
 ### Próximo Milestone:
-🎯 **FASE 4 - Cursos y Meses Habilitados**
+🎯 **FASE 5 - Aportes Mensuales (Preceptoras)**
 
 ---
 

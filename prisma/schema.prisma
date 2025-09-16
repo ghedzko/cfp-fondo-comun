@@ -100,6 +100,7 @@ model CursoPeriodo {
   // Relations
   curso      Curso       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
   matriculas Matricula[]
+  aportes    Aporte[]
   facturas   FacturaCurso[]
 
   @@map("curso_periodos")
@@ -125,22 +126,28 @@ model Matricula {
   @@map("matriculas")
 }
 
-// Aporte - Individual payment from student
+// Aporte - Individual payment from student for a specific course period and month
 model Aporte {
-  id           String      @id @default(cuid())
-  estudianteId String
-  monto        Decimal     @db.Decimal(10, 2)
-  concepto     String      // description of payment
-  fechaPago    DateTime    @default(now())
-  metodoPago   MetodoPago  @default(EFECTIVO)
-  comprobante  String?     // receipt number or reference
-  observaciones String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id             String      @id @default(cuid())
+  estudianteId   String
+  cursoPeriodoId String
+  mes            Int         // 1-12 (month of the contribution)
+  anio           Int         // year of the contribution
+  monto          Decimal     @db.Decimal(10, 2)
+  concepto       String      // description of payment
+  fechaPago      DateTime    @default(now())
+  metodoPago     MetodoPago  @default(EFECTIVO)
+  comprobante    String?     // receipt number or reference
+  observaciones  String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relations
-  estudiante Estudiante @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  estudiante    Estudiante   @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+  cursoPeriodo  CursoPeriodo @relation(fields: [cursoPeriodoId], references: [id], onDelete: Cascade)
 
+  // Unique constraint: one contribution per student per course period per month/year
+  @@unique([estudianteId, cursoPeriodoId, mes, anio])
   @@map("aportes")
 }
 
