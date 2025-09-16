@@ -80,8 +80,8 @@ export async function POST(
         fechaInicio: validatedData.fechaInicio,
         fechaFin: validatedData.fechaFin,
         precioMensual: validatedData.precioMensual,
-        // Store enabled months as JSON in a future migration
-        // For now, we'll handle this in the UI layer
+        mesesHabilitados: validatedData.mesesHabilitados || [3, 4, 5, 6],
+        anio: validatedData.fechaInicio.getFullYear(),
       },
       include: {
         curso: true,

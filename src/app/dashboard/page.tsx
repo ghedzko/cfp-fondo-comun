@@ -165,8 +165,10 @@ export default function DashboardPage() {
                   <p>
                     Cargar aportes voluntarios de estudiantes
                   </p>
-                  <Button disabled aria-label="Gestión de aportes voluntarios - Próximamente disponible">
-                    Próximamente
+                  <Button asChild aria-label="Gestión de aportes voluntarios">
+                    <Link href="/dashboard/aportes">
+                      Gestionar Aportes
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -183,11 +185,11 @@ export default function DashboardPage() {
               <div className="system-info">
                 <div>
                   <span><strong>Fase Actual:</strong></span>
-                  <p>FASE 1 - Autenticación</p>
+                  <p>FASE 5 - Aportes Mensuales</p>
                 </div>
                 <div>
                   <span><strong>Próxima Fase:</strong></span>
-                  <p>FASE 2 - Modelado de Dominio</p>
+                  <p>FASE 6 - Reportes y Estadísticas</p>
                 </div>
                 <div className="status-indicator">
                   <div className="status-dot"></div>

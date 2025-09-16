@@ -115,3 +115,25 @@ export const COOKIE_CONFIG = {
 
 export const ACCESS_TOKEN_COOKIE = 'cfp-access-token';
 export const REFRESH_TOKEN_COOKIE = 'cfp-refresh-token';
+
+// Token verification for API routes
+export async function verifyToken(request: Request): Promise<JWTPayload | null> {
+  try {
+    const cookieHeader = request.headers.get('cookie');
+    if (!cookieHeader) return null;
+
+    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    const token = cookies[ACCESS_TOKEN_COOKIE];
+    if (!token) return null;
+
+    return verifyAccessToken(token);
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return null;
+  }
+}

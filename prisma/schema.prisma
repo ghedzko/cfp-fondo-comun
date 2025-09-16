@@ -87,15 +87,17 @@ model Curso {
 
 // CursoPeriodo - Course instance for a specific period
 model CursoPeriodo {
-  id           String   @id @default(cuid())
-  cursoId      String
-  nombre       String   // e.g., "Curso Básico - Marzo 2025"
-  fechaInicio  DateTime
-  fechaFin     DateTime
-  precioMensual Decimal @db.Decimal(10, 2)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(cuid())
+  cursoId         String
+  nombre          String   // e.g., "Curso Básico - Marzo 2025"
+  fechaInicio     DateTime
+  fechaFin        DateTime
+  precioMensual   Decimal @db.Decimal(10, 2)
+  mesesHabilitados Int[]   // Array of enabled months (1-12)
+  anio            Int      // Year for this period
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
   curso      Curso       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
