@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { useForm } from 'react-hook-form';
@@ -19,12 +19,13 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+function LoginForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { refreshAuth, isAuthenticated } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const searchParams = useSearchParams();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -66,8 +67,8 @@ export default function LoginPage() {
         console.log('Auth refresh failed:', authError);
       }
 
-      // Redirect to requested path or dashboard
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      // Redirect to requested path 
+      const redirect = searchParams?.get('redirect') || '/dashboard';
       console.log('Redirecting to:', redirect);
       router.replace(redirect);
 
@@ -180,5 +181,13 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

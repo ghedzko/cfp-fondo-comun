@@ -5,7 +5,7 @@
 **Proyecto**: CFP Fondo Común – Lago Puelo (MVP escalable)  
 **Tech Stack**: Next.js (App Router) + TypeScript + Prisma + PostgreSQL + TanStack Query + Axios + shadcn/ui + SASS/SCSS + next-themes  
 **Fecha de inicio**: 14 de septiembre de 2025  
-**Estado actual**: FASE 2 completada ✅ (15/09/2025)
+**Estado actual**: FASE 4 en progreso 🔄 (16/09/2025)
 
 ---
 
@@ -97,26 +97,28 @@
 
 ---
 
-### 🔄 FASE 3 — Gestión de Estudiantes y Matrículas
+### ✅ FASE 3 — Gestión de Estudiantes y Matrículas
 **Objetivo**: Estudiantes globales (reutilizables por DNI) y matrícula a cursos  
-**Estado**: 🔄 **PENDIENTE**
+**Estado**: ✅ **COMPLETADA**  
+**Fecha**: 16/09/2025
 
-#### 📋 Tareas Planificadas:
-- [ ] API: /estudiantes (upsert por DNI), /cursos/:id/matriculas
-- [ ] UI: gestión de estudiantes, matriculación batch
-- [ ] Búsqueda por apellido/DNI
-- [ ] Componentes: EstudianteForm, MatriculasManager
+#### ✅ Tareas Completadas:
+- [x] API: /estudiantes (upsert por DNI), /cursos/:id/matriculas
+- [x] UI: gestión de estudiantes, matriculación batch
+- [x] Búsqueda por apellido/DNI
+- [x] Componentes: EstudianteForm, MatriculasManager
 
-#### 🎯 Criterios de Aceptación:
-- [ ] Reutilización de Estudiante por DNI
-- [ ] UNIQUE(cursoId, dni) respetado
-- [ ] Búsqueda funcional
+#### ✅ Criterios de Aceptación Cumplidos:
+- [x] Reutilización de Estudiante por DNI
+- [x] UNIQUE(cursoId, dni) respetado
+- [x] Búsqueda funcional
 
 ---
 
 ### 🔄 FASE 4 — Cursos y Meses Habilitados
 **Objetivo**: Crear cursos y seleccionar meses (con cortes)  
-**Estado**: 🔄 **PENDIENTE**
+**Estado**: 🔄 **EN PROGRESO**  
+**Fecha inicio**: 16/09/2025
 
 #### 📋 Tareas Planificadas:
 - [ ] API: /cursos, /cursos/:id/periodos
@@ -229,12 +231,12 @@
 
 ## 📊 Progreso General
 
-**Completado**: 2/9 fases (22%)  
+**Completado**: 3/9 fases (33%)  
 **En progreso**: 0/9 fases  
-**Pendiente**: 7/9 fases  
+**Pendiente**: 6/9 fases  
 
 ### Próximo Milestone:
-🎯 **FASE 3 - Gestión de Estudiantes y Matrículas**
+🎯 **FASE 4 - Cursos y Meses Habilitados**
 
 ---
 

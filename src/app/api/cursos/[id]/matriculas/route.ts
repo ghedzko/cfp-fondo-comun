@@ -130,8 +130,8 @@ export async function POST(
           });
 
           results.push(matricula);
-        } catch (error: any) {
-          if (error.code === 'P2002') {
+        } catch (error: unknown) {
+          if ((error as any).code === 'P2002') {
             errors.push({
               dni: estudianteData.dni,
               error: 'El estudiante ya está matriculado en este curso',
@@ -201,7 +201,7 @@ export async function POST(
 
       return NextResponse.json(matricula, { status: 201 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Datos inválidos', details: error.issues },
@@ -209,7 +209,7 @@ export async function POST(
       );
     }
 
-    if (error.code === 'P2002') {
+    if ((error as any).code === 'P2002') {
       return NextResponse.json(
         { error: 'El estudiante ya está matriculado en este curso' },
         { status: 409 }

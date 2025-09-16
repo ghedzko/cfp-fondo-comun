@@ -142,13 +142,17 @@ export default function CursosPage() {
                         </div>
                       </div>
                       <div className="course-actions">
-                        <Button variant="outline" size="sm" disabled>
-                          Ver Detalles
-                        </Button>
-                        {isAdmin && (
-                          <Button variant="outline" size="sm" disabled>
-                            Editar
+                        <Link href={`/dashboard/cursos/${curso.id}`}>
+                          <Button variant="outline" size="sm">
+                            Ver Detalles
                           </Button>
+                        </Link>
+                        {isAdmin && (
+                          <Link href={`/dashboard/cursos/${curso.id}/nuevo-periodo`}>
+                            <Button variant="outline" size="sm">
+                              Nuevo Período
+                            </Button>
+                          </Link>
                         )}
                       </div>
                     </CardContent>
