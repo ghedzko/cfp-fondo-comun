@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { DatabaseStatus } from "@/components/database-status";
 import Link from "next/link";
 
 export default function Home() {
@@ -103,6 +104,14 @@ export default function Home() {
                 </p>
               </CardContent>
             </Card>
+          </section>
+
+          {/* Database Status Indicator */}
+          <section aria-labelledby="system-status">
+            <h2 id="system-status" className="sr-only">Estado del sistema</h2>
+            <div className="flex justify-center">
+              <DatabaseStatus />
+            </div>
           </section>
         </div>
       </main>
