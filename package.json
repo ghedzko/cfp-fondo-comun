@@ -9,9 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npm run railway:init && next start",
-    "railway:init": "node scripts/railway-init.js",
-    "migrate:deploy": "npx prisma migrate deploy",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
