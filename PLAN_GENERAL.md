@@ -140,27 +140,34 @@
 
 ---
 
-### 🔄 FASE 5 — Aportes Mensuales (Preceptoras)
+### ✅ FASE 5 — Aportes Mensuales (Preceptoras)
 **Objetivo**: Carga masiva y validaciones  
-**Estado**: 🔄 **EN PROGRESO**  
-**Fecha inicio**: 16/09/2025
+**Estado**: ✅ **COMPLETADA**  
+**Fecha**: 16/09/2025
 
-#### 📋 Tareas Planificadas:
-- [ ] API: /cursos/:id/aportes (batch), /cursos/:id/periodos/:periodoId/aportes
-- [ ] Tabla editable por curso/mes con estudiantes matriculados
-- [ ] Resumen: total recaudado, #aportantes/#matriculados
-- [ ] Validaciones: duplicados, monto ≥ 0, solo meses habilitados
-- [ ] UI para seleccionar curso/período/mes
-- [ ] Formulario de carga masiva de aportes
-- [ ] Indicadores visuales de estado de aportes
+#### ✅ Tareas Completadas:
+- [x] API: /cursos/:id/aportes (batch), /cursos/:id/periodos/:periodoId/aportes
+- [x] Tabla editable por curso/mes con estudiantes matriculados
+- [x] Resumen: total recaudado, #aportantes/#matriculados
+- [x] Validaciones: duplicados, monto ≥ 0, solo meses habilitados
+- [x] UI para seleccionar curso/período/mes
+- [x] Formulario de carga masiva de aportes
+- [x] Indicadores visuales de estado de aportes
+- [x] **REFACTOR CRÍTICO**: Migración completa de campos de español a inglés
+- [x] Actualización de todos los modelos Prisma a nomenclatura en inglés
+- [x] Corrección de todos los endpoints API para usar nombres en inglés
+- [x] Regeneración completa del cliente Prisma
+- [x] Actualización de scripts de seed y datos de prueba
 
-#### 🎯 Criterios de Aceptación:
-- [ ] Tabla editable funcional con estudiantes matriculados
-- [ ] Duplicados bloqueados por (estudiante, curso, período, mes)
-- [ ] Texto "aporte voluntario" destacado
-- [ ] Solo meses habilitados permiten aportes
-- [ ] Resumen estadístico en tiempo real
-- [ ] Validación de montos y datos
+#### ✅ Criterios de Aceptación Cumplidos:
+- [x] Tabla editable funcional con estudiantes matriculados
+- [x] Duplicados bloqueados por (estudiante, curso, período, mes)
+- [x] Texto "aporte voluntario" destacado
+- [x] Solo meses habilitados permiten aportes
+- [x] Resumen estadístico en tiempo real
+- [x] Validación de montos y datos
+- [x] **CRÍTICO**: Nomenclatura en inglés implementada según mejores prácticas
+- [x] Build compilando exitosamente con nueva estructura
 
 ---
 
@@ -245,12 +252,12 @@
 
 ## 📊 Progreso General
 
-**Completado**: 4/9 fases (44%)  
-**En progreso**: 1/9 fases  
+**Completado**: 5/9 fases (56%)  
+**En progreso**: 0/9 fases  
 **Pendiente**: 4/9 fases  
 
 ### Próximo Milestone:
-🎯 **FASE 5 - Aportes Mensuales (Preceptoras)**
+🎯 **FASE 6 - Facturación Mensual por Curso (Secretaría)**
 
 ---
 
