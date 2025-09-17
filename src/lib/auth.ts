@@ -137,3 +137,32 @@ export async function verifyToken(request: Request): Promise<JWTPayload | null> 
     return null;
   }
 }
+
+// Auth verification for API routes
+export async function verifyAuth(request: Request): Promise<{
+  success: boolean;
+  user?: JWTPayload;
+  error?: string;
+}> {
+  try {
+    const user = await getTokenPayload(request);
+    
+    if (!user) {
+      return {
+        success: false,
+        error: 'No valid authentication token found'
+      };
+    }
+
+    return {
+      success: true,
+      user
+    };
+  } catch (error) {
+    console.error('Auth verification error:', error);
+    return {
+      success: false,
+      error: 'Authentication verification failed'
+    };
+  }
+}
