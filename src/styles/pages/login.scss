@@ -23,40 +23,47 @@
   @include card;
   box-shadow: $shadow-xl;
   border: none;
-  
-  &__header {
-    @include card-header;
-    text-align: center;
-    padding: $spacing-2xl $spacing-xl $spacing-lg;
-    
-    .logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto $spacing-lg;
-      background: var(--primary-600);
-      border-radius: $radius-xl;
-      @include flex-center;
-      color: white;
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-bold;
-    }
-    
-    .title {
-      @include text-heading-2;
-      margin-bottom: $spacing-sm;
-      color: var(--text-primary);
-    }
-    
-    .subtitle {
-      @include text-small;
-      color: var(--text-secondary);
-    }
-  }
-  
-  &__content {
-    @include card-content;
-    padding: 0 $spacing-xl $spacing-2xl;
-  }
+  background-color: var(--card);
+}
+
+.login-header {
+  @include card-header;
+  text-align: center;
+  padding: $spacing-2xl $spacing-xl $spacing-lg;
+  gap: $spacing-lg;
+}
+
+.login-logo {
+  display: flex;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: $radius-xl;
+  background: var(--primary-600);
+  color: white;
+  @include flex-center;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  box-shadow: $shadow-md;
+}
+
+.login-title {
+  @include text-heading-2;
+  margin-bottom: $spacing-xs;
+  color: var(--foreground);
+}
+
+.login-description {
+  @include text-small;
+  color: var(--muted-foreground);
+}
+
+.login-card__content {
+  @include card-content;
+  padding: 0 $spacing-xl $spacing-2xl;
 }
 
 .login-form {
@@ -80,15 +87,15 @@
     
     &:focus {
       transform: translateY(-1px);
-      box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1), $shadow-md;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--border-focus) 30%, transparent), $shadow-md;
     }
     
     &.error {
-      border-color: var(--error);
+      border-color: var(--danger-strong-bg);
       
       &:focus {
-        border-color: var(--error);
-        box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+        border-color: var(--danger-strong-bg);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger-strong-bg) 30%, transparent);
       }
     }
   }
@@ -174,24 +181,22 @@
     padding: $spacing-md;
   }
   
-  .login-card {
-    &__header {
-      padding: $spacing-xl $spacing-lg $spacing-md;
-      
-      .logo {
-        width: 56px;
-        height: 56px;
-        font-size: $font-size-xl;
-      }
-      
-      .title {
-        font-size: $font-size-xl;
-      }
-    }
-    
-    &__content {
-      padding: 0 $spacing-lg $spacing-xl;
-    }
+  .login-header {
+    padding: $spacing-xl $spacing-lg $spacing-md;
+  }
+
+  .logo-icon {
+    width: 56px;
+    height: 56px;
+    font-size: $font-size-xl;
+  }
+
+  .login-title {
+    font-size: $font-size-xl;
+  }
+
+  .login-card__content {
+    padding: 0 $spacing-lg $spacing-xl;
   }
 }
 

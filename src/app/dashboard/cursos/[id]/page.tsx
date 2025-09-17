@@ -217,9 +217,9 @@ export default function CursoDetailPage() {
           {curso.periodos.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8">
-                <Calendar size={48} className="mx-auto mb-4 text-gray-400" />
+                <Calendar size={48} className="mx-auto mb-4 text-muted-foreground" />
                 <h4>No hay períodos creados</h4>
-                <p className="text-gray-600 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Crea el primer período para comenzar a gestionar estudiantes y aportes.
                 </p>
                 {isAdmin && (

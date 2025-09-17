@@ -502,7 +502,7 @@ export default function AportesPage() {
                 </div>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-300">
                   ${estadisticas.totalRecaudado.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -510,7 +510,7 @@ export default function AportesPage() {
                 </div>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-300">
                   {estadisticas.totalMatriculados}
                 </div>
                 <div className="text-sm text-muted-foreground">

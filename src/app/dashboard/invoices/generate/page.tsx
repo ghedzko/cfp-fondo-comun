@@ -230,15 +230,15 @@ export default function GenerateInvoicesPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Generar Facturas</h1>
-          <p className="text-gray-600">Generación masiva de facturas mensuales por curso</p>
+          <p className="text-muted-foreground">Generación masiva de facturas mensuales por curso</p>
         </div>
       </div>
 
       {/* Error/Success Messages */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 bg-red-50 dark:border-red-500 dark:bg-red-900/30">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-red-800">
+            <div className="flex items-center gap-2 text-red-800 dark:text-red-200">
               <AlertCircle className="w-5 h-5" />
               <p>{error}</p>
             </div>
@@ -247,9 +247,9 @@ export default function GenerateInvoicesPage() {
       )}
 
       {success && (
-        <Card className="border-green-200 bg-green-50">
+        <Card className="border-green-200 bg-green-50 dark:border-green-500 dark:bg-green-900/20">
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-green-800">
+            <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
               <CheckCircle className="w-5 h-5" />
               <p>{success}</p>
             </div>
@@ -375,7 +375,7 @@ export default function GenerateInvoicesPage() {
                   <label htmlFor={`course-${course.id}`} className="flex-1">
                     <div className="font-medium">{course.name}</div>
                     {course.description && (
-                      <div className="text-sm text-gray-600">{course.description}</div>
+                      <div className="text-sm text-muted-foreground">{course.description}</div>
                     )}
                   </label>
                 </div>
@@ -400,42 +400,42 @@ export default function GenerateInvoicesPage() {
           <CardContent>
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-blue-600 dark:text-blue-200" />
                   <div>
-                    <p className="text-sm text-blue-600">Períodos Elegibles</p>
-                    <p className="text-xl font-bold text-blue-800">{summary.eligiblePeriods}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-200">Períodos Elegibles</p>
+                    <p className="text-xl font-bold text-blue-800 dark:text-blue-100">{summary.eligiblePeriods}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-200" />
                   <div>
-                    <p className="text-sm text-green-600">A Procesar</p>
-                    <p className="text-xl font-bold text-green-800">{summary.periodsToProcess}</p>
+                    <p className="text-sm text-green-600 dark:text-green-200">A Procesar</p>
+                    <p className="text-xl font-bold text-green-800 dark:text-green-100">{summary.periodsToProcess}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-yellow-50 p-4 rounded-lg">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-200" />
                   <div>
-                    <p className="text-sm text-yellow-600">Ya Facturados</p>
-                    <p className="text-xl font-bold text-yellow-800">{summary.periodsWithExistingInvoices}</p>
+                    <p className="text-sm text-yellow-600 dark:text-yellow-200">Ya Facturados</p>
+                    <p className="text-xl font-bold text-yellow-800 dark:text-yellow-100">{summary.periodsWithExistingInvoices}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="bg-purple-50 dark:bg-purple-900/25 p-4 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-purple-600" />
+                  <DollarSign className="w-5 h-5 text-purple-600 dark:text-purple-200" />
                   <div>
-                    <p className="text-sm text-purple-600">Monto Total</p>
-                    <p className="text-xl font-bold text-purple-800">
+                    <p className="text-sm text-purple-600 dark:text-purple-200">Monto Total</p>
+                    <p className="text-xl font-bold text-purple-800 dark:text-purple-100">
                       ${summary.estimatedTotalAmount.toLocaleString()}
                     </p>
                   </div>
@@ -450,7 +450,7 @@ export default function GenerateInvoicesPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border">
                     <thead>
-                      <tr className="bg-gray-50">
+                      <tr className="bg-muted">
                         <th className="border p-2 text-left">Curso</th>
                         <th className="border p-2 text-left">Período</th>
                         <th className="border p-2 text-center">Estudiantes</th>
@@ -460,7 +460,7 @@ export default function GenerateInvoicesPage() {
                     </thead>
                     <tbody>
                       {preview.map((item, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
+                        <tr key={index} className="hover:bg-muted/50">
                           <td className="border p-2 font-medium">{item.courseName}</td>
                           <td className="border p-2">{item.periodName}</td>
                           <td className="border p-2 text-center">{item.enrolledStudents}</td>
@@ -493,13 +493,13 @@ export default function GenerateInvoicesPage() {
             {/* Existing Invoices */}
             {existingInvoices.length > 0 && (
               <div className="mt-6 space-y-4">
-                <h3 className="font-semibold text-lg text-yellow-800">
+                <h3 className="font-semibold text-lg text-yellow-800 dark:text-yellow-200">
                   Facturas Ya Existentes ({existingInvoices.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border">
                     <thead>
-                      <tr className="bg-yellow-50">
+                      <tr className="bg-yellow-50 dark:bg-yellow-900/20">
                         <th className="border p-2 text-left">Curso</th>
                         <th className="border p-2 text-left">Período</th>
                         <th className="border p-2 text-center">Estado</th>
@@ -509,15 +509,18 @@ export default function GenerateInvoicesPage() {
                     </thead>
                     <tbody>
                       {existingInvoices.map((invoice, index) => (
-                        <tr key={index} className="hover:bg-yellow-50">
+                        <tr key={index} className="hover:bg-yellow-100/40 dark:hover:bg-yellow-900/30">
                           <td className="border p-2">{invoice.courseName}</td>
                           <td className="border p-2">{invoice.periodName}</td>
                           <td className="border p-2 text-center">
                             <span className={`px-2 py-1 rounded text-xs ${
-                              invoice.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                              invoice.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                              invoice.status === 'OVERDUE' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
+                              invoice.status === 'PAID'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200'
+                                : invoice.status === 'PENDING'
+                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200'
+                                  : invoice.status === 'OVERDUE'
+                                    ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'
+                                    : 'bg-muted text-muted-foreground dark:bg-muted/60'
                             }`}>
                               {invoice.status === 'PAID' ? 'Pagada' :
                                invoice.status === 'PENDING' ? 'Pendiente' :
@@ -547,11 +550,11 @@ export default function GenerateInvoicesPage() {
 
             {preview.length === 0 && summary && summary.periodsToProcess === 0 && (
               <div className="text-center py-8">
-                <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                <p className="text-gray-600">
+                <AlertCircle className="w-12 h-12 text-yellow-500 dark:text-yellow-300 mx-auto mb-4" />
+                <p className="text-muted-foreground">
                   No hay períodos de curso elegibles para generar facturas en {MONTHS[month - 1]} {year}
                 </p>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   Esto puede deberse a que ya existen facturas para este período o no hay cursos activos con este mes habilitado.
                 </p>
               </div>

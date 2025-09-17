@@ -20,15 +20,15 @@
 
   &--destructive {
     @include button-base;
-    background-color: var(--error);
-    color: white;
+    background-color: var(--danger-strong-bg);
+    color: var(--danger-strong-fg);
     
     &:hover:not(:disabled) {
-      background-color: #dc2626;
+      background-color: color-mix(in srgb, var(--danger-strong-bg) 85%, black);
     }
     
     &:active:not(:disabled) {
-      background-color: #b91c1c;
+      background-color: color-mix(in srgb, var(--danger-strong-bg) 70%, black);
     }
   }
 

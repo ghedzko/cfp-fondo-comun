@@ -51,8 +51,9 @@
     }
 
     .error-message {
-      background-color: var(--destructive);
-      color: var(--destructive-foreground);
+      background-color: var(--danger-soft-bg);
+      color: var(--danger-soft-fg);
+      border: 1px solid var(--danger-strong-bg);
       padding: 0.75rem;
       border-radius: 0.375rem;
       margin-bottom: 1.5rem;
@@ -115,13 +116,4 @@
   }
 }
 
-// Dark mode adjustments
-.dark {
-  .nuevo-estudiante-page {
-    .error-message {
-      background-color: rgba(239, 68, 68, 0.1);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-  }
-}
+// Dark mode adjustments handled via CSS custom properties

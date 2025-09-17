@@ -75,10 +75,10 @@ const MONTHS = [
 ];
 
 const STATUS_COLORS = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  PAID: 'bg-green-100 text-green-800',
-  OVERDUE: 'bg-red-100 text-red-800',
-  CANCELLED: 'bg-gray-100 text-gray-800'
+  PENDING: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
+  PAID: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
+  OVERDUE: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
+  CANCELLED: 'bg-muted text-muted-foreground dark:bg-muted/60'
 };
 
 const STATUS_LABELS = {
@@ -218,7 +218,7 @@ export default function InvoiceDetailPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold">Detalle de Factura</h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {invoice.coursePeriod.course.name} - {MONTHS[invoice.month - 1]} {invoice.year}
             </p>
           </div>
@@ -259,29 +259,29 @@ export default function InvoiceDetailPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Curso</label>
+                  <label className="text-sm font-medium text-muted-foreground">Curso</label>
                   <p className="font-semibold">{invoice.coursePeriod.course.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Período</label>
+                  <label className="text-sm font-medium text-muted-foreground">Período</label>
                   <p className="font-semibold">{invoice.coursePeriod.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Mes/Año</label>
+                  <label className="text-sm font-medium text-muted-foreground">Mes/Año</label>
                   <p className="font-semibold">{MONTHS[invoice.month - 1]} {invoice.year}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Fecha de Vencimiento</label>
+                  <label className="text-sm font-medium text-muted-foreground">Fecha de Vencimiento</label>
                   <p className="font-semibold">{new Date(invoice.dueDate).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Monto Total</label>
-                  <p className="font-semibold text-lg text-green-600">
+                  <label className="text-sm font-medium text-muted-foreground">Monto Total</label>
+                  <p className="font-semibold text-lg text-green-600 dark:text-green-300">
                     ${Number(invoice.totalAmount).toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Precio Mensual</label>
+                  <label className="text-sm font-medium text-muted-foreground">Precio Mensual</label>
                   <p className="font-semibold">
                     ${Number(invoice.coursePeriod.monthlyPrice).toLocaleString()}
                   </p>
@@ -290,8 +290,8 @@ export default function InvoiceDetailPage() {
               
               {invoice.notes && (
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Notas</label>
-                  <p className="text-gray-800">{invoice.notes}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Notas</label>
+                  <p className="text-foreground">{invoice.notes}</p>
                 </div>
               )}
             </CardContent>
@@ -309,36 +309,38 @@ export default function InvoiceDetailPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Estudiantes Matriculados:</span>
+                <span className="text-muted-foreground">Estudiantes Matriculados:</span>
                 <span className="font-semibold">{invoice.statistics.enrolledStudents}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Estudiantes que Aportaron:</span>
+                <span className="text-muted-foreground">Estudiantes que Aportaron:</span>
                 <span className="font-semibold">{invoice.statistics.contributingStudents}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tasa de Recaudación:</span>
+                <span className="text-muted-foreground">Tasa de Recaudación:</span>
                 <span className="font-semibold">
                   {Math.round(invoice.statistics.collectionRate)}%
                 </span>
               </div>
               <hr />
               <div className="flex justify-between">
-                <span className="text-gray-600">Monto Esperado:</span>
+                <span className="text-muted-foreground">Monto Esperado:</span>
                 <span className="font-semibold">
                   ${invoice.statistics.expectedAmount.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Monto Recaudado:</span>
-                <span className="font-semibold text-green-600">
+                <span className="text-muted-foreground">Monto Recaudado:</span>
+                <span className="font-semibold text-green-600 dark:text-green-300">
                   ${invoice.statistics.totalContributions.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Déficit:</span>
+                <span className="text-muted-foreground">Déficit:</span>
                 <span className={`font-semibold ${
-                  invoice.statistics.collectionDeficit > 0 ? 'text-red-600' : 'text-green-600'
+                  invoice.statistics.collectionDeficit > 0
+                    ? 'text-red-600 dark:text-red-300'
+                    : 'text-green-600 dark:text-green-300'
                 }`}>
                   ${invoice.statistics.collectionDeficit.toLocaleString()}
                 </span>
@@ -411,22 +413,22 @@ export default function InvoiceDetailPage() {
               </thead>
               <tbody>
                 {invoice.studentsWithContributions.map((student) => (
-                  <tr key={student.id} className="border-b hover:bg-gray-50">
+                  <tr key={student.id} className="border-b hover:bg-muted/50">
                     <td className="p-2 font-mono text-sm">{student.dni}</td>
                     <td className="p-2">
                       <div>
                         <p className="font-medium">{student.firstName} {student.lastName}</p>
                       </div>
                     </td>
-                    <td className="p-2 text-sm text-gray-600">{student.email || '-'}</td>
+                    <td className="p-2 text-sm text-muted-foreground">{student.email || '-'}</td>
                     <td className="p-2">
                       {student.hasContributed ? (
-                        <Badge className="bg-green-100 text-green-800">
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Aportó
                         </Badge>
                       ) : (
-                        <Badge className="bg-red-100 text-red-800">
+                        <Badge className="bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200">
                           <XCircle className="w-3 h-3 mr-1" />
                           Sin aporte
                         </Badge>
