@@ -350,84 +350,80 @@ export default function InvoicesPage() {
       </div>
 
       {/* Invoices List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Facturas</CardTitle>
-          <CardDescription>
+      <div className="facturas-page__list">
+        <div className="facturas-page__list-header">
+          <h3>Facturas</h3>
+          <p className="description">
             Lista de facturas generadas ({pagination.total} total)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="facturas-page__list-content">
           {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Cargando facturas...</p>
+            <div className="facturas-page__loading">
+              <div className="facturas-page__loading-spinner"></div>
+              <p className="facturas-page__loading-text">Cargando facturas...</p>
             </div>
           ) : invoices.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No se encontraron facturas</p>
+            <div className="facturas-page__empty">
+              <FileText className="facturas-page__empty-icon" />
+              <p className="facturas-page__empty-text">No se encontraron facturas</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div>
               {invoices.map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                  className="facturas-page__invoice-item"
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">
-                          {invoice.coursePeriod.course.name}
-                        </h3>
-                        <Badge className={STATUS_COLORS[invoice.status]}>
+                  <div className="facturas-page__invoice-item-header">
+                    <div>
+                      <div className="facturas-page__invoice-item-title">
+                        <h3>{invoice.coursePeriod.course.name}</h3>
+                        <span className={`badge badge--${invoice.status.toLowerCase()}`}>
                           {STATUS_LABELS[invoice.status]}
-                        </Badge>
+                        </span>
                       </div>
                       
-                      <p className="text-gray-600 mb-2">
+                      <p className="facturas-page__invoice-item-subtitle">
                         {invoice.coursePeriod.name} - {MONTHS[invoice.month - 1]} {invoice.year}
                       </p>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-500">Monto:</span>
-                          <span className="font-medium ml-1">
-                            ${Number(invoice.totalAmount).toLocaleString()}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Estudiantes:</span>
-                          <span className="font-medium ml-1">
-                            {invoice.statistics.enrolledStudents}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Recaudación:</span>
-                          <span className="font-medium ml-1">
-                            {Math.round(invoice.statistics.collectionRate)}%
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Vencimiento:</span>
-                          <span className="font-medium ml-1">
-                            {new Date(invoice.dueDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
                     </div>
                     
-                    <div className="flex gap-2 ml-4">
-                      <Button
+                    <div className="facturas-page__invoice-item-actions">
+                      <button
                         onClick={() => viewInvoice(invoice.id)}
-                        size="sm"
-                        variant="outline"
-                        className="flex items-center gap-1"
+                        className="btn btn--outline btn--sm"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye />
                         Ver
-                      </Button>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="facturas-page__invoice-item-stats">
+                    <div className="facturas-page__invoice-item-stat">
+                      <p className="facturas-page__invoice-item-stat-label">Monto:</p>
+                      <p className="facturas-page__invoice-item-stat-value">
+                        ${Number(invoice.totalAmount).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="facturas-page__invoice-item-stat">
+                      <p className="facturas-page__invoice-item-stat-label">Estudiantes:</p>
+                      <p className="facturas-page__invoice-item-stat-value">
+                        {invoice.statistics.enrolledStudents}
+                      </p>
+                    </div>
+                    <div className="facturas-page__invoice-item-stat">
+                      <p className="facturas-page__invoice-item-stat-label">Recaudación:</p>
+                      <p className="facturas-page__invoice-item-stat-value">
+                        {Math.round(invoice.statistics.collectionRate)}%
+                      </p>
+                    </div>
+                    <div className="facturas-page__invoice-item-stat">
+                      <p className="facturas-page__invoice-item-stat-label">Vencimiento:</p>
+                      <p className="facturas-page__invoice-item-stat-value">
+                        {new Date(invoice.dueDate).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -437,32 +433,30 @@ export default function InvoicesPage() {
 
           {/* Pagination */}
           {pagination.pages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-6">
-              <Button
+            <div className="facturas-page__pagination">
+              <button
                 onClick={() => fetchInvoices(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                variant="outline"
-                size="sm"
+                className="btn btn--outline btn--sm"
               >
                 Anterior
-              </Button>
+              </button>
               
-              <span className="text-sm text-gray-600">
+              <span className="facturas-page__pagination-info">
                 Página {pagination.page} de {pagination.pages}
               </span>
               
-              <Button
+              <button
                 onClick={() => fetchInvoices(pagination.page + 1)}
                 disabled={pagination.page === pagination.pages}
-                variant="outline"
-                size="sm"
+                className="btn btn--outline btn--sm"
               >
                 Siguiente
-              </Button>
+              </button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
