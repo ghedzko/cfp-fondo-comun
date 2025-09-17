@@ -152,12 +152,17 @@
         }
         
         &:hover {
-          background-color: var(--gray-50);
+          background-color: var(--surface);
         }
         
         &--selected {
-          background-color: var(--primary-50);
-          border-color: var(--primary-200);
+          background-color: var(--primary-100);
+          border-color: var(--primary-300);
+          
+          .dark & {
+            background-color: var(--primary-900);
+            border-color: var(--primary-700);
+          }
         }
         
         input[type="checkbox"] {
@@ -220,18 +225,34 @@
       
       &--blue {
         background-color: var(--primary-50);
+        
+        .dark & {
+          background-color: var(--primary-900);
+        }
       }
       
       &--green {
         background-color: #f0fdf4;
+        
+        .dark & {
+          background-color: #064e3b;
+        }
       }
       
       &--yellow {
         background-color: #fffbeb;
+        
+        .dark & {
+          background-color: #451a03;
+        }
       }
       
       &--purple {
         background-color: #faf5ff;
+        
+        .dark & {
+          background-color: #3b0764;
+        }
       }
       
       .icon {

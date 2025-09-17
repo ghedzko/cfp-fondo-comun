@@ -179,10 +179,12 @@
     padding: $spacing-lg;
     margin-bottom: $spacing-md;
     transition: all 0.2s ease-in-out;
+    background-color: var(--card);
     
     &:hover {
-      background-color: var(--gray-50);
-      border-color: var(--primary-200);
+      background-color: var(--surface);
+      border-color: var(--primary-300);
+      box-shadow: $shadow-md;
     }
     
     &:last-child {
@@ -397,24 +399,48 @@
     background-color: #fef2f2;
     border: 1px solid #fecaca;
     color: #991b1b;
+    
+    .dark & {
+      background-color: #450a0a;
+      border-color: #7f1d1d;
+      color: #fca5a5;
+    }
   }
   
   &--success {
     background-color: #f0fdf4;
     border: 1px solid #bbf7d0;
     color: #166534;
+    
+    .dark & {
+      background-color: #052e16;
+      border-color: #166534;
+      color: #86efac;
+    }
   }
   
   &--warning {
     background-color: #fffbeb;
     border: 1px solid #fed7aa;
     color: #92400e;
+    
+    .dark & {
+      background-color: #451a03;
+      border-color: #92400e;
+      color: #fdba74;
+    }
   }
   
   &--info {
     background-color: #eff6ff;
     border: 1px solid #dbeafe;
     color: #1e40af;
+    
+    .dark & {
+      background-color: #1e3a8a;
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
   }
 }
 
@@ -424,7 +450,7 @@
   border-collapse: collapse;
   
   &__header {
-    background-color: var(--gray-50);
+    background-color: var(--surface);
     
     th {
       @include text-small;
@@ -448,7 +474,7 @@
       transition: background-color 0.2s ease-in-out;
       
       &:hover {
-        background-color: var(--gray-50);
+        background-color: var(--surface);
       }
     }
     
