@@ -1,0 +1,473 @@
+// Facturas Page Styles
+@import '../variables';
+@import '../mixins';
+
+.facturas-page {
+  @include container;
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+    
+    @include mobile-only {
+      @include flex-column;
+      align-items: flex-start;
+      gap: $spacing-md;
+    }
+  }
+
+  &__title {
+    @include text-heading-1;
+    margin: 0;
+  }
+
+  &__subtitle {
+    @include text-small;
+    margin: $spacing-xs 0 0 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    
+    @include mobile-only {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+
+  // Summary Cards Grid
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__summary-card {
+    @include card;
+    padding: $spacing-lg;
+    
+    &-content {
+      @include flex-between;
+    }
+    
+    &-info {
+      flex: 1;
+    }
+    
+    &-label {
+      @include text-small;
+      margin: 0 0 $spacing-xs 0;
+    }
+    
+    &-value {
+      @include text-heading-3;
+      margin: 0;
+    }
+    
+    &-icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: $radius-lg;
+      @include flex-center;
+      
+      &--blue {
+        background-color: var(--primary-100);
+        color: var(--primary-600);
+      }
+      
+      &--green {
+        background-color: #dcfce7;
+        color: #16a34a;
+      }
+      
+      &--purple {
+        background-color: #f3e8ff;
+        color: #9333ea;
+      }
+      
+      &--orange {
+        background-color: #fed7aa;
+        color: #ea580c;
+      }
+    }
+  }
+
+  // Filters Section
+  &__filters {
+    @include card;
+    margin-bottom: $spacing-xl;
+    
+    &-header {
+      @include card-header;
+      @include flex-between;
+      
+      h3 {
+        @include text-heading-3;
+        margin: 0;
+        @include flex-center;
+        gap: $spacing-sm;
+      }
+    }
+    
+    &-content {
+      @include card-content;
+    }
+    
+    &-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: $spacing-lg;
+      margin-bottom: $spacing-lg;
+    }
+    
+    &-group {
+      @include form-group;
+      margin-bottom: 0;
+      
+      label {
+        @include form-label;
+      }
+      
+      select, input {
+        @include input-base;
+      }
+    }
+    
+    &-actions {
+      display: flex;
+      gap: $spacing-sm;
+      justify-content: flex-end;
+      
+      @include mobile-only {
+        flex-direction: column;
+      }
+    }
+  }
+
+  // Invoice List
+  &__list {
+    @include card;
+    
+    &-header {
+      @include card-header;
+      @include flex-between;
+      
+      h3 {
+        @include text-heading-3;
+        margin: 0;
+      }
+      
+      .description {
+        @include text-small;
+        margin: $spacing-xs 0 0 0;
+      }
+    }
+    
+    &-content {
+      @include card-content;
+    }
+  }
+
+  // Invoice Item
+  &__invoice-item {
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: var(--gray-50);
+      border-color: var(--primary-200);
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-md;
+      
+      @include mobile-only {
+        @include flex-column;
+        align-items: flex-start;
+        gap: $spacing-sm;
+      }
+    }
+    
+    &-title {
+      @include text-heading-3;
+      margin: 0;
+      
+      @include flex-center;
+      gap: $spacing-md;
+    }
+    
+    &-subtitle {
+      @include text-small;
+      margin: $spacing-xs 0 0 0;
+    }
+    
+    &-actions {
+      display: flex;
+      gap: $spacing-sm;
+      
+      @include mobile-only {
+        width: 100%;
+      }
+    }
+    
+    &-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: $spacing-lg;
+      
+      @include mobile-only {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $spacing-md;
+      }
+    }
+    
+    &-stat {
+      &-label {
+        @include text-muted;
+        margin: 0;
+      }
+      
+      &-value {
+        @include text-body;
+        font-weight: $font-weight-medium;
+        margin: $spacing-xs 0 0 0;
+      }
+    }
+  }
+
+  // Loading State
+  &__loading {
+    @include flex-center;
+    @include flex-column;
+    padding: $spacing-3xl;
+    gap: $spacing-md;
+    
+    &-spinner {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--primary-600);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    &-text {
+      @include text-small;
+    }
+  }
+
+  // Empty State
+  &__empty {
+    @include flex-center;
+    @include flex-column;
+    padding: $spacing-3xl;
+    gap: $spacing-md;
+    
+    &-icon {
+      width: 3rem;
+      height: 3rem;
+      color: var(--text-muted);
+    }
+    
+    &-text {
+      @include text-small;
+    }
+  }
+
+  // Pagination
+  &__pagination {
+    @include flex-center;
+    gap: $spacing-sm;
+    margin-top: $spacing-xl;
+    
+    &-info {
+      @include text-small;
+    }
+  }
+}
+
+// Badge Component
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  
+  &--pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  &--paid {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  &--overdue {
+    background-color: #fecaca;
+    color: #991b1b;
+  }
+  
+  &--cancelled {
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+  }
+}
+
+// Button variants for facturas
+.btn {
+  @include button-base;
+  
+  &--primary {
+    @include button-primary;
+  }
+  
+  &--secondary {
+    @include button-secondary;
+  }
+  
+  &--outline {
+    @include button-secondary;
+    background-color: transparent;
+  }
+  
+  &--ghost {
+    @include button-ghost;
+  }
+  
+  &--sm {
+    @include button-sm;
+  }
+  
+  &--md {
+    @include button-md;
+  }
+  
+  &--lg {
+    @include button-lg;
+  }
+  
+  // Icon button
+  &--icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    
+    &.btn--sm {
+      width: 2rem;
+      height: 2rem;
+    }
+    
+    &.btn--lg {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Alert/Message Components
+.alert {
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-lg;
+  @include flex-center;
+  gap: $spacing-sm;
+  
+  &--error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+  
+  &--success {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+  }
+  
+  &--warning {
+    background-color: #fffbeb;
+    border: 1px solid #fed7aa;
+    color: #92400e;
+  }
+  
+  &--info {
+    background-color: #eff6ff;
+    border: 1px solid #dbeafe;
+    color: #1e40af;
+  }
+}
+
+// Table styles for invoice details
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  &__header {
+    background-color: var(--gray-50);
+    
+    th {
+      @include text-small;
+      font-weight: $font-weight-semibold;
+      padding: $spacing-md;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      
+      &:first-child {
+        border-top-left-radius: $radius-md;
+      }
+      
+      &:last-child {
+        border-top-right-radius: $radius-md;
+      }
+    }
+  }
+  
+  &__body {
+    tr {
+      transition: background-color 0.2s ease-in-out;
+      
+      &:hover {
+        background-color: var(--gray-50);
+      }
+    }
+    
+    td {
+      @include text-body;
+      padding: $spacing-md;
+      border-bottom: 1px solid var(--border);
+      
+      &:last-child {
+        text-align: center;
+      }
+    }
+  }
+  
+  &--responsive {
+    @include mobile-only {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+}

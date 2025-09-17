@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// Removed UI component imports - using SCSS classes instead
 import { 
   FileText, 
   Download, 
@@ -202,91 +200,90 @@ export default function InvoicesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="facturas-page">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Gestión de Facturas</h1>
-          <p className="text-gray-600">Sistema de facturación mensual por curso</p>
+      <div className="facturas-page__header">
+        <div className="facturas-page__title-group">
+          <h1 className="facturas-page__title">Gestión de Facturas</h1>
+          <p className="facturas-page__subtitle">Sistema de facturación mensual por curso</p>
         </div>
-        <div className="flex gap-2">
-          <Button 
+        <div className="facturas-page__actions">
+          <button 
             onClick={() => router.push('/dashboard/invoices/generate')}
-            className="flex items-center gap-2"
+            className="btn btn--primary btn--md"
           >
             <Plus className="w-4 h-4" />
             Generar Facturas
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Facturas</p>
-                <p className="text-2xl font-bold">{summaryStats.totalInvoices}</p>
-              </div>
-              <FileText className="w-8 h-8 text-blue-600" />
+      <div className="facturas-page__summary">
+        <div className="facturas-page__summary-card">
+          <div className="facturas-page__summary-card-content">
+            <div className="facturas-page__summary-card-info">
+              <p className="facturas-page__summary-card-label">Total Facturas</p>
+              <p className="facturas-page__summary-card-value">{summaryStats.totalInvoices}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="facturas-page__summary-card-icon facturas-page__summary-card-icon--blue">
+              <FileText />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Monto Total</p>
-                <p className="text-2xl font-bold">${summaryStats.totalAmount.toLocaleString()}</p>
-              </div>
-              <DollarSign className="w-8 h-8 text-green-600" />
+        <div className="facturas-page__summary-card">
+          <div className="facturas-page__summary-card-content">
+            <div className="facturas-page__summary-card-info">
+              <p className="facturas-page__summary-card-label">Monto Total</p>
+              <p className="facturas-page__summary-card-value">${summaryStats.totalAmount.toLocaleString()}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="facturas-page__summary-card-icon facturas-page__summary-card-icon--green">
+              <DollarSign />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Estudiantes</p>
-                <p className="text-2xl font-bold">{summaryStats.totalStudents}</p>
-              </div>
-              <Users className="w-8 h-8 text-purple-600" />
+        <div className="facturas-page__summary-card">
+          <div className="facturas-page__summary-card-content">
+            <div className="facturas-page__summary-card-info">
+              <p className="facturas-page__summary-card-label">Estudiantes</p>
+              <p className="facturas-page__summary-card-value">{summaryStats.totalStudents}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="facturas-page__summary-card-icon facturas-page__summary-card-icon--purple">
+              <Users />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Recaudado</p>
-                <p className="text-2xl font-bold">${summaryStats.totalContributions.toLocaleString()}</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-orange-600" />
+        <div className="facturas-page__summary-card">
+          <div className="facturas-page__summary-card-content">
+            <div className="facturas-page__summary-card-info">
+              <p className="facturas-page__summary-card-label">Recaudado</p>
+              <p className="facturas-page__summary-card-value">${summaryStats.totalContributions.toLocaleString()}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="facturas-page__summary-card-icon facturas-page__summary-card-icon--orange">
+              <TrendingUp />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
+      <div className="facturas-page__filters">
+        <div className="facturas-page__filters-header">
+          <h3>
+            <Filter />
             Filtros
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Mes</label>
+          </h3>
+        </div>
+        <div className="facturas-page__filters-content">
+          <div className="facturas-page__filters-grid">
+            <div className="facturas-page__filters-group">
+              <label>Mes</label>
               <select
                 value={filters.month}
                 onChange={(e) => handleFilterChange('month', e.target.value)}
-                className="w-full p-2 border rounded-md"
               >
                 <option value="">Todos los meses</option>
                 {MONTHS.map((month, index) => (
@@ -297,12 +294,11 @@ export default function InvoicesPage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Año</label>
+            <div className="facturas-page__filters-group">
+              <label>Año</label>
               <select
                 value={filters.year}
                 onChange={(e) => handleFilterChange('year', e.target.value)}
-                className="w-full p-2 border rounded-md"
               >
                 <option value="">Todos los años</option>
                 {[2024, 2025, 2026].map(year => (
@@ -313,12 +309,11 @@ export default function InvoicesPage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Estado</label>
+            <div className="facturas-page__filters-group">
+              <label>Estado</label>
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full p-2 border rounded-md"
               >
                 <option value="">Todos los estados</option>
                 <option value="PENDING">Pendiente</option>
@@ -328,39 +323,31 @@ export default function InvoicesPage() {
               </select>
             </div>
 
-            <div className="flex items-end">
-              <Button 
-                onClick={clearFilters}
-                variant="outline"
-                className="w-full"
-              >
-                Limpiar Filtros
-              </Button>
-            </div>
-
-            <div className="flex items-end gap-2">
-              <Button 
-                onClick={() => handleExportCSV(false)}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1"
-              >
-                <Download className="w-4 h-4" />
-                CSV Resumen
-              </Button>
-              <Button 
-                onClick={() => handleExportCSV(true)}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1"
-              >
-                <Download className="w-4 h-4" />
-                CSV Detallado
-              </Button>
-            </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="facturas-page__filters-actions">
+            <button 
+              onClick={clearFilters}
+              className="btn btn--secondary btn--md"
+            >
+              Limpiar Filtros
+            </button>
+            <button 
+              onClick={() => handleExportCSV(false)}
+              className="btn btn--outline btn--sm"
+            >
+              <Download />
+              CSV Resumen
+            </button>
+            <button 
+              onClick={() => handleExportCSV(true)}
+              className="btn btn--outline btn--sm"
+            >
+              <Download />
+              CSV Detallado
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Invoices List */}
       <Card>
