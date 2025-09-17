@@ -106,6 +106,18 @@ export default function DashboardPage() {
 
               <Card className="dashboard-card">
                 <CardContent>
+                  <h3>Gestión de Facturas</h3>
+                  <p>Facturación mensual por curso y seguimiento de pagos</p>
+                  <Link href="/dashboard/invoices">
+                    <Button variant="outline" size="sm">
+                      Ver Facturas
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="dashboard-card">
+                <CardContent>
                   <h3>Usuarios del Sistema</h3>
                   <p>Gestionar usuarios y permisos</p>
                   <Button variant="outline" size="sm">
@@ -185,11 +197,11 @@ export default function DashboardPage() {
               <div className="system-info">
                 <div>
                   <span><strong>Fase Actual:</strong></span>
-                  <p>FASE 5 - Aportes Mensuales</p>
+                  <p>FASE 6 - Facturación Mensual ✅</p>
                 </div>
                 <div>
                   <span><strong>Próxima Fase:</strong></span>
-                  <p>FASE 6 - Reportes y Estadísticas</p>
+                  <p>FASE 7 - Reportes y Estadísticas</p>
                 </div>
                 <div className="status-indicator">
                   <div className="status-dot"></div>
@@ -212,8 +224,9 @@ export default function DashboardPage() {
             <h3 id="dev-notice-heading">🚧 En Desarrollo</h3>
             <p>
               Este sistema está en desarrollo activo. Las funcionalidades se irán habilitando 
-              progresivamente según el plan de fases establecido. Actualmente se encuentra 
-              completada la FASE 1 (Autenticación y Usuarios).
+              progresivamente según el plan de fases establecido. Actualmente se encuentran 
+              completadas las FASES 1-6: Autenticación, Estudiantes, Cursos, Matrículas, 
+              Aportes y Facturación Mensual.
             </p>
           </div>
         </section>
