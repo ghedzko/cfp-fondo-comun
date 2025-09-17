@@ -10,14 +10,11 @@ const updateInvoiceSchema = z.object({
   notes: z.string().optional(),
 });
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET /api/invoices/[id] - Get invoice by ID
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify authentication and admin role
     const authResult = await verifyAuth(request);
@@ -28,6 +25,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const params = await context.params;
     const { id } = params;
 
     const invoice = await db.courseInvoice.findUnique({
@@ -119,7 +117,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/invoices/[id] - Update invoice
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify authentication and admin role
     const authResult = await verifyAuth(request);
@@ -130,6 +131,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const params = await context.params;
     const { id } = params;
     const body = await request.json();
     
@@ -181,7 +183,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/invoices/[id] - Delete invoice
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify authentication and admin role
     const authResult = await verifyAuth(request);
@@ -192,6 +197,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const params = await context.params;
     const { id } = params;
 
     // Check if invoice exists

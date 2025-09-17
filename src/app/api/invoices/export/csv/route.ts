@@ -10,7 +10,7 @@ const csvExportSchema = z.object({
   month: z.string().transform((val) => parseInt(val)).optional(),
   year: z.string().transform((val) => parseInt(val)).optional(),
   status: z.enum(['PENDING', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
-  includeStudentDetails: z.string().transform((val) => val === 'true').default('false'),
+  includeStudentDetails: z.string().transform((val) => val === 'true').default(() => false),
 });
 
 // Helper function to convert array to CSV

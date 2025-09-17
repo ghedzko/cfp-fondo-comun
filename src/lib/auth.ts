@@ -145,7 +145,7 @@ export async function verifyAuth(request: Request): Promise<{
   error?: string;
 }> {
   try {
-    const user = await getTokenPayload(request);
+    const user = await verifyToken(request);
     
     if (!user) {
       return {

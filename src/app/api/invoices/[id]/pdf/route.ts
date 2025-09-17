@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyAuth } from '@/lib/auth';
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET /api/invoices/[id]/pdf - Generate PDF for invoice
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest, 
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     // Verify authentication and admin role
     const authResult = await verifyAuth(request);
@@ -20,6 +17,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const params = await context.params;
     const { id } = params;
 
     // Get invoice with all related data

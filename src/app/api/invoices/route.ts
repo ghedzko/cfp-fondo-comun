@@ -19,8 +19,8 @@ const querySchema = z.object({
   month: z.string().transform((val) => parseInt(val)).optional(),
   year: z.string().transform((val) => parseInt(val)).optional(),
   status: z.enum(['PENDING', 'PAID', 'OVERDUE', 'CANCELLED']).optional(),
-  page: z.string().transform((val) => parseInt(val)).default('1'),
-  limit: z.string().transform((val) => parseInt(val)).default('10'),
+  page: z.string().transform((val) => parseInt(val)).default(() => 1),
+  limit: z.string().transform((val) => parseInt(val)).default(() => 10),
 });
 
 // GET /api/invoices - List invoices with filters
