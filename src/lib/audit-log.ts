@@ -1,28 +1,8 @@
 import { db } from './db';
-
-export enum AuditAction {
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  LOGIN = 'LOGIN',
-  LOGOUT = 'LOGOUT',
-  VIEW = 'VIEW',
-  EXPORT = 'EXPORT'
-}
-
-export enum AuditEntity {
-  USER = 'USER',
-  STUDENT = 'STUDENT',
-  COURSE = 'COURSE',
-  COURSE_PERIOD = 'COURSE_PERIOD',
-  ENROLLMENT = 'ENROLLMENT',
-  CONTRIBUTION = 'CONTRIBUTION',
-  COURSE_INVOICE = 'COURSE_INVOICE',
-  REPORT = 'REPORT'
-}
+import { AuditAction, AuditEntity } from '@prisma/client';
 
 interface AuditLogData {
-  userId: number;
+  userId: string; // Changed to string to match Prisma User.id type
   action: AuditAction;
   entity: AuditEntity;
   entityId?: number | string;
@@ -42,39 +22,50 @@ export async function createAuditLog({
   userAgent
 }: AuditLogData) {
   try {
-    // First, let's add the AuditLog model to Prisma schema if it doesn't exist
-    // For now, we'll store in a simple format that can be added to the schema later
-    
     const auditEntry = {
       userId,
       action,
       entity,
       entityId: entityId?.toString(),
-      details: details ? JSON.stringify(details) : null,
+      details: details || null,
       ipAddress,
-      userAgent,
-      timestamp: new Date()
+      userAgent
     };
 
-    // Log to console for now (in production, this would go to database)
-    console.log('AUDIT LOG:', auditEntry);
+    // Persist audit log entry to database for accountability and compliance
+    const savedEntry = await db.auditLog.create({
+      data: auditEntry
+    });
 
-    // TODO: Implement database storage when AuditLog model is added to schema
-    // await db.auditLog.create({
-    //   data: auditEntry
-    // });
+    // Also log to console for development debugging
+    console.log('AUDIT LOG SAVED:', {
+      id: savedEntry.id,
+      userId: savedEntry.userId,
+      action: savedEntry.action,
+      entity: savedEntry.entity,
+      entityId: savedEntry.entityId,
+      timestamp: savedEntry.timestamp
+    });
 
-    return auditEntry;
+    return savedEntry;
   } catch (error) {
     console.error('Failed to create audit log:', error);
     // Don't throw error to avoid breaking main functionality
+    // But log the failure for monitoring
+    console.error('AUDIT LOG FAILURE - This is a security concern:', {
+      userId,
+      action,
+      entity,
+      entityId,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
 
 // Helper functions for common audit scenarios
 export const auditHelpers = {
   // Authentication events
-  async logLogin(userId: number, ipAddress?: string, userAgent?: string) {
+  async logLogin(userId: string, ipAddress?: string, userAgent?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.LOGIN,
@@ -85,7 +76,7 @@ export const auditHelpers = {
     });
   },
 
-  async logLogout(userId: number, ipAddress?: string, userAgent?: string) {
+  async logLogout(userId: string, ipAddress?: string, userAgent?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.LOGOUT,
@@ -97,7 +88,7 @@ export const auditHelpers = {
   },
 
   // Student management
-  async logStudentCreated(userId: number, studentId: number, studentData: any, ipAddress?: string) {
+  async logStudentCreated(userId: string, studentId: string, studentData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -112,7 +103,7 @@ export const auditHelpers = {
     });
   },
 
-  async logStudentUpdated(userId: number, studentId: number, changes: any, ipAddress?: string) {
+  async logStudentUpdated(userId: string, studentId: string, changes: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.UPDATE,
@@ -124,7 +115,7 @@ export const auditHelpers = {
   },
 
   // Course management
-  async logCourseCreated(userId: number, courseId: number, courseData: any, ipAddress?: string) {
+  async logCourseCreated(userId: string, courseId: string, courseData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -138,7 +129,7 @@ export const auditHelpers = {
     });
   },
 
-  async logCoursePeriodCreated(userId: number, periodId: number, periodData: any, ipAddress?: string) {
+  async logCoursePeriodCreated(userId: string, periodId: string, periodData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -155,7 +146,7 @@ export const auditHelpers = {
   },
 
   // Contribution management
-  async logContributionCreated(userId: number, contributionId: number, contributionData: any, ipAddress?: string) {
+  async logContributionCreated(userId: string, contributionId: string, contributionData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -172,7 +163,7 @@ export const auditHelpers = {
     });
   },
 
-  async logContributionUpdated(userId: number, contributionId: number, changes: any, ipAddress?: string) {
+  async logContributionUpdated(userId: string, contributionId: string, changes: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.UPDATE,
@@ -183,7 +174,7 @@ export const auditHelpers = {
     });
   },
 
-  async logContributionDeleted(userId: number, contributionId: number, contributionData: any, ipAddress?: string) {
+  async logContributionDeleted(userId: string, contributionId: string, contributionData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.DELETE,
@@ -197,7 +188,7 @@ export const auditHelpers = {
   },
 
   // Enrollment management
-  async logEnrollmentCreated(userId: number, enrollmentId: number, enrollmentData: any, ipAddress?: string) {
+  async logEnrollmentCreated(userId: string, enrollmentId: string, enrollmentData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -213,7 +204,7 @@ export const auditHelpers = {
   },
 
   // Invoice management
-  async logInvoiceGenerated(userId: number, invoiceId: number, invoiceData: any, ipAddress?: string) {
+  async logInvoiceGenerated(userId: string, invoiceId: string, invoiceData: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.CREATE,
@@ -229,7 +220,7 @@ export const auditHelpers = {
     });
   },
 
-  async logInvoiceStatusChanged(userId: number, invoiceId: number, oldStatus: string, newStatus: string, ipAddress?: string) {
+  async logInvoiceStatusChanged(userId: string, invoiceId: string, oldStatus: string, newStatus: string, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.UPDATE,
@@ -246,7 +237,7 @@ export const auditHelpers = {
   },
 
   // Report access
-  async logReportAccessed(userId: number, reportType: string, filters: any, ipAddress?: string) {
+  async logReportAccessed(userId: string, reportType: string, filters: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.VIEW,
@@ -260,7 +251,7 @@ export const auditHelpers = {
     });
   },
 
-  async logReportExported(userId: number, reportType: string, format: string, filters: any, ipAddress?: string) {
+  async logReportExported(userId: string, reportType: string, format: string, filters: any, ipAddress?: string) {
     return createAuditLog({
       userId,
       action: AuditAction.EXPORT,

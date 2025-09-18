@@ -25,8 +25,9 @@ import Link from 'next/link';
 
 interface AuditLogEntry {
   id: string;
-  userId: number;
+  userId: string;
   userName: string;
+  userEmail: string;
   userRole: string;
   action: string;
   entity: string;
@@ -35,6 +36,18 @@ interface AuditLogEntry {
   ipAddress?: string;
   userAgent?: string;
   timestamp: string;
+}
+
+interface AuditLogsResponse {
+  logs: AuditLogEntry[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 
 export default function AuditPage() {
@@ -50,83 +63,48 @@ export default function AuditPage() {
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Mock data for demonstration (in real app, this would come from API)
-  const mockLogs: AuditLogEntry[] = [
-    {
-      id: '1',
-      userId: 1,
-      userName: 'Admin CFP',
-      userRole: 'ADMIN',
-      action: 'CREATE',
-      entity: 'CONTRIBUTION',
-      entityId: '123',
-      details: { studentId: 1, amount: 5000, month: 9, year: 2025 },
-      ipAddress: '192.168.1.100',
-      userAgent: 'Mozilla/5.0...',
-      timestamp: new Date().toISOString()
-    },
-    {
-      id: '2',
-      userId: 2,
-      userName: 'Preceptor María',
-      userRole: 'PRECEPTOR',
-      action: 'UPDATE',
-      entity: 'STUDENT',
-      entityId: '45',
-      details: { changes: { phone: '2944123456' } },
-      ipAddress: '192.168.1.101',
-      userAgent: 'Mozilla/5.0...',
-      timestamp: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-      id: '3',
-      userId: 1,
-      userName: 'Admin CFP',
-      userRole: 'ADMIN',
-      action: 'EXPORT',
-      entity: 'REPORT',
-      entityId: 'monthly-csv',
-      details: { reportType: 'monthly', format: 'CSV', filters: { month: 9, year: 2025 } },
-      ipAddress: '192.168.1.100',
-      userAgent: 'Mozilla/5.0...',
-      timestamp: new Date(Date.now() - 7200000).toISOString()
-    },
-    {
-      id: '4',
-      userId: 2,
-      userName: 'Preceptor María',
-      userRole: 'PRECEPTOR',
-      action: 'LOGIN',
-      entity: 'USER',
-      entityId: '2',
-      details: null,
-      ipAddress: '192.168.1.101',
-      userAgent: 'Mozilla/5.0...',
-      timestamp: new Date(Date.now() - 10800000).toISOString()
-    },
-    {
-      id: '5',
-      userId: 1,
-      userName: 'Admin CFP',
-      userRole: 'ADMIN',
-      action: 'CREATE',
-      entity: 'COURSE_INVOICE',
-      entityId: '78',
-      details: { coursePeriodId: 1, month: 9, year: 2025, totalAmount: 50000 },
-      ipAddress: '192.168.1.100',
-      userAgent: 'Mozilla/5.0...',
-      timestamp: new Date(Date.now() - 14400000).toISOString()
-    }
-  ];
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 50,
+    totalCount: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false
+  });
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setLogs(mockLogs);
+    fetchLogs();
+  }, [filterUser, filterAction, filterEntity, filterDateFrom, filterDateTo, searchTerm, pagination.page]);
+
+  const fetchLogs = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      
+      if (filterUser) params.append('userId', filterUser);
+      if (filterAction) params.append('action', filterAction);
+      if (filterEntity) params.append('entity', filterEntity);
+      if (filterDateFrom) params.append('dateFrom', filterDateFrom);
+      if (filterDateTo) params.append('dateTo', filterDateTo);
+      if (searchTerm) params.append('search', searchTerm);
+
+      const response = await fetch(`/api/audit/logs?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch audit logs');
+      }
+      
+      const data: AuditLogsResponse = await response.json();
+      setLogs(data.logs);
+      setPagination(data.pagination);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error loading audit logs');
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
 
   // Only admins can access audit logs
   if (!isAdmin) {
@@ -269,15 +247,11 @@ export default function AuditPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
 
-              <AccessibleSelect
-                label="Usuario"
+              <AccessibleInput
+                label="Usuario ID"
+                placeholder="ID del usuario..."
                 value={filterUser}
                 onChange={(e) => setFilterUser(e.target.value)}
-                options={[
-                  { value: '', label: 'Todos los usuarios' },
-                  { value: 'Admin CFP', label: 'Admin CFP' },
-                  { value: 'Preceptor María', label: 'Preceptor María' }
-                ]}
               />
 
               <AccessibleSelect
@@ -328,22 +302,41 @@ export default function AuditPage() {
 
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Mostrando {filteredLogs.length} de {logs.length} registros
+                Mostrando {logs.length} de {pagination.totalCount} registros (Página {pagination.page} de {pagination.totalPages})
               </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setFilterUser('');
-                  setFilterAction('');
-                  setFilterEntity('');
-                  setFilterDateFrom('');
-                  setFilterDateTo('');
-                  setSearchTerm('');
-                }}
-              >
-                Limpiar Filtros
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                  disabled={!pagination.hasPrev}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                  disabled={!pagination.hasNext}
+                >
+                  Siguiente
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFilterUser('');
+                    setFilterAction('');
+                    setFilterEntity('');
+                    setFilterDateFrom('');
+                    setFilterDateTo('');
+                    setSearchTerm('');
+                    setPagination(prev => ({ ...prev, page: 1 }));
+                  }}
+                >
+                  Limpiar Filtros
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -360,9 +353,9 @@ export default function AuditPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {filteredLogs.length > 0 ? (
+            {logs.length > 0 ? (
               <div className="space-y-3">
-                {filteredLogs.map((log) => (
+                {logs.map((log) => (
                   <div
                     key={log.id}
                     className="flex items-start justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"

@@ -28,6 +28,7 @@ model User {
 
   // Relations
   refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
 
   @@map("users")
 }
@@ -194,4 +195,48 @@ enum InvoiceStatus {
   PAID
   OVERDUE
   CANCELLED
+}
+
+// FASE 7: Audit Log - Security and Compliance
+model AuditLog {
+  id        String      @id @default(cuid())
+  userId    String
+  action    AuditAction
+  entity    AuditEntity
+  entityId  String?     // ID of the affected entity
+  details   Json?       // Additional details about the action
+  ipAddress String?     // IP address of the user
+  userAgent String?     // User agent string
+  timestamp DateTime    @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Index for performance on common queries
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  VIEW
+  EXPORT
+}
+
+enum AuditEntity {
+  USER
+  STUDENT
+  COURSE
+  COURSE_PERIOD
+  ENROLLMENT
+  CONTRIBUTION
+  COURSE_INVOICE
+  REPORT
 }
