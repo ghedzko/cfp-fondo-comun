@@ -227,9 +227,11 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Reportes</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">Análisis y exportación de datos</p>
-              <Button disabled className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 opacity-50 text-white border-0">
-                Próximamente
-              </Button>
+              <Link href="/dashboard/reports">
+                <Button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white border-0">
+                  Ver Reportes
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
