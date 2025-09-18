@@ -317,7 +317,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Important Notice */}
-        <Card className="border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-l-4 border-l-amber-400 mt-4">
+        <Card className="mt-20 mb-12 border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-l-4 border-l-amber-400">
           <CardContent className="p-8">
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
