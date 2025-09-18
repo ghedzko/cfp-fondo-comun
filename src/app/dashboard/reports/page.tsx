@@ -232,31 +232,37 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.trends.monthly.slice(-6).map((trend, index) => (
-                  <div key={`${trend.year}-${trend.month}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                        <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                {(() => {
+                  // Fix: Use the sliced array for correct trend comparison
+                  const monthlyTrends = stats.trends.monthly.slice(-6);
+                  return monthlyTrends.map((trend, index) => (
+                    <div key={`${trend.year}-${trend.month}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{trend.label}</p>
+                          <p className="text-sm text-gray-500">{trend.count} aportes</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{trend.label}</p>
-                        <p className="text-sm text-gray-500">{trend.count} aportes</p>
+                      <div className="text-right">
+                        <p className="font-bold text-gray-900 dark:text-white">{formatCurrency(trend.amount)}</p>
+                        <div className="flex items-center text-sm">
+                          {index > 0 && monthlyTrends[index - 1] && (
+                            trend.amount > monthlyTrends[index - 1].amount ? (
+                              <ArrowUp className="w-3 h-3 text-green-500 mr-1" />
+                            ) : trend.amount < monthlyTrends[index - 1].amount ? (
+                              <ArrowDown className="w-3 h-3 text-red-500 mr-1" />
+                            ) : (
+                              <span className="w-3 h-3 text-gray-400 mr-1">−</span>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900 dark:text-white">{formatCurrency(trend.amount)}</p>
-                      <div className="flex items-center text-sm">
-                        {index > 0 && stats.trends.monthly[index - 1] && (
-                          trend.amount > stats.trends.monthly[index - 1].amount ? (
-                            <ArrowUp className="w-3 h-3 text-green-500 mr-1" />
-                          ) : (
-                            <ArrowDown className="w-3 h-3 text-red-500 mr-1" />
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ));
+                })()}
               </div>
             </CardContent>
           </Card>
