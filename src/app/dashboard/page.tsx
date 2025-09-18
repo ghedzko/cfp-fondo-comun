@@ -20,6 +20,7 @@ import {
   BarChart3,
   GraduationCap
 } from 'lucide-react';
+import { formatNumber } from '@/lib/format';
 
 export default function DashboardPage() {
   const { user, logout, isAdmin, isPreceptor } = useAuth();
@@ -111,7 +112,7 @@ export default function DashboardPage() {
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">3</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{formatNumber(3)}</div>
                   <div className="text-sm text-gray-500">Estudiantes</div>
                 </div>
               </div>
@@ -133,7 +134,7 @@ export default function DashboardPage() {
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatNumber(2)}</div>
                   <div className="text-sm text-gray-500">Cursos</div>
                 </div>
               </div>
@@ -177,7 +178,7 @@ export default function DashboardPage() {
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">5</div>
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{formatNumber(5)}</div>
                   <div className="text-sm text-gray-500">Matrículas</div>
                 </div>
               </div>
@@ -227,11 +228,37 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Reportes</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">Análisis y exportación de datos</p>
-              <Button disabled className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 opacity-50 text-white border-0">
-                Próximamente
-              </Button>
+              <Link href="/dashboard/reports">
+                <Button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white border-0">
+                  Ver Reportes
+                </Button>
+              </Link>
             </CardContent>
           </Card>
+
+          {/* Auditoría - Solo para Admins */}
+          {isAdmin && (
+            <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-gray-500 to-slate-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Settings className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">🔒</div>
+                    <div className="text-sm text-gray-500">Auditoría</div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Logs de Auditoría</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">Historial de actividades del sistema</p>
+                <Link href="/dashboard/audit">
+                  <Button className="w-full bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600 text-white border-0">
+                    Ver Logs
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* System Status */}
@@ -294,22 +321,22 @@ export default function DashboardPage() {
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Fase Actual</span>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm font-medium text-green-600 dark:text-green-400">FASE 6 Completada</span>
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">FASE 7 En Progreso</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Próxima Fase</span>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Completadas</span>
                   <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-orange-500" />
-                    <span className="text-sm font-medium text-orange-600 dark:text-orange-400">FASE 7 - Reportes</span>
+                    <CheckCircle className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Reportes + Accesibilidad</span>
                   </div>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style={{width: '85%'}}></div>
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style={{width: '95%'}}></div>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>85% Completado</span>
-                  <span>6/7 Fases</span>
+                  <span>95% Completado</span>
+                  <span>FASE 7/7 - MVP Casi Listo</span>
                 </div>
               </div>
             </CardContent>
