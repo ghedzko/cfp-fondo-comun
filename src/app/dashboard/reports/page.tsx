@@ -18,6 +18,7 @@ import {
   ArrowDown
 } from 'lucide-react';
 import Link from 'next/link';
+import { formatCurrency, formatNumber, formatDate } from '@/lib/format';
 
 interface Stats {
   overview: {
@@ -83,20 +84,6 @@ export default function ReportsPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS'
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
 
   if (loading) {
     return (
@@ -172,7 +159,7 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Estudiantes</p>
-                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{stats.overview.totalStudents}</p>
+                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatNumber(stats.overview.totalStudents)}</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                   <Users className="w-6 h-6 text-white" />
@@ -219,7 +206,7 @@ export default function ReportsPage() {
                 <div>
                   <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Cursos Activos</p>
                   <p className="text-3xl font-bold text-orange-700 dark:text-orange-300">
-                    {stats.overview.activeCoursePeriods}
+                    {formatNumber(stats.overview.activeCoursePeriods)}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">

@@ -20,6 +20,7 @@ import {
   BarChart3,
   GraduationCap
 } from 'lucide-react';
+import { formatNumber } from '@/lib/format';
 
 export default function DashboardPage() {
   const { user, logout, isAdmin, isPreceptor } = useAuth();
@@ -111,7 +112,7 @@ export default function DashboardPage() {
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">3</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{formatNumber(3)}</div>
                   <div className="text-sm text-gray-500">Estudiantes</div>
                 </div>
               </div>
@@ -133,7 +134,7 @@ export default function DashboardPage() {
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{formatNumber(2)}</div>
                   <div className="text-sm text-gray-500">Cursos</div>
                 </div>
               </div>
@@ -177,7 +178,7 @@ export default function DashboardPage() {
                   <UserCheck className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">5</div>
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{formatNumber(5)}</div>
                   <div className="text-sm text-gray-500">Matrículas</div>
                 </div>
               </div>

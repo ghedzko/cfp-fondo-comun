@@ -16,6 +16,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
+import { formatCurrency, formatNumber, formatDate } from '@/lib/format';
 
 interface MonthlyReport {
   filters: {
@@ -115,20 +116,6 @@ export default function MonthlyReportsPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS'
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
 
   const exportToPDF = async () => {
     // TODO: Implement PDF export
@@ -328,7 +315,7 @@ export default function MonthlyReportsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Cursos</p>
-                  <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{report.summary.totalCourses}</p>
+                  <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{formatNumber(report.summary.totalCourses)}</p>
                 </div>
                 <BookOpen className="w-8 h-8 text-blue-500" />
               </div>
@@ -340,7 +327,7 @@ export default function MonthlyReportsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-green-600 dark:text-green-400">Aportes</p>
-                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{report.summary.totalContributions}</p>
+                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{formatNumber(report.summary.totalContributions)}</p>
                 </div>
                 <Users className="w-8 h-8 text-green-500" />
               </div>
