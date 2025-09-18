@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserRole } from '@/providers/auth-provider';
+import { usePreloadOnHover } from '@/components/lazy-components';
 import { 
   Users, 
   BookOpen, 
@@ -24,6 +25,14 @@ import { formatNumber } from '@/lib/format';
 
 export default function DashboardPage() {
   const { user, logout, isAdmin, isPreceptor } = useAuth();
+  
+  // Preload hooks for better UX
+  const studentsPreload = usePreloadOnHover('students');
+  const coursesPreload = usePreloadOnHover('courses');
+  const contributionsPreload = usePreloadOnHover('contributions');
+  const invoicesPreload = usePreloadOnHover('invoices');
+  const reportsPreload = usePreloadOnHover('reports');
+  const auditPreload = usePreloadOnHover('audit');
 
   const handleLogout = async () => {
     await logout();
@@ -105,7 +114,7 @@ export default function DashboardPage() {
         {/* Main Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
           {/* Estudiantes */}
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20" {...studentsPreload}>
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -127,7 +136,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Cursos */}
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20" {...coursesPreload}>
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
