@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { AccessibleTextarea } from '@/components/accessible-form';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ArrowLeft, Plus, Trash2, Users, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -472,9 +472,8 @@ export default function MatricularPage() {
 
               {/* Notes */}
               <div>
-                <Label htmlFor="notes">Observaciones</Label>
-                <Textarea
-                  id="notes"
+                <AccessibleTextarea
+                  label="Observaciones"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Observaciones adicionales sobre la matriculación..."
