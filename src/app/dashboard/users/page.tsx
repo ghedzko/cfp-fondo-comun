@@ -18,7 +18,10 @@ import {
   UserCheck,
   UserX,
   Crown,
-  GraduationCap
+  GraduationCap,
+  X,
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
 import { UserRole } from '@prisma/client';
 
@@ -56,6 +59,23 @@ export default function UsersManagementPage() {
   const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<UsersResponse['pagination'] | null>(null);
+  
+  // Create User Modal State
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createSuccess, setCreateSuccess] = useState<string | null>(null);
+  const [newUser, setNewUser] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  }>({
+    name: '',
+    email: '',
+    password: '',
+    role: UserRole.PRECEPTOR
+  });
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -130,6 +150,69 @@ export default function UsersManagementPage() {
     });
   };
 
+  const handleCreateUser = async (e: FormEvent) => {
+    e.preventDefault();
+    setCreateLoading(true);
+    setCreateError(null);
+    setCreateSuccess(null);
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(newUser),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCreateSuccess('Usuario creado exitosamente');
+        setNewUser({
+          name: '',
+          email: '',
+          password: '',
+          role: UserRole.PRECEPTOR
+        });
+        
+        // Refresh users list
+        await fetchUsers();
+        
+        // Close modal after a delay
+        setTimeout(() => {
+          setShowCreateModal(false);
+          setCreateSuccess(null);
+        }, 2000);
+      } else {
+        setCreateError(data.error || 'Error al crear usuario');
+      }
+    } catch (err) {
+      setCreateError('Error de conexión');
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+    setCreateError(null);
+    setCreateSuccess(null);
+    setNewUser({
+      name: '',
+      email: '',
+      password: '',
+      role: UserRole.PRECEPTOR
+    });
+  };
+
+  const closeCreateModal = () => {
+    setShowCreateModal(false);
+    setCreateError(null);
+    setCreateSuccess(null);
+  };
+
   const getRoleIcon = (role: UserRole) => {
     switch (role) {
       case UserRole.ADMIN:
@@ -191,9 +274,7 @@ export default function UsersManagementPage() {
             </div>
             
             <Button
-              onClick={() => {
-                /* TODO: open create user modal */
-              }}
+              onClick={openCreateModal}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -451,7 +532,125 @@ export default function UsersManagementPage() {
           </CardContent>
         </Card>
 
-        {/* TODO: Add Create User Modal */}
+        {/* Create User Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Crear Nuevo Usuario
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeCreateModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <form onSubmit={handleCreateUser} className="p-6">
+                <div className="space-y-4">
+                  {/* Success Message */}
+                  {createSuccess && (
+                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-green-700 dark:text-green-300 text-sm">
+                        {createSuccess}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Error Message */}
+                  {createError && (
+                    <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                      <span className="text-red-700 dark:text-red-300 text-sm">
+                        {createError}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Name Field */}
+                  <div>
+                    <AccessibleInput
+                      label="Nombre completo"
+                      type="text"
+                      value={newUser.name}
+                      onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                      placeholder="Juan Pérez"
+                      required
+                      disabled={createLoading}
+                    />
+                  </div>
+
+                  {/* Email Field */}
+                  <div>
+                    <AccessibleInput
+                      label="Email"
+                      type="email"
+                      value={newUser.email}
+                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                      placeholder="juan@ejemplo.com"
+                      required
+                      disabled={createLoading}
+                    />
+                  </div>
+
+                  {/* Password Field */}
+                  <div>
+                    <AccessibleInput
+                      label="Contraseña"
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      placeholder="Mínimo 6 caracteres"
+                      required
+                      disabled={createLoading}
+                      minLength={6}
+                    />
+                  </div>
+
+                  {/* Role Field */}
+                  <div>
+                    <AccessibleSelect
+                      label="Rol del usuario"
+                      value={newUser.role}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value as UserRole })}
+                      options={[
+                        { value: UserRole.PRECEPTOR, label: 'Preceptor' },
+                        { value: UserRole.ADMIN, label: 'Administrador' }
+                      ]}
+                      disabled={createLoading}
+                    />
+                  </div>
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    type="submit"
+                    disabled={createLoading || !newUser.name || !newUser.email || !newUser.password}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {createLoading ? 'Creando...' : 'Crear Usuario'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeCreateModal}
+                    disabled={createLoading}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* TODO: Add Edit User Modal */}
         {/* TODO: Add Delete Confirmation Modal */}
       </div>

@@ -209,10 +209,12 @@ export default function DashboardPage() {
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Matrículas</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">Inscripción de estudiantes a cursos</p>
-              <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0">
-                Gestionar Matrículas
-              </Button>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">Inscripción de estudiantes a cursos por período</p>
+              <Link href="/dashboard/cursos">
+                <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0">
+                  Gestionar Matrículas
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
