@@ -306,6 +306,21 @@ export const auditHelpers = {
     });
   },
 
+  async logUserPasswordChangeFailed(userId: string, ipAddress?: string, userAgent?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.UPDATE,
+      entity: AuditEntity.USER,
+      entityId: userId,
+      details: {
+        action: 'password_change_failed',
+        reason: 'invalid_current_password'
+      },
+      ipAddress,
+      userAgent
+    });
+  },
+
   async logUserPasswordChanged(userId: string, ipAddress?: string) {
     return createAuditLog({
       userId,

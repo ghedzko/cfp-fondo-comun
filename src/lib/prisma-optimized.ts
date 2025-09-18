@@ -37,6 +37,14 @@ class QueryCache {
   delete(key: string) {
     this.cache.delete(key);
   }
+
+  deleteByPrefix(prefix: string) {
+    for (const key of this.cache.keys()) {
+      if (key.startsWith(prefix)) {
+        this.cache.delete(key);
+      }
+    }
+  }
 }
 
 export const queryCache = new QueryCache();
@@ -368,20 +376,20 @@ function getMonthName(month: number): string {
 // Cache invalidation utilities
 export const cacheInvalidation = {
   invalidateStudents() {
-    queryCache.delete('students-stats');
+    queryCache.deleteByPrefix('students-stats-');
     queryCache.delete('dashboard-stats');
   },
   
   invalidateCourses() {
-    queryCache.delete('courses-periods');
-    queryCache.delete('top-courses');
+    queryCache.deleteByPrefix('courses-periods-');
+    queryCache.deleteByPrefix('top-courses-');
     queryCache.delete('dashboard-stats');
   },
   
   invalidateContributions() {
-    queryCache.delete('contributions-details');
-    queryCache.delete('monthly-trends');
-    queryCache.delete('top-courses');
+    queryCache.deleteByPrefix('contributions-details-');
+    queryCache.deleteByPrefix('monthly-trends-');
+    queryCache.deleteByPrefix('top-courses-');
     queryCache.delete('dashboard-stats');
   },
   

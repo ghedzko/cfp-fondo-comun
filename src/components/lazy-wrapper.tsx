@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, lazy, ComponentType } from 'react';
+import React, { Suspense, lazy, ComponentType } from 'react';
 import { LoadingSpinner, CardSkeleton } from './loading-spinner';
 
 // Types for lazy loading
@@ -65,9 +65,6 @@ export function withLazyLoading<T extends object>(
     return WrappedComponent;
   };
 }
-
-// Error Boundary Component
-import React from 'react';
 
 interface ErrorBoundaryState {
   hasError: boolean;

@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       // Log failed attempt
-      await auditHelpers.logLogin(
+      await auditHelpers.logUserPasswordChangeFailed(
         authResult.user.userId,
         request.headers.get('x-forwarded-for') || 'unknown',
         request.headers.get('user-agent') || 'unknown'
