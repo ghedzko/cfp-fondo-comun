@@ -102,10 +102,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
           {/* Estudiantes */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
-            <CardContent className="p-6">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Users className="w-6 h-6 text-white" />
@@ -127,7 +127,7 @@ export default function DashboardPage() {
 
           {/* Cursos */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20">
-            <CardContent className="p-6">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <BookOpen className="w-6 h-6 text-white" />
@@ -149,7 +149,7 @@ export default function DashboardPage() {
 
           {/* Aportes Voluntarios */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-            <CardContent className="p-6">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <DollarSign className="w-6 h-6 text-white" />
@@ -171,7 +171,7 @@ export default function DashboardPage() {
 
           {/* Matrículas */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20">
-            <CardContent className="p-6">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <UserCheck className="w-6 h-6 text-white" />
@@ -192,7 +192,7 @@ export default function DashboardPage() {
           {/* Facturación */}
           {isAdmin && (
             <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                     <FileText className="w-6 h-6 text-white" />
@@ -215,7 +215,7 @@ export default function DashboardPage() {
 
           {/* Reportes */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20">
-            <CardContent className="p-6">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <BarChart3 className="w-6 h-6 text-white" />
@@ -235,9 +235,9 @@ export default function DashboardPage() {
         </div>
 
         {/* System Status */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-6 px-8 pt-8">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                   <Database className="w-5 h-5 text-white" />
@@ -248,8 +248,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-5">
+            <CardContent className="px-8 pb-8">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Estado</span>
                   <div className="flex items-center space-x-2">
@@ -277,7 +277,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-6 px-8 pt-8">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-white" />
@@ -288,8 +288,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-5">
+            <CardContent className="px-8 pb-8">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Fase Actual</span>
                   <div className="flex items-center space-x-2">
