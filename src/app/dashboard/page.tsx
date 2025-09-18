@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserRole } from '@/providers/auth-provider';
+import { usePreloadOnHover } from '@/components/lazy-components';
 import { 
   Users, 
   BookOpen, 
@@ -18,12 +19,21 @@ import {
   CheckCircle,
   Clock,
   BarChart3,
-  GraduationCap
+  GraduationCap,
+  User
 } from 'lucide-react';
 import { formatNumber } from '@/lib/format';
 
 export default function DashboardPage() {
   const { user, logout, isAdmin, isPreceptor } = useAuth();
+  
+  // Preload hooks for better UX
+  const studentsPreload = usePreloadOnHover('students');
+  const coursesPreload = usePreloadOnHover('courses');
+  const contributionsPreload = usePreloadOnHover('contributions');
+  const invoicesPreload = usePreloadOnHover('invoices');
+  const reportsPreload = usePreloadOnHover('reports');
+  const auditPreload = usePreloadOnHover('audit');
 
   const handleLogout = async () => {
     await logout();
@@ -62,7 +72,23 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              <Button variant="outline" onClick={handleLogout} className="hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors">
+              <span className="text-gray-600 dark:text-gray-300">Bienvenido, {user.name}</span>
+              <Link href="/dashboard/profile">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Mi Perfil
+                </Button>
+              </Link>
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+              >
                 Cerrar Sesión
               </Button>
             </div>
@@ -105,7 +131,7 @@ export default function DashboardPage() {
         {/* Main Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
           {/* Estudiantes */}
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20" {...studentsPreload}>
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -127,7 +153,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Cursos */}
-          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20">
+          <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20" {...coursesPreload}>
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -254,6 +280,30 @@ export default function DashboardPage() {
                 <Link href="/dashboard/audit">
                   <Button className="w-full bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600 text-white border-0">
                     Ver Logs
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Gestión de Usuarios - Solo para Admins */}
+          {isAdmin && (
+            <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <UserCheck className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-violet-600 dark:text-violet-400">👥</div>
+                    <div className="text-sm text-gray-500">Usuarios</div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Gestión de Usuarios</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">Administrar usuarios, roles y permisos</p>
+                <Link href="/dashboard/users">
+                  <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white border-0">
+                    Gestionar Usuarios
                   </Button>
                 </Link>
               </CardContent>

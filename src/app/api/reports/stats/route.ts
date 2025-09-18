@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyAuth } from '@/lib/auth';
+import { optimizedQueries, withPerformanceMonitoring } from '@/lib/prisma-optimized';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,165 +11,91 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get general statistics
-    const [
-      totalStudents,
-      totalCourses,
-      totalEnrollments,
-      totalContributions,
-      totalInvoices,
-      activeCoursePeriods,
-      recentContributions
-    ] = await Promise.all([
-      // Total students
-      db.student.count(),
-      
-      // Total courses
-      db.course.count(),
-      
-      // Total enrollments
-      db.enrollment.count(),
-      
-      // Total contributions with sum
-      db.contribution.aggregate({
-        _sum: { amount: true },
-        _count: true
-      }),
-      
-      // Total invoices
-      db.courseInvoice.count(),
-      
-      // Active course periods (current year)
-      db.coursePeriod.count({
-        where: {
-          year: new Date().getFullYear()
-        }
-      }),
-      
-      // Recent contributions (last 30 days)
-      db.contribution.findMany({
-        where: {
-          paymentDate: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          }
-        },
-        include: {
-          student: true,
-          coursePeriod: {
-            include: {
-              course: true
+    // Get optimized statistics with performance monitoring
+    const getStatsOptimized = withPerformanceMonitoring(
+      'reports-stats-api',
+      async () => {
+        // Use optimized queries for better performance
+        const [dashboardStats, monthlyTrends, topCourses] = await Promise.all([
+          optimizedQueries.getDashboardStats(),
+          optimizedQueries.getMonthlyTrends(6),
+          optimizedQueries.getTopCourses(5)
+        ]);
+
+        // Get recent contributions (last 30 days)
+        const recentContributions = await db.contribution.findMany({
+          where: {
+            paymentDate: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
             }
-          }
-        },
-        orderBy: {
-          paymentDate: 'desc'
-        },
-        take: 10
-      })
-    ]);
-
-    // Calculate contribution rate
-    const contributionRate = totalEnrollments > 0 
-      ? Math.round((totalContributions._count / totalEnrollments) * 100) 
-      : 0;
-
-    // Get monthly contribution trends (last 6 months)
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
-    const monthlyTrends = await db.contribution.groupBy({
-      by: ['month', 'year'],
-      where: {
-        OR: [
-          { year: { gt: sixMonthsAgo.getFullYear() } },
-          {
-            AND: [
-              { year: sixMonthsAgo.getFullYear() },
-              { month: { gte: sixMonthsAgo.getMonth() + 1 } }
-            ]
-          }
-        ]
-      },
-      _sum: {
-        amount: true
-      },
-      _count: true,
-      orderBy: [
-        { year: 'asc' },
-        { month: 'asc' }
-      ]
-    });
-
-    // Get top contributing courses
-    const topCourses = await db.contribution.groupBy({
-      by: ['coursePeriodId'],
-      _sum: {
-        amount: true
-      },
-      _count: true,
-      orderBy: {
-        _sum: {
-          amount: 'desc'
-        }
-      },
-      take: 5
-    });
-
-    // Get course details for top courses
-    const topCoursesWithDetails = await Promise.all(
-      topCourses.map(async (course) => {
-        const coursePeriod = await db.coursePeriod.findUnique({
-          where: { id: course.coursePeriodId },
+          },
           include: {
-            course: true
-          }
+            student: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                dni: true
+              }
+            },
+            coursePeriod: {
+              select: {
+                id: true,
+                name: true,
+                course: {
+                  select: {
+                    id: true,
+                    name: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: {
+            paymentDate: 'desc'
+          },
+          take: 10
         });
+
+        // Get total invoices count
+        const totalInvoices = await db.courseInvoice.count();
+
+        // Calculate contribution rate
+        const contributionRate = dashboardStats.totalEnrollments > 0 
+          ? Math.round((dashboardStats.totalContributions / dashboardStats.totalEnrollments) * 100) 
+          : 0;
+
         return {
-          ...course,
-          coursePeriod
+          overview: {
+            totalStudents: dashboardStats.totalStudents,
+            totalCourses: dashboardStats.totalCourses,
+            totalEnrollments: dashboardStats.totalEnrollments,
+            totalContributions: dashboardStats.totalContributions,
+            totalAmount: dashboardStats.totalAmount,
+            totalInvoices,
+            activeCoursePeriods: dashboardStats.activeCoursePeriods,
+            contributionRate
+          },
+          trends: {
+            monthly: monthlyTrends
+          },
+          topCourses,
+          recentActivity: recentContributions.map(contribution => ({
+            id: contribution.id,
+            studentName: `${contribution.student.firstName} ${contribution.student.lastName}`,
+            courseName: contribution.coursePeriod.course.name,
+            amount: Number(contribution.amount),
+            month: contribution.month,
+            year: contribution.year,
+            paymentDate: contribution.paymentDate
+          }))
         };
-      })
+      }
     );
 
-    const stats = {
-      overview: {
-        totalStudents,
-        totalCourses,
-        totalEnrollments,
-        totalContributions: totalContributions._count,
-        totalAmount: totalContributions._sum.amount || 0,
-        totalInvoices,
-        activeCoursePeriods,
-        contributionRate
-      },
-      trends: {
-        monthly: monthlyTrends.map(trend => ({
-          month: trend.month,
-          year: trend.year,
-          amount: trend._sum.amount || 0,
-          count: trend._count,
-          label: `${trend.month}/${trend.year}`
-        }))
-      },
-      topCourses: topCoursesWithDetails.map(course => ({
-        coursePeriodId: course.coursePeriodId,
-        courseName: course.coursePeriod?.course.name || 'Unknown',
-        periodName: course.coursePeriod?.name || 'Unknown',
-        totalAmount: course._sum.amount || 0,
-        contributionCount: course._count
-      })),
-      recentActivity: recentContributions.map(contribution => ({
-        id: contribution.id,
-        studentName: `${contribution.student.firstName} ${contribution.student.lastName}`,
-        courseName: contribution.coursePeriod.course.name,
-        amount: contribution.amount,
-        month: contribution.month,
-        year: contribution.year,
-        paymentDate: contribution.paymentDate
-      }))
-    };
-
+    const stats = await getStatsOptimized();
     return NextResponse.json(stats);
+
   } catch (error) {
     console.error('Error fetching statistics:', error);
     return NextResponse.json(

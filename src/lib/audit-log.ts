@@ -264,6 +264,74 @@ export const auditHelpers = {
       },
       ipAddress
     });
+  },
+
+  // User management
+  async logUserCreated(userId: string, newUserId: string, userData: any, ipAddress?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.CREATE,
+      entity: AuditEntity.USER,
+      entityId: newUserId,
+      details: {
+        name: userData.name,
+        email: userData.email,
+        role: userData.role
+      },
+      ipAddress
+    });
+  },
+
+  async logUserUpdated(userId: string, targetUserId: string, changes: any, ipAddress?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.UPDATE,
+      entity: AuditEntity.USER,
+      entityId: targetUserId,
+      details: { changes },
+      ipAddress
+    });
+  },
+
+  async logUserDeleted(userId: string, deletedUserId: string, userData: any, ipAddress?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.DELETE,
+      entity: AuditEntity.USER,
+      entityId: deletedUserId,
+      details: {
+        deletedUser: userData
+      },
+      ipAddress
+    });
+  },
+
+  async logUserPasswordChangeFailed(userId: string, ipAddress?: string, userAgent?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.UPDATE,
+      entity: AuditEntity.USER,
+      entityId: userId,
+      details: {
+        action: 'password_change_failed',
+        reason: 'invalid_current_password'
+      },
+      ipAddress,
+      userAgent
+    });
+  },
+
+  async logUserPasswordChanged(userId: string, ipAddress?: string) {
+    return createAuditLog({
+      userId,
+      action: AuditAction.UPDATE,
+      entity: AuditEntity.USER,
+      entityId: userId,
+      details: {
+        action: 'password_changed'
+      },
+      ipAddress
+    });
   }
 };
 
