@@ -234,6 +234,30 @@ export default function DashboardPage() {
               </Link>
             </CardContent>
           </Card>
+
+          {/* Auditoría - Solo para Admins */}
+          {isAdmin && (
+            <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-gray-500 to-slate-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Settings className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">🔒</div>
+                    <div className="text-sm text-gray-500">Auditoría</div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Logs de Auditoría</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">Historial de actividades del sistema</p>
+                <Link href="/dashboard/audit">
+                  <Button className="w-full bg-gradient-to-r from-gray-500 to-slate-500 hover:from-gray-600 hover:to-slate-600 text-white border-0">
+                    Ver Logs
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* System Status */}
