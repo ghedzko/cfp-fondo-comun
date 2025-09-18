@@ -1,5 +1,5 @@
-import { db } from './db';
-import { AuditAction, AuditEntity } from '@prisma/client';
+import { db } from '@/lib/db';
+import { AuditAction, AuditEntity, Prisma } from '@prisma/client';
 
 interface AuditLogData {
   userId: string; // Changed to string to match Prisma User.id type
@@ -27,7 +27,7 @@ export async function createAuditLog({
       action,
       entity,
       entityId: entityId?.toString(),
-      details: details || null,
+      details: details ? details : Prisma.JsonNull,
       ipAddress,
       userAgent
     };

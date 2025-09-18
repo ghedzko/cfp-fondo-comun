@@ -16,9 +16,11 @@ interface UpdateUserRequest {
 // GET - Get specific user (ADMIN only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Verify authentication and admin access
     const authResult = await verifyAuth(request);
     if (!authResult.success || !authResult.user) {
@@ -30,7 +32,7 @@ export async function GET(
     }
 
     const user = await db.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -68,9 +70,11 @@ export async function GET(
 // PUT - Update user (ADMIN only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Verify authentication and admin access
     const authResult = await verifyAuth(request);
     if (!authResult.success || !authResult.user) {
@@ -82,7 +86,7 @@ export async function PUT(
     }
 
     // Prevent admin from modifying themselves
-    if (authResult.user.userId === params.id) {
+    if (authResult.user.userId === id) {
       return NextResponse.json(
         { error: 'No puedes modificar tu propio usuario' },
         { status: 400 }
@@ -94,7 +98,7 @@ export async function PUT(
 
     // Get current user
     const currentUser = await db.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!currentUser) {
@@ -128,7 +132,7 @@ export async function PUT(
         where: { email: email.toLowerCase() }
       });
 
-      if (existingUser && existingUser.id !== params.id) {
+      if (existingUser && existingUser.id !== id) {
         return NextResponse.json(
           { error: 'Ya existe un usuario con este email' },
           { status: 400 }
@@ -170,7 +174,7 @@ export async function PUT(
 
       // Invalidate all refresh tokens for this user
       await db.refreshToken.deleteMany({
-        where: { userId: params.id }
+        where: { userId: id }
       });
     }
 
@@ -186,7 +190,7 @@ export async function PUT(
 
     // Update user
     const updatedUser = await db.user.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       select: {
         id: true,
@@ -202,7 +206,7 @@ export async function PUT(
     // Log user update
     await auditHelpers.logUserUpdated(
       authResult.user.userId,
-      params.id,
+      id,
       changes,
       request.headers.get('x-forwarded-for') || 'unknown'
     );
@@ -225,9 +229,11 @@ export async function PUT(
 // DELETE - Delete user (ADMIN only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Verify authentication and admin access
     const authResult = await verifyAuth(request);
     if (!authResult.success || !authResult.user) {
@@ -239,7 +245,7 @@ export async function DELETE(
     }
 
     // Prevent admin from deleting themselves
-    if (authResult.user.userId === params.id) {
+    if (authResult.user.userId === id) {
       return NextResponse.json(
         { error: 'No puedes eliminar tu propio usuario' },
         { status: 400 }
@@ -248,7 +254,7 @@ export async function DELETE(
 
     // Get user before deletion
     const userToDelete = await db.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         name: true,
@@ -266,13 +272,13 @@ export async function DELETE(
 
     // Delete user (cascade will handle refresh tokens)
     await db.user.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     // Log user deletion
     await auditHelpers.logUserDeleted(
       authResult.user.userId,
-      params.id,
+      id,
       userToDelete,
       request.headers.get('x-forwarded-for') || 'unknown'
     );

@@ -6,8 +6,11 @@
 // Language type for future expansion
 export type Language = 'es-AR' | 'en-US';
 
+// Supported languages (currently only es-AR)
+export type SupportedLanguage = 'es-AR';
+
 // Default language
-export const DEFAULT_LANGUAGE: Language = 'es-AR';
+export const DEFAULT_LANGUAGE: SupportedLanguage = 'es-AR';
 
 // Accessibility labels and messages
 export const a11yLabels = {
@@ -175,5 +178,10 @@ export const formLabels = {
 
 // Get form label
 export function getFormLabel(key: keyof typeof formLabels['es-AR'], language: Language = DEFAULT_LANGUAGE): string {
-  return formLabels[language]?.[key] || formLabels[DEFAULT_LANGUAGE][key];
+  // For now, only es-AR is supported, fallback to default
+  if (language === 'es-AR') {
+    return formLabels['es-AR'][key];
+  }
+  // Fallback to default for unsupported languages
+  return formLabels[DEFAULT_LANGUAGE][key];
 }

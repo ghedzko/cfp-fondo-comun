@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AccessibleInput, AccessibleSelect } from '@/components/accessible-form';
-import { LoadingSpinner, TableSkeleton } from '@/components/loading-spinner';
+import { TableSkeleton } from '@/components/loading-spinner';
 import { 
   Users, 
   Plus, 
@@ -56,28 +56,7 @@ export default function UsersManagementPage() {
   const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<UsersResponse['pagination'] | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-
-  // Redirect if not admin
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="p-6 text-center">
-            <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Acceso Denegado
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Solo los administradores pueden acceder a la gestión de usuarios.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -110,16 +89,45 @@ export default function UsersManagementPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, roleFilter, searchTerm]);
 
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, searchTerm, roleFilter]);
+    if (!isAdmin) {
+      setLoading(false);
+      return;
+    }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
     fetchUsers();
+  }, [fetchUsers, isAdmin]);
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="p-6 text-center">
+            <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Acceso Denegado
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300">
+              Solo los administradores pueden acceder a la gestión de usuarios.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    setCurrentPage((prev) => {
+      if (prev === 1) {
+        fetchUsers();
+        return prev;
+      }
+
+      return 1;
+    });
   };
 
   const getRoleIcon = (role: UserRole) => {
@@ -183,7 +191,9 @@ export default function UsersManagementPage() {
             </div>
             
             <Button
-              onClick={() => setShowCreateModal(true)}
+              onClick={() => {
+                /* TODO: open create user modal */
+              }}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
