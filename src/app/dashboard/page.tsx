@@ -320,22 +320,22 @@ export default function DashboardPage() {
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Fase Actual</span>
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm font-medium text-green-600 dark:text-green-400">FASE 6 Completada</span>
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">FASE 7 En Progreso</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Próxima Fase</span>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Completadas</span>
                   <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-orange-500" />
-                    <span className="text-sm font-medium text-orange-600 dark:text-orange-400">FASE 7 - Reportes</span>
+                    <CheckCircle className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Reportes + Accesibilidad</span>
                   </div>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style={{width: '85%'}}></div>
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style={{width: '95%'}}></div>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>85% Completado</span>
-                  <span>6/7 Fases</span>
+                  <span>95% Completado</span>
+                  <span>FASE 7/7 - MVP Casi Listo</span>
                 </div>
               </div>
             </CardContent>
