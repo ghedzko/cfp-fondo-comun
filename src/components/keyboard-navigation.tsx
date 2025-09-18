@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 interface KeyboardNavigationProps {
   children: React.ReactNode;
   className?: string;
+  circularNavigation?: boolean; // Enable/disable circular navigation (default: true)
 }
 
-export function KeyboardNavigation({ children, className = '' }: KeyboardNavigationProps) {
+export function KeyboardNavigation({ children, className = '', circularNavigation = true }: KeyboardNavigationProps) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Skip navigation if user is typing in an input
@@ -49,17 +50,33 @@ export function KeyboardNavigation({ children, className = '' }: KeyboardNavigat
 
         case 'ArrowDown':
         case 'ArrowUp':
-          // Handle arrow navigation in lists and menus
+          // Handle arrow navigation in lists and menus with circular navigation
+          // This provides better UX by wrapping around when reaching the end/beginning
           const focusableElements = getFocusableElements();
           const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
           
-          if (currentIndex !== -1) {
+          if (currentIndex !== -1 && focusableElements.length > 1) {
             event.preventDefault();
-            const nextIndex = event.key === 'ArrowDown' 
-              ? Math.min(currentIndex + 1, focusableElements.length - 1)
-              : Math.max(currentIndex - 1, 0);
+            
+            let nextIndex: number;
+            if (circularNavigation) {
+              // Circular navigation: ArrowDown on last element goes to first,
+              // ArrowUp on first element goes to last
+              nextIndex = event.key === 'ArrowDown'
+                ? (currentIndex + 1) % focusableElements.length
+                : (currentIndex - 1 + focusableElements.length) % focusableElements.length;
+            } else {
+              // Linear navigation: stop at boundaries
+              nextIndex = event.key === 'ArrowDown'
+                ? Math.min(currentIndex + 1, focusableElements.length - 1)
+                : Math.max(currentIndex - 1, 0);
+            }
             
             focusableElements[nextIndex]?.focus();
+          } else if (focusableElements.length === 1) {
+            // If only one element, just ensure it stays focused
+            event.preventDefault();
+            focusableElements[0]?.focus();
           }
           break;
 
