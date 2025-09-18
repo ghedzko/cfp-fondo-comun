@@ -82,7 +82,7 @@ export async function PUT(
     }
 
     // Prevent admin from modifying themselves
-    if (authResult.user.id === params.id) {
+    if (authResult.user.userId === params.id) {
       return NextResponse.json(
         { error: 'No puedes modificar tu propio usuario' },
         { status: 400 }
@@ -201,7 +201,7 @@ export async function PUT(
 
     // Log user update
     await auditHelpers.logUserUpdated(
-      authResult.user.id,
+      authResult.user.userId,
       params.id,
       changes,
       request.headers.get('x-forwarded-for') || 'unknown'
@@ -239,7 +239,7 @@ export async function DELETE(
     }
 
     // Prevent admin from deleting themselves
-    if (authResult.user.id === params.id) {
+    if (authResult.user.userId === params.id) {
       return NextResponse.json(
         { error: 'No puedes eliminar tu propio usuario' },
         { status: 400 }
@@ -271,7 +271,7 @@ export async function DELETE(
 
     // Log user deletion
     await auditHelpers.logUserDeleted(
-      authResult.user.id,
+      authResult.user.userId,
       params.id,
       userToDelete,
       request.headers.get('x-forwarded-for') || 'unknown'

@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     // Log access
     await auditHelpers.logReportAccessed(
-      authResult.user.id,
+      authResult.user.userId,
       'users-list',
       { page, limit, search, role },
       request.headers.get('x-forwarded-for') || 'unknown'
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
 
     // Log user creation
     await auditHelpers.logUserCreated(
-      authResult.user.id,
+      authResult.user.userId,
       newUser.id,
       {
         name: newUser.name,

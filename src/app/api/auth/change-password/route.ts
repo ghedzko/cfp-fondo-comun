@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Get current user from database
     const user = await db.user.findUnique({
-      where: { id: authResult.user.id }
+      where: { id: authResult.user.userId }
     });
 
     if (!user) {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     if (!isCurrentPasswordValid) {
       // Log failed attempt
       await auditHelpers.logLogin(
-        user.id,
+        authResult.user.userId,
         request.headers.get('x-forwarded-for') || 'unknown',
         request.headers.get('user-agent') || 'unknown'
       );
@@ -86,13 +86,13 @@ export async function POST(request: NextRequest) {
 
     // Log successful password change
     await auditHelpers.logUserPasswordChanged(
-      user.id,
+      authResult.user.userId,
       request.headers.get('x-forwarded-for') || 'unknown'
     );
 
     // Invalidate all refresh tokens for this user (force re-login on all devices)
     await db.refreshToken.deleteMany({
-      where: { userId: user.id }
+      where: { userId: authResult.user.userId }
     });
 
     return NextResponse.json({
