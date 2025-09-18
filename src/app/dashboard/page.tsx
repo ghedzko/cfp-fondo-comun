@@ -102,7 +102,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {/* Estudiantes */}
           <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
             <CardContent className="p-6">
@@ -235,9 +235,9 @@ export default function DashboardPage() {
         </div>
 
         {/* System Status */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800">
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
                   <Database className="w-5 h-5 text-white" />
@@ -248,8 +248,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className="pt-2">
+              <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Estado</span>
                   <div className="flex items-center space-x-2">
@@ -277,7 +277,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-white" />
@@ -288,8 +288,8 @@ export default function DashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className="pt-2">
+              <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Fase Actual</span>
                   <div className="flex items-center space-x-2">
@@ -317,8 +317,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Important Notice */}
-        <Card className="border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-l-4 border-l-amber-400">
-          <CardContent className="p-6">
+        <Card className="border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-l-4 border-l-amber-400 mt-4">
+          <CardContent className="p-8">
             <div className="flex items-start space-x-4">
               <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-lg">💡</span>
