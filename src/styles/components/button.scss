@@ -14,6 +14,22 @@
     @include button-secondary;
   }
 
+  &--outline {
+    @include button-base;
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+
+    &:hover:not(:disabled) {
+      background-color: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--surface-strong);
+    }
+  }
+
   &--ghost {
     @include button-ghost;
   }
@@ -32,6 +48,19 @@
     }
   }
 
+  &--link {
+    background-color: transparent;
+    color: var(--primary-600);
+    padding: 0;
+    height: auto;
+    border-radius: 0;
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+      color: var(--primary-700);
+    }
+  }
+
   // Sizes
   &--sm {
     @include button-sm;
@@ -43,6 +72,23 @@
 
   &--lg {
     @include button-lg;
+  }
+
+  &--icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: $radius-md;
+
+    &.btn--sm {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    &.btn--lg {
+      width: 3rem;
+      height: 3rem;
+    }
   }
 
   // Loading state
