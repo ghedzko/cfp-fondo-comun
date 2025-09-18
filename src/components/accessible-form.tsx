@@ -9,10 +9,11 @@ interface AccessibleInputProps extends React.InputHTMLAttributes<HTMLInputElemen
   error?: string;
   helperText?: string;
   required?: boolean;
+  requiredLabel?: string; // Customizable required label for i18n
 }
 
 export const AccessibleInput = forwardRef<HTMLInputElement, AccessibleInputProps>(
-  ({ label, error, helperText, required, className, id, ...props }, ref) => {
+  ({ label, error, helperText, required, requiredLabel = 'requerido', className, id, ...props }, ref) => {
     const inputId = useId();
     const finalId = id || inputId;
     const errorId = `${finalId}-error`;
@@ -26,7 +27,7 @@ export const AccessibleInput = forwardRef<HTMLInputElement, AccessibleInputProps
         >
           {label}
           {required && (
-            <span className="text-red-500 ml-1" aria-label="requerido">*</span>
+            <span className="text-red-500 ml-1" aria-label={requiredLabel}>*</span>
           )}
         </label>
         
@@ -82,10 +83,11 @@ interface AccessibleSelectProps extends React.SelectHTMLAttributes<HTMLSelectEle
   helperText?: string;
   options: Array<{ value: string; label: string; disabled?: boolean }>;
   placeholder?: string;
+  requiredLabel?: string; // Customizable required label for i18n
 }
 
 export const AccessibleSelect = forwardRef<HTMLSelectElement, AccessibleSelectProps>(
-  ({ label, error, helperText, options, placeholder, required, className, id, ...props }, ref) => {
+  ({ label, error, helperText, options, placeholder, required, requiredLabel = 'requerido', className, id, ...props }, ref) => {
     const selectId = useId();
     const finalId = id || selectId;
     const errorId = `${finalId}-error`;
@@ -99,7 +101,7 @@ export const AccessibleSelect = forwardRef<HTMLSelectElement, AccessibleSelectPr
         >
           {label}
           {required && (
-            <span className="text-red-500 ml-1" aria-label="requerido">*</span>
+            <span className="text-red-500 ml-1" aria-label={requiredLabel}>*</span>
           )}
         </label>
         
@@ -169,10 +171,11 @@ interface AccessibleTextareaProps extends React.TextareaHTMLAttributes<HTMLTextA
   error?: string;
   helperText?: string;
   required?: boolean;
+  requiredLabel?: string; // Customizable required label for i18n
 }
 
 export const AccessibleTextarea = forwardRef<HTMLTextAreaElement, AccessibleTextareaProps>(
-  ({ label, error, helperText, required, className, id, ...props }, ref) => {
+  ({ label, error, helperText, required, requiredLabel = 'requerido', className, id, ...props }, ref) => {
     const textareaId = useId();
     const finalId = id || textareaId;
     const errorId = `${finalId}-error`;
@@ -186,7 +189,7 @@ export const AccessibleTextarea = forwardRef<HTMLTextAreaElement, AccessibleText
         >
           {label}
           {required && (
-            <span className="text-red-500 ml-1" aria-label="requerido">*</span>
+            <span className="text-red-500 ml-1" aria-label={requiredLabel}>*</span>
           )}
         </label>
         
@@ -241,7 +244,7 @@ interface AccessibleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
-  loadingText?: string;
+  loadingText?: string; // Customizable loading text for i18n
   children: React.ReactNode;
 }
 
@@ -314,8 +317,18 @@ export const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonPr
 
 AccessibleButton.displayName = 'AccessibleButton';
 
-// Form validation announcer
-export function FormValidationAnnouncer({ errors }: { errors: Record<string, string> }) {
+// Form validation announcer with i18n support
+interface FormValidationAnnouncerProps {
+  errors: Record<string, string>;
+  singleErrorText?: string; // Customizable text for i18n
+  multipleErrorsText?: (count: number) => string; // Customizable text function for i18n
+}
+
+export function FormValidationAnnouncer({ 
+  errors, 
+  singleErrorText = "Hay 1 error en el formulario",
+  multipleErrorsText = (count: number) => `Hay ${count} errores en el formulario`
+}: FormValidationAnnouncerProps) {
   const errorCount = Object.keys(errors).length;
   
   if (errorCount === 0) return null;
@@ -327,8 +340,8 @@ export function FormValidationAnnouncer({ errors }: { errors: Record<string, str
       className="sr-only"
     >
       {errorCount === 1 
-        ? "Hay 1 error en el formulario" 
-        : `Hay ${errorCount} errores en el formulario`
+        ? singleErrorText
+        : multipleErrorsText(errorCount)
       }
     </div>
   );
