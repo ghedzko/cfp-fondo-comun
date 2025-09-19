@@ -100,6 +100,10 @@ export default function UsersManagementPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+
+  // View User Modal State
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -342,6 +346,17 @@ export default function UsersManagementPage() {
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  // View User Functions
+  const openViewModal = (user: User) => {
+    setViewingUser(user);
+    setShowViewModal(true);
+  };
+
+  const closeViewModal = () => {
+    setShowViewModal(false);
+    setViewingUser(null);
   };
 
   const getRoleIcon = (role: UserRole) => {
@@ -598,7 +613,8 @@ export default function UsersManagementPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {/* TODO: View user details */}}
+                                onClick={() => openViewModal(userData)}
+                                title="Ver detalles del usuario"
                               >
                                 <Eye className="w-3 h-3" />
                               </Button>
@@ -889,6 +905,156 @@ export default function UsersManagementPage() {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* View User Modal */}
+        {showViewModal && viewingUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-lg w-full mx-4">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Detalles del Usuario
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeViewModal}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="p-6">
+                {/* User Avatar and Basic Info */}
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      {viewingUser.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {viewingUser.email}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      {getRoleIcon(viewingUser.role)}
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {getRoleLabel(viewingUser.role)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* User Details */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Estado
+                      </label>
+                      <div className="flex items-center space-x-2 mt-1">
+                        {viewingUser.isActive ? (
+                          <>
+                            <UserCheck className="w-4 h-4 text-green-500" />
+                            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                              Activo
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <UserX className="w-4 h-4 text-red-500" />
+                            <span className="text-sm text-red-600 dark:text-red-400 font-medium">
+                              Inactivo
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Sesiones Activas
+                      </label>
+                      <p className="text-sm text-gray-900 dark:text-white mt-1">
+                        {viewingUser._count.refreshTokens} activa{viewingUser._count.refreshTokens !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Fecha de Registro
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white mt-1">
+                      {formatDate(viewingUser.createdAt)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Última Actualización
+                    </label>
+                    <p className="text-sm text-gray-900 dark:text-white mt-1">
+                      {formatDate(viewingUser.updatedAt)}
+                    </p>
+                  </div>
+
+                  {/* Role Description */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Permisos del Rol
+                    </label>
+                    <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      {viewingUser.role === UserRole.ADMIN ? (
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-900 dark:text-white font-medium">Administrador</p>
+                          <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                            <li>• Gestión completa de usuarios</li>
+                            <li>• Acceso a reportes y auditoría</li>
+                            <li>• Configuración del sistema</li>
+                            <li>• Gestión de cursos y estudiantes</li>
+                            <li>• Generación de facturas</li>
+                          </ul>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-900 dark:text-white font-medium">Preceptor</p>
+                          <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                            <li>• Gestión de estudiantes</li>
+                            <li>• Registro de aportes</li>
+                            <li>• Matriculación de estudiantes</li>
+                            <li>• Consulta de reportes básicos</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-3 mt-6">
+                  {viewingUser.id !== user?.id && (
+                    <Button
+                      onClick={() => {
+                        closeViewModal();
+                        openEditModal(viewingUser);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Editar Usuario
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    onClick={closeViewModal}
+                  >
+                    Cerrar
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         )}
