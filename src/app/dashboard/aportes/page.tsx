@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/providers/auth-provider';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,8 +74,10 @@ const MESES = [
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
 
-export default function AportesPage() {
+function AportesPageContent() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const estudianteParam = searchParams.get('estudiante');
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [cursoSeleccionado, setCursoSeleccionado] = useState<string>('');
   const [periodoSeleccionado, setPeriodoSeleccionado] = useState<string>('');
@@ -124,6 +127,17 @@ export default function AportesPage() {
       fetchAportesExistentes();
     }
   }, [periodoSeleccionado, mesSeleccionado, anioSeleccionado]);
+
+  // Pre-seleccionar estudiante si viene del parámetro URL
+  useEffect(() => {
+    if (estudianteParam && estudiantes.length > 0) {
+      const estudianteEncontrado = estudiantes.find(e => e.id === estudianteParam);
+      if (estudianteEncontrado) {
+        setSelectedStudents(new Set([estudianteParam]));
+        setSearchTerm(`${estudianteEncontrado.lastName}, ${estudianteEncontrado.firstName}`);
+      }
+    }
+  }, [estudianteParam, estudiantes]);
 
   const fetchCursos = async () => {
     try {
@@ -191,12 +205,40 @@ export default function AportesPage() {
     setEstudiantes([]);
     setAportes([]);
     setEstadisticas(null);
+    setError('');
+    setSuccess('');
+    setHasUnsavedChanges(false);
+    setSelectedStudents(new Set());
   };
 
   const handlePeriodoChange = (periodoId: string) => {
     setPeriodoSeleccionado(periodoId);
     setAportes([]);
     setEstadisticas(null);
+    setError('');
+    setSuccess('');
+    setHasUnsavedChanges(false);
+    setSelectedStudents(new Set());
+  };
+
+  const handleMesChange = (mes: number) => {
+    setMesSeleccionado(mes);
+    setAportes([]);
+    setEstadisticas(null);
+    setError('');
+    setSuccess('');
+    setHasUnsavedChanges(false);
+    setSelectedStudents(new Set());
+  };
+
+  const handleAnioChange = (anio: number) => {
+    setAnioSeleccionado(anio);
+    setAportes([]);
+    setEstadisticas(null);
+    setError('');
+    setSuccess('');
+    setHasUnsavedChanges(false);
+    setSelectedStudents(new Set());
   };
 
   const getPeriodoActual = () => {
@@ -334,19 +376,21 @@ export default function AportesPage() {
 
   const guardarAportes = async (silent = false) => {
     if (!periodoSeleccionado || !isMesHabilitado(mesSeleccionado)) {
-      setError('Mes no habilitado para aportes');
+      if (!silent) setError('Mes no habilitado para aportes');
       return;
     }
 
     try {
       setSaving(true);
-      setError('');
-      setSuccess('');
+      if (!silent) {
+        setError('');
+        setSuccess('');
+      }
 
       const aportesParaGuardar = aportes.filter(a => a.amount > 0);
 
       if (aportesParaGuardar.length === 0) {
-        setError('No hay aportes para guardar');
+        if (!silent) setError('No hay aportes para guardar');
         return;
       }
 
@@ -373,14 +417,19 @@ export default function AportesPage() {
       }
 
       const data = await response.json();
-      setSuccess(`${data.contributions.length} aportes guardados exitosamente`);
+      if (!silent) {
+        setSuccess(`${data.contributions.length} aportes guardados exitosamente`);
+      }
       
-      // Recargar aportes y estadísticas
+      // Recargar aportes y estadísticas solo para el mes/año actual
       await fetchAportesExistentes();
+      setHasUnsavedChanges(false);
 
     } catch (error: any) {
       console.error('Error:', error);
-      setError(error.message || 'Error al guardar aportes');
+      if (!silent) {
+        setError(error.message || 'Error al guardar aportes');
+      }
     } finally {
       setSaving(false);
     }
@@ -490,6 +539,21 @@ export default function AportesPage() {
         </div>
       </div>
 
+      {/* Alerta cuando se accede desde un estudiante específico */}
+      {estudianteParam && estudiantes.length > 0 && (
+        <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+          <DollarSign className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800 dark:text-blue-200">
+            <strong>Gestión de aportes para estudiante específico:</strong>{' '}
+            {(() => {
+              const estudiante = estudiantes.find(e => e.id === estudianteParam);
+              return estudiante ? `${estudiante.lastName}, ${estudiante.firstName}` : 'Estudiante seleccionado';
+            })()}
+            {' '}• El estudiante aparecerá pre-seleccionado en la lista
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Selectores */}
       <Card>
         <CardHeader>
@@ -542,7 +606,7 @@ export default function AportesPage() {
               <Label htmlFor="mes">Mes</Label>
               <Select 
                 value={mesSeleccionado.toString()} 
-                onValueChange={(value) => setMesSeleccionado(parseInt(value))}
+                onValueChange={(value) => handleMesChange(parseInt(value))}
                 disabled={!periodoSeleccionado}
               >
                 <SelectTrigger>
@@ -574,7 +638,7 @@ export default function AportesPage() {
               <Label htmlFor="anio">Año</Label>
               <Select 
                 value={anioSeleccionado.toString()} 
-                onValueChange={(value) => setAnioSeleccionado(parseInt(value))}
+                onValueChange={(value) => handleAnioChange(parseInt(value))}
                 disabled={!periodoSeleccionado}
               >
                 <SelectTrigger>
@@ -1123,5 +1187,24 @@ export default function AportesPage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function AportesPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Aportes Mensuales</h1>
+            <p className="text-muted-foreground">
+              Cargando...
+            </p>
+          </div>
+        </div>
+      </div>
+    }>
+      <AportesPageContent />
+    </Suspense>
   );
 }

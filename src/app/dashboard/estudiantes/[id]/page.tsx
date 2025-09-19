@@ -249,6 +249,12 @@ export default function StudentDetailPage() {
               </div>
               
               <div className="flex items-center space-x-3">
+                <Link href={`/dashboard/aportes?estudiante=${studentId}`}>
+                  <Button variant="outline" size="sm">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Gestionar Aportes
+                  </Button>
+                </Link>
                 <Link href={`/dashboard/estudiantes/${studentId}/editar`}>
                   <Button variant="outline" size="sm">
                     <Edit className="w-4 h-4 mr-2" />
