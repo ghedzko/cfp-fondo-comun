@@ -249,10 +249,12 @@ export default function StudentDetailPage() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <Button variant="outline" size="sm" disabled>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Editar
-                </Button>
+                <Link href={`/dashboard/estudiantes/${studentId}/editar`}>
+                  <Button variant="outline" size="sm">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Editar
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
