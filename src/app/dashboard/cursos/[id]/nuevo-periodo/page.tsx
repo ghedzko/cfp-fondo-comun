@@ -287,11 +287,11 @@ export default function NuevoPeriodoPage() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          nombre: formData.nombre,
-          fechaInicio: formData.fechaInicio,
-          fechaFin: formData.fechaFin,
-          precioMensual: parseFloat(formData.precioMensual),
-          mesesHabilitados: formData.mesesHabilitados,
+          name: formData.nombre,
+          startDate: formData.fechaInicio,
+          endDate: formData.fechaFin,
+          monthlyPrice: parseFloat(formData.precioMensual),
+          enabledMonths: formData.mesesHabilitados,
         }),
       });
 
