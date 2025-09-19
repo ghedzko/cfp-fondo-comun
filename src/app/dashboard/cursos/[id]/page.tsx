@@ -50,7 +50,6 @@ interface Course {
   requirements: string | null;
   certificateLevel: string | null;
   certification: string | null;
-  price: number;
   isActive: boolean;
   periods: CoursePeriod[];
   _count: {
@@ -329,11 +328,11 @@ export default function CursoDetailPage() {
                   
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                      <DollarSign className="w-5 h-5 text-green-600" />
+                      <GraduationCap className="w-5 h-5 text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Precio Base</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(curso.price)}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Certificación</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{curso.certificateLevel}</p>
                     </div>
                   </div>
                 </div>

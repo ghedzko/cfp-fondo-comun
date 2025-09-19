@@ -25,7 +25,6 @@ import { AREAS_FP, NOMENCLADOR_COURSES, getCoursesByArea, getCourseByCode, type 
 interface FormData {
   areaCode: string;
   profileCode: string;
-  price: string;
   description: string;
 }
 
@@ -36,7 +35,6 @@ export default function NuevoCursoPage() {
   const [formData, setFormData] = useState<FormData>({
     areaCode: '',
     profileCode: '',
-    price: '',
     description: '',
   });
   const [selectedCourse, setSelectedCourse] = useState<NomencladorCourse | null>(null);
@@ -88,11 +86,7 @@ export default function NuevoCursoPage() {
       return;
     }
 
-    const price = parseFloat(formData.price);
-    if (isNaN(price) || price < 0) {
-      setError('El precio debe ser un número válido mayor o igual a 0');
-      return;
-    }
+    // No price validation needed - price is set per course period
 
     setLoading(true);
     setError('');
@@ -113,7 +107,6 @@ export default function NuevoCursoPage() {
           requirements: selectedCourse.requirements,
           certificateLevel: selectedCourse.certificateLevel,
           certification: selectedCourse.certification,
-          price: price,
           description: formData.description || null,
         }),
       });
@@ -297,27 +290,10 @@ export default function NuevoCursoPage() {
           <CardHeader>
             <CardTitle>Configuración del CFP</CardTitle>
             <CardDescription>
-              Personaliza los detalles específicos para tu Centro de Formación Profesional
+              Agrega información adicional específica para tu Centro de Formación Profesional. El precio se definirá al crear cada cursada.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Precio */}
-              <div className="space-y-2">
-                <Label htmlFor="price">Precio del Curso ($)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange('price', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
             {/* Descripción adicional */}
             <div className="space-y-2">
               <Label htmlFor="description">Descripción Adicional (Opcional)</Label>

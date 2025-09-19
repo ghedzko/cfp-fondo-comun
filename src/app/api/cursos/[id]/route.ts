@@ -52,7 +52,6 @@ export async function GET(
 
 // Validation schema for updating courses
 const updateCourseSchema = z.object({
-  price: z.number().min(0, 'Precio debe ser mayor o igual a 0'),
   description: z.string().nullable().optional(),
   isActive: z.boolean().optional(),
 });
@@ -99,7 +98,6 @@ export async function PUT(
     const updatedCourse = await db.course.update({
       where: { id },
       data: {
-        price: validatedData.price,
         description: validatedData.description,
         isActive: validatedData.isActive,
       },

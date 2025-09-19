@@ -80,7 +80,6 @@ model Course {
   requirements     String?  // Requisitos de ingreso
   certificateLevel String?  // Nivel de certificación (Nivel II, III)
   certification    String?  // Tipo de certificación (Ministerial, CISCO, etc.)
-  price            Decimal  @db.Decimal(10, 2) // Precio definido por el CFP
   isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

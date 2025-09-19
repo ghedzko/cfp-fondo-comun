@@ -38,7 +38,6 @@ interface Course {
 }
 
 interface FormData {
-  price: string;
   description: string;
   isActive: boolean;
 }
@@ -51,7 +50,6 @@ export default function EditarCursoPage() {
   
   const [curso, setCurso] = useState<Course | null>(null);
   const [formData, setFormData] = useState<FormData>({
-    price: '',
     description: '',
     isActive: true,
   });
@@ -82,7 +80,6 @@ export default function EditarCursoPage() {
         const data = await response.json();
         setCurso(data.course);
         setFormData({
-          price: data.course.price.toString(),
           description: data.course.description || '',
           isActive: data.course.isActive,
         });
@@ -108,11 +105,7 @@ export default function EditarCursoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const price = parseFloat(formData.price);
-    if (isNaN(price) || price < 0) {
-      setError('El precio debe ser un número válido mayor o igual a 0');
-      return;
-    }
+    // No price validation needed - price is set per course period
 
     setSaving(true);
     setError('');
@@ -126,7 +119,6 @@ export default function EditarCursoPage() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          price: price,
           description: formData.description || null,
           isActive: formData.isActive,
         }),
@@ -331,39 +323,22 @@ export default function EditarCursoPage() {
               Configuración del CFP
             </CardTitle>
             <CardDescription>
-              Modifica los campos específicos de tu Centro de Formación Profesional
+              Modifica los campos específicos de tu Centro de Formación Profesional. El precio se define al crear cada cursada.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Precio */}
-              <div className="space-y-2">
-                <Label htmlFor="price">Precio del Curso ($)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange('price', e.target.value)}
-                  required
-                />
-              </div>
-
-              {/* Estado */}
-              <div className="space-y-2">
-                <Label htmlFor="isActive">Estado del Curso</Label>
-                <select
-                  id="isActive"
-                  value={formData.isActive ? 'true' : 'false'}
-                  onChange={(e) => handleInputChange('isActive', e.target.value === 'true')}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="true">Activo</option>
-                  <option value="false">Inactivo</option>
-                </select>
-              </div>
+            {/* Estado */}
+            <div className="space-y-2">
+              <Label htmlFor="isActive">Estado del Curso</Label>
+              <select
+                id="isActive"
+                value={formData.isActive ? 'true' : 'false'}
+                onChange={(e) => handleInputChange('isActive', e.target.value === 'true')}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
+              </select>
             </div>
 
             {/* Descripción adicional */}

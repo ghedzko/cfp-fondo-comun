@@ -44,7 +44,6 @@ const createCourseSchema = z.object({
   requirements: z.string().optional(),
   certificateLevel: z.string().optional(),
   certification: z.string().optional(),
-  price: z.number().min(0, 'Precio debe ser mayor o igual a 0'),
   description: z.string().nullable().optional(),
 });
 
@@ -95,7 +94,6 @@ export async function POST(request: NextRequest) {
         requirements: validatedData.requirements,
         certificateLevel: validatedData.certificateLevel,
         certification: validatedData.certification,
-        price: validatedData.price,
         description: validatedData.description,
         isActive: true,
       },
