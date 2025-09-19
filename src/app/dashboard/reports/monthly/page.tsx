@@ -118,8 +118,165 @@ export default function MonthlyReportsPage() {
 
 
   const exportToPDF = async () => {
-    // TODO: Implement PDF export
-    alert('Funcionalidad de exportación PDF en desarrollo');
+    if (!report) return;
+
+    try {
+      // Dynamic import to avoid SSR issues
+      const jsPDF = (await import('jspdf')).default;
+      const autoTable = (await import('jspdf-autotable')).default;
+
+      const doc = new jsPDF();
+      
+      // Header
+      doc.setFontSize(20);
+      doc.setTextColor(40, 40, 40);
+      doc.text('CFP Fondo Común - Lago Puelo', 20, 25);
+      
+      doc.setFontSize(16);
+      doc.text('Reporte Mensual de Aportes', 20, 35);
+      
+      // Filters info
+      doc.setFontSize(12);
+      doc.setTextColor(100, 100, 100);
+      let filterText = 'Filtros aplicados: ';
+      if (report.filters.monthName) {
+        filterText += `${report.filters.monthName} ${report.filters.year || ''}`;
+      } else {
+        filterText += `Año ${report.filters.year || new Date().getFullYear()}`;
+      }
+      if (selectedCourse && report.metadata.availableCourses.find(c => c.id.toString() === selectedCourse)) {
+        const courseName = report.metadata.availableCourses.find(c => c.id.toString() === selectedCourse)?.name;
+        filterText += ` - Curso: ${courseName}`;
+      }
+      doc.text(filterText, 20, 45);
+      
+      // Summary section
+      doc.setFontSize(14);
+      doc.setTextColor(40, 40, 40);
+      doc.text('Resumen General', 20, 60);
+      
+      const summaryData = [
+        ['Total de Cursos', report.summary.totalCourses.toString()],
+        ['Total de Aportes', report.summary.totalContributions.toString()],
+        ['Monto Total Recaudado', formatCurrency(report.summary.totalAmount)],
+        ['Promedio por Aporte', formatCurrency(report.summary.averageContribution)]
+      ];
+      
+      autoTable(doc, {
+        startY: 65,
+        head: [['Concepto', 'Valor']],
+        body: summaryData,
+        theme: 'grid',
+        headStyles: { fillColor: [59, 130, 246] },
+        styles: { fontSize: 10 },
+        margin: { left: 20, right: 20 }
+      });
+      
+      // Detail by course
+      let currentY = (doc as any).lastAutoTable.finalY + 20;
+      
+      if (report.data.length > 0) {
+        doc.setFontSize(14);
+        doc.text('Detalle por Curso y Período', 20, currentY);
+        currentY += 10;
+        
+        report.data.forEach((courseData, index) => {
+          // Course header
+          doc.setFontSize(12);
+          doc.setTextColor(40, 40, 40);
+          doc.text(`${courseData.coursePeriod.course.name} - ${courseData.coursePeriod.name}`, 20, currentY);
+          currentY += 5;
+          
+          // Course summary
+          const courseSummaryData = [
+            ['Estudiantes Matriculados', courseData.summary.enrollmentCount.toString()],
+            ['Aportes Recibidos', courseData.summary.contributionCount.toString()],
+            ['Tasa de Aporte', `${(courseData.summary.contributionRate * 100).toFixed(1)}%`],
+            ['Monto Total', formatCurrency(courseData.summary.totalAmount)],
+            ['Promedio por Aporte', formatCurrency(courseData.summary.averageAmount)]
+          ];
+          
+          autoTable(doc, {
+            startY: currentY,
+            head: [['Concepto', 'Valor']],
+            body: courseSummaryData,
+            theme: 'striped',
+            headStyles: { fillColor: [34, 197, 94] },
+            styles: { fontSize: 9 },
+            margin: { left: 25, right: 20 }
+          });
+          
+          currentY = (doc as any).lastAutoTable.finalY + 5;
+          
+          // Student contributions
+          if (courseData.contributions.length > 0) {
+            const contributionsData = courseData.contributions.map(contrib => [
+              `${contrib.student.lastName}, ${contrib.student.firstName}`,
+              contrib.student.dni,
+              formatCurrency(contrib.amount),
+              formatDate(contrib.paymentDate)
+            ]);
+            
+            autoTable(doc, {
+              startY: currentY,
+              head: [['Estudiante', 'DNI', 'Monto', 'Fecha de Pago']],
+              body: contributionsData,
+              theme: 'plain',
+              headStyles: { fillColor: [156, 163, 175], textColor: [255, 255, 255] },
+              styles: { fontSize: 8 },
+              margin: { left: 30, right: 20 }
+            });
+            
+            currentY = (doc as any).lastAutoTable.finalY + 15;
+          } else {
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text('No hay aportes registrados para este período', 30, currentY);
+            currentY += 15;
+          }
+          
+          // Add new page if needed
+          if (currentY > 250 && index < report.data.length - 1) {
+            doc.addPage();
+            currentY = 20;
+          }
+        });
+      }
+      
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          `Generado el ${formatDate(new Date().toISOString())} - Página ${i} de ${pageCount}`,
+          20,
+          doc.internal.pageSize.height - 10
+        );
+      }
+      
+      // Generate filename
+      const dateStr = new Date().toISOString().split('T')[0];
+      let filename = `reporte-mensual-${dateStr}`;
+      if (report.filters.monthName) {
+        filename += `-${report.filters.monthName.toLowerCase()}-${report.filters.year}`;
+      }
+      if (selectedCourse) {
+        const courseName = report.metadata.availableCourses.find(c => c.id.toString() === selectedCourse)?.name;
+        if (courseName) {
+          filename += `-${courseName.toLowerCase().replace(/\s+/g, '-')}`;
+        }
+      }
+      filename += '.pdf';
+      
+      // Save the PDF
+      doc.save(filename);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error al generar el PDF. Por favor, intenta nuevamente.');
+    }
   };
 
   const exportToCSV = async () => {
