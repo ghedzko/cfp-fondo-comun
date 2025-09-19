@@ -18,6 +18,7 @@ import {
   BookOpen,
   TrendingUp,
   Eye,
+  Upload,
   Edit,
   Phone,
   Mail,
@@ -58,7 +59,7 @@ interface PaginationInfo {
 }
 
 export default function EstudiantesPage() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [estudiantes, setEstudiantes] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,10 +93,10 @@ export default function EstudiantesPage() {
   };
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!loading && user) {
       fetchEstudiantes();
     }
-  }, [isLoading, user]);
+  }, [loading, user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +111,7 @@ export default function EstudiantesPage() {
     await logout();
   };
 
-  if (isLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="max-w-md">
@@ -161,6 +162,14 @@ export default function EstudiantesPage() {
             </div>
             
             <div className="flex items-center space-x-3">
+              {isAdmin && (
+                <Link href="/dashboard/estudiantes/importar">
+                  <Button variant="outline">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Importar CSV
+                  </Button>
+                </Link>
+              )}
               <Link href="/dashboard/estudiantes/nuevo">
                 <Button className="bg-green-600 hover:bg-green-700 text-white">
                   <Plus className="w-4 h-4 mr-2" />

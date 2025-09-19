@@ -1,0 +1,6 @@
+dni,firstName,lastName,email,phone,address,birthDate
+12345678,Juan,Pérez,juan.perez@email.com,2944123456,Av. San Martín 123,1990-05-15
+87654321,María,González,maria.gonzalez@email.com,2944654321,Calle Rivadavia 456,1985-10-20
+11223344,Carlos,Rodríguez,carlos.rodriguez@email.com,2944789012,Belgrano 789,1992-03-10
+44332211,Ana,López,ana.lopez@email.com,2944345678,Mitre 321,1988-12-25
+55667788,Luis,Martínez,luis.martinez@email.com,2944901234,Sarmiento 654,1995-07-08
