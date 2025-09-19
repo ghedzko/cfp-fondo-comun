@@ -34,38 +34,38 @@ import {
 
 interface Curso {
   id: string;
-  nombre: string;
-  periodos: CursoPeriodo[];
+  name: string;
+  periods: CursoPeriodo[];
 }
 
 interface CursoPeriodo {
   id: string;
-  nombre: string;
-  mesesHabilitados: number[];
-  anio: number;
+  name: string;
+  enabledMonths: number[];
+  year: number;
 }
 
 interface Estudiante {
   id: string;
-  nombre: string;
-  apellido: string;
+  firstName: string;
+  lastName: string;
   dni: string;
 }
 
 interface Aporte {
   id?: string;
-  estudianteId: string;
-  monto: number;
-  mes: number;
-  anio: number;
-  estudiante?: Estudiante;
+  studentId: string;
+  amount: number;
+  month: number;
+  year: number;
+  student?: Estudiante;
 }
 
 interface EstadisticasAportes {
-  totalAportes: number;
-  totalRecaudado: number;
-  totalMatriculados: number;
-  porcentajeParticipacion: number;
+  totalContributions: number;
+  totalCollected: number;
+  totalEnrolled: number;
+  participationPercentage: number;
 }
 
 const MESES = [
@@ -127,7 +127,7 @@ export default function AportesPage() {
       if (!response.ok) throw new Error('Error al cargar cursos');
 
       const data = await response.json();
-      setCursos(data.cursos || []);
+      setCursos(data.courses || []);
     } catch (error) {
       console.error('Error:', error);
       setError('Error al cargar los cursos');
@@ -141,14 +141,14 @@ export default function AportesPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/cursos/${cursoSeleccionado}/matriculas?periodoId=${periodoSeleccionado}`, {
+      const response = await fetch(`/api/cursos/${periodoSeleccionado}/matriculas`, {
         credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Error al cargar estudiantes');
 
       const data = await response.json();
-      setEstudiantes(data.matriculas?.map((m: any) => m.estudiante) || []);
+      setEstudiantes(data.map((enrollment: any) => enrollment.student) || []);
     } catch (error) {
       console.error('Error:', error);
       setError('Error al cargar estudiantes matriculados');
@@ -169,8 +169,8 @@ export default function AportesPage() {
       if (!response.ok) throw new Error('Error al cargar aportes');
 
       const data = await response.json();
-      setAportes(data.aportes || []);
-      setEstadisticas(data.estadisticas || null);
+      setAportes(data.contributions || []);
+      setEstadisticas(data.statistics || null);
     } catch (error) {
       console.error('Error:', error);
       setError('Error al cargar aportes existentes');
@@ -193,32 +193,32 @@ export default function AportesPage() {
 
   const getPeriodoActual = () => {
     const curso = cursos.find(c => c.id === cursoSeleccionado);
-    return curso?.periodos.find(p => p.id === periodoSeleccionado);
+    return curso?.periods.find((p: CursoPeriodo) => p.id === periodoSeleccionado);
   };
 
   const isMesHabilitado = (mes: number) => {
     const periodo = getPeriodoActual();
-    return periodo?.mesesHabilitados.includes(mes) || false;
+    return periodo?.enabledMonths.includes(mes) || false;
   };
 
   const getMontoAporte = (estudianteId: string) => {
-    const aporte = aportes.find(a => a.estudianteId === estudianteId);
-    return aporte?.monto || 0;
+    const aporte = aportes.find(a => a.studentId === estudianteId);
+    return aporte?.amount || 0;
   };
 
   const updateMontoAporte = (estudianteId: string, monto: number) => {
     setAportes(prev => {
-      const existing = prev.find(a => a.estudianteId === estudianteId);
+      const existing = prev.find(a => a.studentId === estudianteId);
       if (existing) {
         return prev.map(a => 
-          a.estudianteId === estudianteId ? { ...a, monto } : a
+          a.studentId === estudianteId ? { ...a, amount: monto } : a
         );
       } else {
         return [...prev, {
-          estudianteId,
-          monto,
-          mes: mesSeleccionado,
-          anio: anioSeleccionado,
+          studentId: estudianteId,
+          amount: monto,
+          month: mesSeleccionado,
+          year: anioSeleccionado,
         }];
       }
     });
@@ -235,7 +235,7 @@ export default function AportesPage() {
       setError('');
       setSuccess('');
 
-      const aportesParaGuardar = aportes.filter(a => a.monto > 0);
+      const aportesParaGuardar = aportes.filter(a => a.amount > 0);
 
       if (aportesParaGuardar.length === 0) {
         setError('No hay aportes para guardar');
@@ -250,10 +250,10 @@ export default function AportesPage() {
           credentials: 'include',
           body: JSON.stringify({ 
             contributions: aportesParaGuardar.map(aporte => ({
-              studentId: aporte.estudianteId,
-              amount: aporte.monto,
-              month: aporte.mes,
-              year: aporte.anio,
+              studentId: aporte.studentId,
+              amount: aporte.amount,
+              month: aporte.month,
+              year: aporte.year,
             }))
           }),
         }
@@ -279,7 +279,7 @@ export default function AportesPage() {
   };
 
   const calcularTotalMes = () => {
-    return aportes.reduce((total, aporte) => total + (aporte.monto || 0), 0);
+    return aportes.reduce((total, aporte) => total + (aporte.amount || 0), 0);
   };
 
   // Advanced filtering and search functions
@@ -290,8 +290,8 @@ export default function AportesPage() {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(estudiante => 
-        estudiante.nombre.toLowerCase().includes(term) ||
-        estudiante.apellido.toLowerCase().includes(term) ||
+        estudiante.firstName.toLowerCase().includes(term) ||
+        estudiante.lastName.toLowerCase().includes(term) ||
         estudiante.dni.includes(term)
       );
     }
@@ -310,8 +310,8 @@ export default function AportesPage() {
       
       switch (sortBy) {
         case 'name':
-          aValue = `${a.apellido}, ${a.nombre}`.toLowerCase();
-          bValue = `${b.apellido}, ${b.nombre}`.toLowerCase();
+          aValue = `${a.lastName}, ${a.firstName}`.toLowerCase();
+          bValue = `${b.lastName}, ${b.firstName}`.toLowerCase();
           break;
         case 'dni':
           aValue = a.dni;
@@ -418,7 +418,7 @@ export default function AportesPage() {
                 <SelectContent>
                   {cursos.map(curso => (
                     <SelectItem key={curso.id} value={curso.id}>
-                      {curso.nombre}
+                      {curso.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -439,9 +439,9 @@ export default function AportesPage() {
                 <SelectContent>
                   {cursos
                     .find(c => c.id === cursoSeleccionado)
-                    ?.periodos.map(periodo => (
+                    ?.periods.map((periodo: CursoPeriodo) => (
                       <SelectItem key={periodo.id} value={periodo.id}>
-                        {periodo.nombre}
+                        {periodo.name}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -508,14 +508,14 @@ export default function AportesPage() {
               <h3 className="font-medium mb-2">Información del Período</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">Período:</span> {periodo.nombre}
+                  <span className="font-medium">Período:</span> {periodo.name}
                 </div>
                 <div>
-                  <span className="font-medium">Año:</span> {periodo.anio}
+                  <span className="font-medium">Año:</span> {periodo.year}
                 </div>
                 <div>
                   <span className="font-medium">Meses habilitados:</span>{' '}
-                  {periodo.mesesHabilitados.map(m => MESES[m - 1]).join(', ')}
+                  {periodo.enabledMonths.map((m: number) => MESES[m - 1]).join(', ')}
                 </div>
               </div>
             </div>
@@ -557,7 +557,7 @@ export default function AportesPage() {
                 </Badge>
                 <Button 
                   onClick={guardarAportes} 
-                  disabled={saving || aportes.filter(a => a.monto > 0).length === 0}
+                  disabled={saving || aportes.filter(a => a.amount > 0).length === 0}
                   className="flex items-center gap-2"
                 >
                   {saving ? (
@@ -785,7 +785,7 @@ export default function AportesPage() {
                                 </div>
                                 <div>
                                   <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {estudiante.apellido}, {estudiante.nombre}
+                                    {estudiante.lastName}, {estudiante.firstName}
                                   </div>
                                 </div>
                               </div>
@@ -891,7 +891,7 @@ export default function AportesPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-2xl font-bold text-primary">
-                  {estadisticas.totalAportes}
+                  {estadisticas.totalContributions}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Aportes
@@ -899,7 +899,7 @@ export default function AportesPage() {
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-2xl font-bold text-green-600 dark:text-green-300">
-                  ${estadisticas.totalRecaudado.toLocaleString()}
+                  ${estadisticas.totalCollected.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Recaudado
@@ -907,7 +907,7 @@ export default function AportesPage() {
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-300">
-                  {estadisticas.totalMatriculados}
+                  {estadisticas.totalEnrolled}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Matriculados
@@ -915,7 +915,7 @@ export default function AportesPage() {
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">
-                  {estadisticas.porcentajeParticipacion}%
+                  {estadisticas.participationPercentage}%
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Participación
@@ -939,7 +939,7 @@ export default function AportesPage() {
               </p>
               {periodo && (
                 <p className="text-sm text-muted-foreground">
-                  Meses habilitados: {periodo.mesesHabilitados.map(m => MESES[m - 1]).join(', ')}
+                  Meses habilitados: {periodo.enabledMonths.map((m: number) => MESES[m - 1]).join(', ')}
                 </p>
               )}
             </div>
