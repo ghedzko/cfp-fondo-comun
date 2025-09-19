@@ -201,18 +201,18 @@ export default function DashboardPage() {
             <CardContent className="p-8">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <UserCheck className="w-6 h-6 text-white" />
+                  <GraduationCap className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{formatNumber(5)}</div>
-                  <div className="text-sm text-gray-500">Matrículas</div>
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">📚</div>
+                  <div className="text-sm text-gray-500">Cursadas</div>
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Matrículas</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">Inscripción de estudiantes a cursos por período</p>
-              <Link href="/dashboard/cursos">
+              <p className="text-gray-600 dark:text-gray-300 mb-4">Gestión de cursadas actuales y matrículas activas</p>
+              <Link href="/dashboard/matriculas">
                 <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0">
-                  Gestionar Matrículas
+                  Ver Cursadas Actuales
                 </Button>
               </Link>
             </CardContent>
