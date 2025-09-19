@@ -248,7 +248,14 @@ export default function AportesPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ aportes: aportesParaGuardar }),
+          body: JSON.stringify({ 
+            contributions: aportesParaGuardar.map(aporte => ({
+              studentId: aporte.estudianteId,
+              amount: aporte.monto,
+              month: aporte.mes,
+              year: aporte.anio,
+            }))
+          }),
         }
       );
 
@@ -258,7 +265,7 @@ export default function AportesPage() {
       }
 
       const data = await response.json();
-      setSuccess(`${data.aportes.length} aportes guardados exitosamente`);
+      setSuccess(`${data.contributions.length} aportes guardados exitosamente`);
       
       // Recargar aportes y estadísticas
       await fetchAportesExistentes();

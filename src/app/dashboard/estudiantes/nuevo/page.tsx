@@ -53,7 +53,15 @@ export default function NuevoEstudiantePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          dni: formData.dni,
+          firstName: formData.nombre,
+          lastName: formData.apellido,
+          email: formData.email,
+          phone: formData.telefono,
+          address: formData.direccion,
+          birthDate: formData.fechaNacimiento,
+        }),
       });
 
       if (response.ok) {
