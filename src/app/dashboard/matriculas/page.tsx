@@ -29,36 +29,28 @@ import {
 import Link from 'next/link';
 import { formatDate } from '@/lib/format';
 
-interface Enrollment {
+interface CoursePeriod {
   id: string;
-  enrollmentDate: string;
-  status: string;
-  notes: string | null;
-  student: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    dni: string;
-    email: string | null;
-    phone: string | null;
-    isActive: boolean;
-  };
-  coursePeriod: {
+  name: string;
+  startDate: string;
+  endDate: string;
+  monthlyPrice: number;
+  enabledMonths: number[];
+  year: number;
+  course: {
     id: string;
     name: string;
-    startDate: string;
-    endDate: string;
-    monthlyPrice: number;
-    course: {
-      id: string;
-      name: string;
-      description: string | null;
-    };
+    description: string | null;
+    duration: number;
+    price: number;
+  };
+  _count: {
+    enrollments: number;
   };
 }
 
-interface EnrollmentsResponse {
-  enrollments: Enrollment[];
+interface CoursePeriodsResponse {
+  coursePeriods: CoursePeriod[];
   pagination: {
     page: number;
     limit: number;
@@ -76,7 +68,7 @@ interface Course {
 
 export default function MatriculasPage() {
   const { user, logout } = useAuth();
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [coursePeriods, setCoursePeriods] = useState<CoursePeriod[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,9 +76,9 @@ export default function MatriculasPage() {
   const [statusFilter, setStatusFilter] = useState('ACTIVE');
   const [courseFilter, setCourseFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<EnrollmentsResponse['pagination'] | null>(null);
+  const [pagination, setPagination] = useState<CoursePeriodsResponse['pagination'] | null>(null);
 
-  const fetchEnrollments = useCallback(async () => {
+  const fetchCoursePeriods = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -110,11 +102,11 @@ export default function MatriculasPage() {
       });
       
       if (!response.ok) {
-        throw new Error('Error al cargar las matrículas');
+        throw new Error('Error al cargar las cursadas');
       }
 
-      const data: EnrollmentsResponse = await response.json();
-      setEnrollments(data.enrollments);
+      const data: CoursePeriodsResponse = await response.json();
+      setCoursePeriods(data.coursePeriods);
       setPagination(data.pagination);
       
     } catch (err) {
@@ -140,8 +132,8 @@ export default function MatriculasPage() {
   }, []);
 
   useEffect(() => {
-    fetchEnrollments();
-  }, [fetchEnrollments]);
+    fetchCoursePeriods();
+  }, [fetchCoursePeriods]);
 
   useEffect(() => {
     fetchCourses();
@@ -200,7 +192,7 @@ export default function MatriculasPage() {
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col space-y-3">
-            <Breadcrumb items={[{ label: 'Matrículas', icon: GraduationCap }]} />
+            <Breadcrumb items={[{ label: 'Cursadas', icon: GraduationCap }]} />
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -214,7 +206,7 @@ export default function MatriculasPage() {
                 <div>
                   <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
                     <GraduationCap className="w-6 h-6 mr-2 text-blue-600" />
-                    Gestión de Matrículas
+                    Cursadas Activas
                   </h1>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
                     CFP Fondo Común - Lago Puelo
@@ -248,7 +240,7 @@ export default function MatriculasPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Buscar estudiante, DNI o curso..."
+                  placeholder="Buscar curso o período..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -261,11 +253,10 @@ export default function MatriculasPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="ALL">Todos los estados</option>
-                <option value="ACTIVE">Activas</option>
-                <option value="COMPLETED">Completadas</option>
-                <option value="CANCELLED">Canceladas</option>
-                <option value="SUSPENDED">Suspendidas</option>
+                <option value="ALL">Todos los períodos</option>
+                <option value="ACTIVE">En curso</option>
+                <option value="UPCOMING">Próximos</option>
+                <option value="FINISHED">Finalizados</option>
               </select>
 
               {/* Course Filter */}
@@ -304,8 +295,8 @@ export default function MatriculasPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-green-600" />
-                  Matrículas
+                  <BookOpen className="w-5 h-5 text-green-600" />
+                  Cursadas Activas
                   {pagination && (
                     <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                       ({pagination.totalCount} total)
@@ -313,7 +304,7 @@ export default function MatriculasPage() {
                   )}
                 </CardTitle>
                 <CardDescription>
-                  Lista de todas las matrículas del sistema
+                  Lista de todos los períodos de curso del sistema
                 </CardDescription>
               </div>
             </div>
@@ -328,15 +319,15 @@ export default function MatriculasPage() {
                   <p className="text-lg font-semibold">Error al cargar matrículas</p>
                   <p className="text-sm">{error}</p>
                 </div>
-                <Button onClick={fetchEnrollments} variant="outline">
+                <Button onClick={fetchCoursePeriods} variant="outline">
                   Reintentar
                 </Button>
               </div>
-            ) : enrollments.length === 0 ? (
+            ) : coursePeriods.length === 0 ? (
               <div className="text-center py-8">
                 <GraduationCap className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 dark:text-gray-400">
-                  No se encontraron matrículas con los filtros aplicados
+                  No se encontraron cursadas con los filtros aplicados
                 </p>
               </div>
             ) : (
@@ -346,19 +337,22 @@ export default function MatriculasPage() {
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
                         <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
-                          Estudiante
-                        </th>
-                        <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
                           Curso
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
-                          Período
+                          Período / Cursada
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
+                          Fechas
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
                           Estado
                         </th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
-                          Fecha de Matrícula
+                          Estudiantes
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
+                          Precio Mensual
                         </th>
                         <th className="text-right py-3 px-4 font-medium text-gray-900 dark:text-white">
                           Acciones
@@ -366,29 +360,31 @@ export default function MatriculasPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {enrollments.map((enrollment) => {
+                      {coursePeriods.map((coursePeriod) => {
                         const periodStatus = getPeriodStatus(
-                          enrollment.coursePeriod.startDate,
-                          enrollment.coursePeriod.endDate
+                          coursePeriod.startDate,
+                          coursePeriod.endDate
                         );
                         
                         return (
                           <tr
-                            key={enrollment.id}
+                            key={coursePeriod.id}
                             className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                           >
                             <td className="py-4 px-4">
                               <div className="flex items-center space-x-3">
                                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                                  <User className="w-4 h-4 text-white" />
+                                  <BookOpen className="w-4 h-4 text-white" />
                                 </div>
                                 <div>
                                   <div className="font-medium text-gray-900 dark:text-white">
-                                    {enrollment.student.firstName} {enrollment.student.lastName}
+                                    {coursePeriod.course.name}
                                   </div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                                    DNI: {enrollment.student.dni}
-                                  </div>
+                                  {coursePeriod.course.description && (
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                      {coursePeriod.course.description}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </td>
@@ -396,70 +392,65 @@ export default function MatriculasPage() {
                             <td className="py-4 px-4">
                               <div>
                                 <div className="font-medium text-gray-900 dark:text-white">
-                                  {enrollment.coursePeriod.course.name}
-                                </div>
-                                {enrollment.coursePeriod.course.description && (
-                                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                                    {enrollment.coursePeriod.course.description}
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                            
-                            <td className="py-4 px-4">
-                              <div>
-                                <div className="font-medium text-gray-900 dark:text-white">
-                                  {enrollment.coursePeriod.name}
+                                  {coursePeriod.name}
                                 </div>
                                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                                  {formatDate(enrollment.coursePeriod.startDate)} - {formatDate(enrollment.coursePeriod.endDate)}
-                                </div>
-                                <div className={`text-xs font-medium ${periodStatus.color}`}>
-                                  {periodStatus.label}
+                                  Año {coursePeriod.year}
                                 </div>
                               </div>
                             </td>
                             
                             <td className="py-4 px-4">
-                              <div className="flex flex-col space-y-1">
-                                {getStatusBadge(enrollment.status)}
-                                <div className="flex items-center space-x-1">
-                                  {enrollment.student.isActive ? (
-                                    <UserCheck className="w-3 h-3 text-green-500" />
-                                  ) : (
-                                    <UserX className="w-3 h-3 text-red-500" />
-                                  )}
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {enrollment.student.isActive ? 'Activo' : 'Inactivo'}
-                                  </span>
+                              <div>
+                                <div className="text-sm text-gray-600 dark:text-gray-300">
+                                  <div>Inicio: {formatDate(coursePeriod.startDate)}</div>
+                                  <div>Fin: {formatDate(coursePeriod.endDate)}</div>
                                 </div>
                               </div>
                             </td>
                             
                             <td className="py-4 px-4">
-                              <span className="text-sm text-gray-600 dark:text-gray-300">
-                                {formatDate(enrollment.enrollmentDate)}
+                              <div className={`text-sm font-medium ${periodStatus.color}`}>
+                                {periodStatus.label}
+                              </div>
+                            </td>
+                            
+                            <td className="py-4 px-4">
+                              <div className="flex items-center space-x-2">
+                                <Users className="w-4 h-4 text-gray-400" />
+                                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {coursePeriod._count.enrollments}
+                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  matriculados
+                                </span>
+                              </div>
+                            </td>
+                            
+                            <td className="py-4 px-4">
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                ${coursePeriod.monthlyPrice.toLocaleString()}
                               </span>
                             </td>
                             
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end space-x-2">
-                                <Link href={`/dashboard/estudiantes/${enrollment.student.id}`}>
+                                <Link href={`/dashboard/cursos/${coursePeriod.course.id}/periodos/${coursePeriod.id}`}>
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    title="Ver perfil del estudiante"
+                                    title="Ver detalles del período"
                                   >
                                     <Eye className="w-3 h-3" />
                                   </Button>
                                 </Link>
-                                <Link href={`/dashboard/cursos/${enrollment.coursePeriod.course.id}/periodos/${enrollment.coursePeriod.id}`}>
+                                <Link href={`/dashboard/cursos/${coursePeriod.course.id}/periodos/${coursePeriod.id}/matricular`}>
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    title="Ver período del curso"
+                                    title="Matricular estudiantes"
                                   >
-                                    <BookOpen className="w-3 h-3" />
+                                    <UserCheck className="w-3 h-3" />
                                   </Button>
                                 </Link>
                               </div>
@@ -477,7 +468,7 @@ export default function MatriculasPage() {
                     <div className="text-sm text-gray-600 dark:text-gray-300">
                       Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{' '}
                       {Math.min(pagination.page * pagination.limit, pagination.totalCount)} de{' '}
-                      {pagination.totalCount} matrículas
+                      {pagination.totalCount} cursadas
                     </div>
                     
                     <div className="flex items-center space-x-2">
