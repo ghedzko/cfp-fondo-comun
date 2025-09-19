@@ -103,6 +103,14 @@ export default function AportesPage() {
   const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
   const [bulkAmount, setBulkAmount] = useState<string>('');
   const [showBulkActions, setShowBulkActions] = useState(false);
+  
+  // Auto-save and UX improvements
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  
+  // Quick amounts
+  const quickAmounts = [3000, 5000, 7000, 10000, 15000];
 
   // Cargar cursos al montar el componente
   useEffect(() => {
@@ -222,9 +230,109 @@ export default function AportesPage() {
         }];
       }
     });
+    setHasUnsavedChanges(true);
   };
 
-  const guardarAportes = async () => {
+  // Auto-save effect
+  useEffect(() => {
+    if (!hasUnsavedChanges || !periodoSeleccionado || saving) return;
+    
+    const autoSaveTimer = setTimeout(async () => {
+      try {
+        setAutoSaving(true);
+        await guardarAportes(true); // true = silent save
+        setHasUnsavedChanges(false);
+        setLastSaved(new Date());
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [aportes, hasUnsavedChanges, periodoSeleccionado, saving]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+A to select all students
+      if (e.ctrlKey && e.key === 'a' && estudiantes.length > 0) {
+        e.preventDefault();
+        selectAllStudents();
+      }
+      
+      // Escape to clear selection
+      if (e.key === 'Escape') {
+        setSelectedStudents(new Set());
+      }
+      
+      // Ctrl+S to save manually
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        if (aportes.filter(a => a.amount > 0).length > 0) {
+          handleSaveClick();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [estudiantes, aportes]);
+
+  // Quick amount functions
+  const applyQuickAmount = (amount: number) => {
+    if (selectedStudents.size === 0) {
+      setError('Selecciona al menos un estudiante');
+      return;
+    }
+    
+    selectedStudents.forEach(studentId => {
+      updateMontoAporte(studentId, amount);
+    });
+    setSelectedStudents(new Set());
+  };
+
+  const applyBulkAmount = () => {
+    const amount = parseFloat(bulkAmount);
+    if (isNaN(amount) || amount < 0) {
+      setError('Ingresa un monto válido');
+      return;
+    }
+    
+    if (selectedStudents.size === 0) {
+      setError('Selecciona al menos un estudiante');
+      return;
+    }
+    
+    selectedStudents.forEach(studentId => {
+      updateMontoAporte(studentId, amount);
+    });
+    setBulkAmount('');
+    setSelectedStudents(new Set());
+  };
+
+  const clearAllAmounts = () => {
+    setAportes([]);
+    setHasUnsavedChanges(true);
+  };
+
+  const selectAllStudents = () => {
+    const allIds = new Set(estudiantes.map(e => e.id));
+    setSelectedStudents(allIds);
+  };
+
+  const getPeriodMonthlyPrice = () => {
+    // For now, return a default amount since monthlyPrice is not in the interface
+    // This could be fetched from the course period API if needed
+    return 7000; // Default monthly price
+  };
+
+  const handleSaveClick = () => {
+    guardarAportes(false);
+  };
+
+  const guardarAportes = async (silent = false) => {
     if (!periodoSeleccionado || !isMesHabilitado(mesSeleccionado)) {
       setError('Mes no habilitado para aportes');
       return;
@@ -364,28 +472,9 @@ export default function AportesPage() {
     setSelectedStudents(newSelected);
   };
 
-  const applyBulkAmount = () => {
-    const amount = parseFloat(bulkAmount) || 0;
-    if (amount >= 0) {
-      selectedStudents.forEach(studentId => {
-        updateMontoAporte(studentId, amount);
-      });
-      setSelectedStudents(new Set());
-      setBulkAmount('');
-      setShowBulkActions(false);
-      setSuccess(`Monto aplicado a ${selectedStudents.size} estudiantes`);
-    }
-  };
-
   const copyFromPreviousMonth = async () => {
     // This would require an API call to get previous month's data
     setError('Funcionalidad en desarrollo');
-  };
-
-  const clearAllAmounts = () => {
-    setAportes([]);
-    setSelectedStudents(new Set());
-    setSuccess('Todos los montos han sido limpiados');
   };
 
   const periodo = getPeriodoActual();
@@ -550,23 +639,110 @@ export default function AportesPage() {
                   Los aportes son <strong>voluntarios</strong> y contribuyen al fondo común del curso
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Calculator className="h-3 w-3" />
-                  Total: ${calcularTotalMes().toLocaleString()}
-                </Badge>
-                <Button 
-                  onClick={guardarAportes} 
-                  disabled={saving || aportes.filter(a => a.amount > 0).length === 0}
-                  className="flex items-center gap-2"
-                >
-                  {saving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4" />
+              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+                {/* Status indicators */}
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <Calculator className="h-3 w-3" />
+                    Total: ${calcularTotalMes().toLocaleString()}
+                  </Badge>
+                  {hasUnsavedChanges && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                      Cambios sin guardar
+                    </Badge>
                   )}
-                  Guardar Aportes
-                </Button>
+                  {autoSaving && (
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Guardando...
+                    </Badge>
+                  )}
+                  {lastSaved && !hasUnsavedChanges && (
+                    <Badge variant="outline" className="text-green-600">
+                      ✓ Guardado {lastSaved.toLocaleTimeString()}
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Quick amount buttons */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium">Montos rápidos:</span>
+                  {quickAmounts.map(amount => (
+                    <Button
+                      key={amount}
+                      size="sm"
+                      variant="outline"
+                      onClick={() => applyQuickAmount(amount)}
+                      disabled={selectedStudents.size === 0}
+                      className="h-8 px-3 text-xs"
+                    >
+                      ${amount.toLocaleString()}
+                    </Button>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => applyQuickAmount(getPeriodMonthlyPrice())}
+                    disabled={selectedStudents.size === 0}
+                    className="h-8 px-3 text-xs bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  >
+                    Precio período (${getPeriodMonthlyPrice().toLocaleString()})
+                  </Button>
+                </div>
+
+                {/* Bulk actions */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Input
+                      type="number"
+                      placeholder="Monto"
+                      value={bulkAmount}
+                      onChange={(e) => setBulkAmount(e.target.value)}
+                      className="w-24 h-8 text-xs"
+                      min="0"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={applyBulkAmount}
+                      disabled={selectedStudents.size === 0 || !bulkAmount}
+                      className="h-8 px-3 text-xs"
+                    >
+                      Aplicar
+                    </Button>
+                  </div>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={selectAllStudents}
+                    className="h-8 px-3 text-xs"
+                  >
+                    Seleccionar todos
+                  </Button>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={clearAllAmounts}
+                    className="h-8 px-3 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                  >
+                    Limpiar todo
+                  </Button>
+
+                  <Button 
+                    onClick={handleSaveClick} 
+                    disabled={saving || aportes.filter(a => a.amount > 0).length === 0}
+                    className="flex items-center gap-2 h-8 px-4 text-xs"
+                  >
+                    {saving ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Save className="h-3 w-3" />
+                    )}
+                    Guardar manual
+                  </Button>
+                </div>
               </div>
             </div>
           </CardHeader>
