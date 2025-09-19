@@ -7,20 +7,20 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-interface Curso {
+interface Course {
   id: string;
-  nombre: string;
-  descripcion: string | null;
+  name: string;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
   _count: {
-    periodos: number;
+    periods: number;
   };
 }
 
 export default function CursosPage() {
   const { user, logout, isAdmin } = useAuth();
-  const [cursos, setCursos] = useState<Curso[]>([]);
+  const [cursos, setCursos] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -39,7 +39,7 @@ export default function CursosPage() {
       }
       
       const data = await response.json();
-      setCursos(data.cursos || []);
+      setCursos(data.courses || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
@@ -125,16 +125,16 @@ export default function CursosPage() {
                 {cursos.map((curso) => (
                   <Card key={curso.id} className="course-card">
                     <CardHeader>
-                      <h3>{curso.nombre}</h3>
+                      <h3>{curso.name}</h3>
                       <CardDescription>
-                        {curso.descripcion || 'Sin descripción'}
+                        {curso.description || 'Sin descripción'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="course-stats">
                         <div className="stat-item">
                           <strong>Períodos:</strong>
-                          <span>{curso._count.periodos}</span>
+                          <span>{curso._count.periods}</span>
                         </div>
                         <div className="stat-item">
                           <strong>Estado:</strong>
