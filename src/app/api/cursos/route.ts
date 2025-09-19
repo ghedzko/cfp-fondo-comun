@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { z } from 'zod';
+import { verifyAuth } from '@/lib/auth';
 
 // GET /api/cursos - List all active courses with their periods
 export async function GET(request: NextRequest) {
