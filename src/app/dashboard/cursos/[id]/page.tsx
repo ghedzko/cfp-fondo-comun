@@ -26,6 +26,7 @@ import {
   Activity
 } from 'lucide-react';
 import Link from 'next/link';
+import { getAreaByCode } from '@/lib/nomenclador';
 
 interface CoursePeriod {
   id: string;
@@ -41,9 +42,14 @@ interface CoursePeriod {
 
 interface Course {
   id: string;
+  areaCode: string;
+  profileCode: string;
   name: string;
   description: string | null;
   duration: number;
+  requirements: string | null;
+  certificateLevel: string | null;
+  certification: string | null;
   price: number;
   isActive: boolean;
   periods: CoursePeriod[];
@@ -184,12 +190,20 @@ export default function CursoDetailPage() {
             
             <div className="flex items-center space-x-3">
               {isAdmin && (
-                <Link href={`/dashboard/cursos/${curso.id}/nuevo-periodo`}>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nueva Cursada
-                  </Button>
-                </Link>
+                <>
+                  <Link href={`/dashboard/cursos/${curso.id}/nuevo-periodo`}>
+                    <Button className="bg-green-600 hover:bg-green-700 text-white">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Nueva Cursada
+                    </Button>
+                  </Link>
+                  <Link href={`/dashboard/cursos/${curso.id}/editar`}>
+                    <Button variant="outline">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Editar Curso
+                    </Button>
+                  </Link>
+                </>
               )}
               <ThemeToggle />
               <Button variant="outline" onClick={handleLogout} size="sm">
@@ -245,7 +259,7 @@ export default function CursoDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-orange-100 text-sm font-medium">Duración</p>
-                  <p className="text-2xl font-bold">{curso.duration} meses</p>
+                  <p className="text-2xl font-bold">{curso.duration} hs</p>
                 </div>
                 <Clock className="w-8 h-8 text-orange-200" />
               </div>
@@ -266,6 +280,41 @@ export default function CursoDetailPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Información del Nomenclador */}
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Datos del Nomenclador Oficial</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-blue-800 dark:text-blue-200">Área:</span>
+                    <span className="ml-2 text-blue-700 dark:text-blue-300">
+                      {curso.areaCode} - {getAreaByCode(curso.areaCode)?.name || 'Área no encontrada'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-blue-800 dark:text-blue-200">Código:</span>
+                    <span className="ml-2 text-blue-700 dark:text-blue-300">{curso.profileCode}</span>
+                  </div>
+                  {curso.certificateLevel && (
+                    <div>
+                      <span className="font-medium text-blue-800 dark:text-blue-200">Certificación:</span>
+                      <span className="ml-2 text-blue-700 dark:text-blue-300">
+                        {curso.certificateLevel} - {curso.certification}
+                      </span>
+                    </div>
+                  )}
+                  {curso.requirements && (
+                    <div className="md:col-span-2">
+                      <span className="font-medium text-blue-800 dark:text-blue-200">Requisitos:</span>
+                      <span className="ml-2 text-blue-700 dark:text-blue-300">{curso.requirements}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Información General */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
@@ -274,7 +323,7 @@ export default function CursoDetailPage() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">Duración</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{curso.duration} meses</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{curso.duration} horas reloj</p>
                     </div>
                   </div>
                   
