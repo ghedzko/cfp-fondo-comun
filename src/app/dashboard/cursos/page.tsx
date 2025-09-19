@@ -182,10 +182,12 @@ export default function CursosPage() {
             Filtros
           </Button>
           {isAdmin && (
-            <Button className="bg-green-600 hover:bg-green-700 text-white" disabled>
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Curso
-            </Button>
+            <Link href="/dashboard/cursos/nuevo">
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Nuevo Curso
+              </Button>
+            </Link>
           )}
         </div>
 

@@ -71,18 +71,25 @@ model Student {
 
 // Course - Course definition
 model Course {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  duration    Int      // duration in months
-  price       Decimal  @db.Decimal(10, 2)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  areaCode         String   // Código del área (I, II, III, etc.)
+  profileCode      String   // Código del perfil del nomenclador
+  name             String   // Nombre oficial del curso
+  description      String?  // Descripción adicional del CFP
+  duration         Int      // Duración en horas reloj (del nomenclador)
+  requirements     String?  // Requisitos de ingreso
+  certificateLevel String?  // Nivel de certificación (Nivel II, III)
+  certification    String?  // Tipo de certificación (Ministerial, CISCO, etc.)
+  price            Decimal  @db.Decimal(10, 2) // Precio definido por el CFP
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
   periods CoursePeriod[]
 
+  // Unique constraint for area + profile code
+  @@unique([areaCode, profileCode])
   @@map("courses")
 }
 
