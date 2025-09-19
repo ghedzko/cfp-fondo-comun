@@ -76,6 +76,30 @@ export default function UsersManagementPage() {
     password: '',
     role: UserRole.PRECEPTOR
   });
+
+  // Edit User Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editSuccess, setEditSuccess] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editUser, setEditUser] = useState<{
+    name: string;
+    email: string;
+    role: UserRole;
+    isActive: boolean;
+  }>({
+    name: '',
+    email: '',
+    role: UserRole.PRECEPTOR,
+    isActive: true
+  });
+
+  // Delete User Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -211,6 +235,113 @@ export default function UsersManagementPage() {
     setShowCreateModal(false);
     setCreateError(null);
     setCreateSuccess(null);
+  };
+
+  // Edit User Functions
+  const openEditModal = (user: User) => {
+    setEditingUser(user);
+    setEditUser({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive
+    });
+    setShowEditModal(true);
+    setEditError(null);
+    setEditSuccess(null);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingUser(null);
+    setEditError(null);
+    setEditSuccess(null);
+  };
+
+  const handleEditUser = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    setEditLoading(true);
+    setEditError(null);
+    setEditSuccess(null);
+
+    try {
+      const response = await fetch(`/api/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(editUser),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setEditSuccess('Usuario actualizado exitosamente');
+        
+        // Refresh users list
+        await fetchUsers();
+        
+        // Close modal after a delay
+        setTimeout(() => {
+          setShowEditModal(false);
+          setEditSuccess(null);
+          setEditingUser(null);
+        }, 2000);
+      } else {
+        setEditError(data.error || 'Error al actualizar usuario');
+      }
+    } catch (err) {
+      setEditError('Error de conexión');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  // Delete User Functions
+  const openDeleteModal = (user: User) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+    setDeleteError(null);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setUserToDelete(null);
+    setDeleteError(null);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      const response = await fetch(`/api/users/${userToDelete.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Refresh users list
+        await fetchUsers();
+        
+        // Close modal
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+      } else {
+        setDeleteError(data.error || 'Error al eliminar usuario');
+      }
+    } catch (err) {
+      setDeleteError('Error de conexión');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const getRoleIcon = (role: UserRole) => {
@@ -475,8 +606,9 @@ export default function UsersManagementPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {/* TODO: Edit user */}}
+                                onClick={() => openEditModal(userData)}
                                 disabled={userData.id === user?.id}
+                                title="Editar usuario"
                               >
                                 <Edit className="w-3 h-3" />
                               </Button>
@@ -484,9 +616,10 @@ export default function UsersManagementPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {/* TODO: Delete user */}}
+                                onClick={() => openDeleteModal(userData)}
                                 disabled={userData.id === user?.id}
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                title="Eliminar usuario"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </Button>
@@ -651,8 +784,199 @@ export default function UsersManagementPage() {
           </div>
         )}
 
-        {/* TODO: Add Edit User Modal */}
-        {/* TODO: Add Delete Confirmation Modal */}
+        {/* Edit User Modal */}
+        {showEditModal && editingUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Editar Usuario
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeEditModal}
+                  disabled={editLoading}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <form onSubmit={handleEditUser} className="p-6">
+                <div className="space-y-4">
+                  {/* Success Message */}
+                  {editSuccess && (
+                    <div className="flex items-center space-x-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-sm">{editSuccess}</span>
+                    </div>
+                  )}
+
+                  {/* Error Message */}
+                  {editError && (
+                    <div className="flex items-center space-x-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                      <AlertCircle className="w-4 h-4" />
+                      <span className="text-sm">{editError}</span>
+                    </div>
+                  )}
+
+                  <AccessibleInput
+                    id="edit-name"
+                    label="Nombre completo"
+                    type="text"
+                    value={editUser.name}
+                    onChange={(e) => setEditUser(prev => ({ ...prev, name: e.target.value }))}
+                    required
+                    disabled={editLoading}
+                    placeholder="Ej: Juan Pérez"
+                  />
+
+                  <AccessibleInput
+                    id="edit-email"
+                    label="Email"
+                    type="email"
+                    value={editUser.email}
+                    onChange={(e) => setEditUser(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                    disabled={editLoading}
+                    placeholder="usuario@ejemplo.com"
+                  />
+
+                  <AccessibleSelect
+                    id="edit-role"
+                    label="Rol"
+                    value={editUser.role}
+                    onChange={(e) => setEditUser(prev => ({ ...prev, role: e.target.value as UserRole }))}
+                    required
+                    disabled={editLoading}
+                    options={[
+                      { value: UserRole.PRECEPTOR, label: 'Preceptor' },
+                      { value: UserRole.ADMIN, label: 'Administrador' }
+                    ]}
+                  />
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      id="edit-isActive"
+                      type="checkbox"
+                      checked={editUser.isActive}
+                      onChange={(e) => setEditUser(prev => ({ ...prev, isActive: e.target.checked }))}
+                      disabled={editLoading}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="edit-isActive" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Usuario activo
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex space-x-3 mt-6">
+                  <Button
+                    type="submit"
+                    disabled={editLoading || !editUser.name || !editUser.email}
+                    className="flex-1"
+                  >
+                    {editLoading ? 'Actualizando...' : 'Actualizar Usuario'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeEditModal}
+                    disabled={editLoading}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && userToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Confirmar Eliminación
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeDeleteModal}
+                  disabled={deleteLoading}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="p-6">
+                {/* Error Message */}
+                {deleteError && (
+                  <div className="flex items-center space-x-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg mb-4">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="text-sm">{deleteError}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                    <Trash2 className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                      ¿Eliminar usuario?
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Esta acción no se puede deshacer.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {userToDelete.name}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {userToDelete.email}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        {getRoleIcon(userToDelete.role)}
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {getRoleLabel(userToDelete.role)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={handleDeleteUser}
+                    disabled={deleteLoading}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {deleteLoading ? 'Eliminando...' : 'Eliminar Usuario'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={closeDeleteModal}
+                    disabled={deleteLoading}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
