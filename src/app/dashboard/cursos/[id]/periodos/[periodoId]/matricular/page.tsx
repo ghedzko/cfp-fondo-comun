@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Breadcrumb } from '@/components/breadcrumb';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { 
   ArrowLeft, 
@@ -331,25 +333,33 @@ export default function MatricularPage() {
       {/* Header */}
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href={`/dashboard/cursos/${cursoId}`}>
-                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver al Curso
-                </Button>
-              </Link>
-              <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-                  <UserPlus className="w-6 h-6 mr-2 text-blue-600" />
-                  Matricular Estudiantes
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  CFP Fondo Común - Lago Puelo
-                </p>
+          <div className="flex flex-col space-y-3">
+            <Breadcrumb items={[
+              { label: 'Cursos', href: '/dashboard/cursos' },
+              { label: 'Curso', href: `/dashboard/cursos/${cursoId}` },
+              { label: 'Período', href: `/dashboard/cursos/${cursoId}/periodos/${periodoId}` },
+              { label: 'Matricular' }
+            ]} />
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Link href={`/dashboard/cursos/${cursoId}/periodos/${periodoId}`}>
+                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Volver al Período
+                  </Button>
+                </Link>
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                    <UserPlus className="w-6 h-6 mr-2 text-blue-600" />
+                    Matricular Estudiantes
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    CFP Fondo Común - Lago Puelo
+                  </p>
+                </div>
               </div>
-            </div>
             
             <div className="flex items-center space-x-3">
               <ThemeToggle />
