@@ -361,11 +361,12 @@ export default function MatricularPage() {
                 </div>
               </div>
             
-            <div className="flex items-center space-x-3">
-              <ThemeToggle />
-              <Button variant="outline" onClick={handleLogout} size="sm">
-                Cerrar Sesión
-              </Button>
+              <div className="flex items-center space-x-3">
+                <ThemeToggle />
+                <Button variant="outline" onClick={handleLogout} size="sm">
+                  Cerrar Sesión
+                </Button>
+              </div>
             </div>
           </div>
         </div>
