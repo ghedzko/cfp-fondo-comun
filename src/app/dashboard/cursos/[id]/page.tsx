@@ -81,7 +81,7 @@ export default function CursoDetailPage() {
       
       if (response.ok) {
         const data = await response.json();
-        setCurso(data);
+        setCurso(data.course);
       } else {
         setError('Curso no encontrado');
       }
