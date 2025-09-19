@@ -28,7 +28,7 @@ interface Course {
   createdAt: string;
   updatedAt: string;
   _count: {
-    periods: number;
+    periods: number; // Cursadas activas del curso
   };
 }
 
@@ -137,7 +137,7 @@ export default function CursosPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Períodos Activos</p>
+                  <p className="text-green-100 text-sm font-medium">Cursadas Activas</p>
                   <p className="text-3xl font-bold">
                     {cursos.reduce((sum, curso) => sum + curso._count.periods, 0)}
                   </p>
@@ -218,7 +218,7 @@ export default function CursosPage() {
                 No hay cursos registrados
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Comienza creando tu primer curso para gestionar períodos académicos
+                Comienza creando tu primer curso para gestionar cursadas y estudiantes
               </p>
               {isAdmin && (
                 <Button disabled className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -258,7 +258,7 @@ export default function CursosPage() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-blue-500" />
                         <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Períodos</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Cursadas</p>
                           <p className="text-lg font-semibold text-gray-900 dark:text-white">
                             {curso._count.periods}
                           </p>
@@ -291,7 +291,7 @@ export default function CursosPage() {
                       <Link href={`/dashboard/cursos/${curso.id}/nuevo-periodo`}>
                         <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                           <Plus className="w-4 h-4 mr-2" />
-                          Período
+                          Nueva Cursada
                         </Button>
                       </Link>
                     )}
@@ -315,7 +315,7 @@ export default function CursosPage() {
                 </h3>
                 <p className="text-amber-800 dark:text-amber-200 leading-relaxed">
                   La gestión completa de cursos está siendo implementada. Actualmente puedes visualizar 
-                  los cursos existentes y gestionar períodos. Las funcionalidades de creación, edición 
+                  los cursos existentes y gestionar cursadas. Las funcionalidades de creación, edición 
                   y administración avanzada estarán disponibles próximamente.
                 </p>
               </div>
