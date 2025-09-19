@@ -2,14 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/auth-provider';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Save, Plus, Trash2, Calculator } from 'lucide-react';
+import { 
+  Loader2, 
+  Save, 
+  Plus, 
+  Trash2, 
+  Calculator,
+  Search,
+  Filter,
+  Copy,
+  DollarSign,
+  Users,
+  TrendingUp,
+  Download,
+  Upload,
+  Eye,
+  EyeOff,
+  CheckCircle,
+  XCircle,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 
 interface Curso {
   id: string;
@@ -66,6 +87,22 @@ export default function AportesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+
+  // Advanced search and filtering
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'with-aporte' | 'without-aporte'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'dni' | 'amount'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  
+  // Bulk actions
+  const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
+  const [bulkAmount, setBulkAmount] = useState<string>('');
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
   // Cargar cursos al montar el componente
   useEffect(() => {
@@ -238,6 +275,112 @@ export default function AportesPage() {
     return aportes.reduce((total, aporte) => total + (aporte.monto || 0), 0);
   };
 
+  // Advanced filtering and search functions
+  const getFilteredStudents = () => {
+    let filtered = [...estudiantes];
+
+    // Search filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(estudiante => 
+        estudiante.nombre.toLowerCase().includes(term) ||
+        estudiante.apellido.toLowerCase().includes(term) ||
+        estudiante.dni.includes(term)
+      );
+    }
+
+    // Status filter
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(estudiante => {
+        const hasAporte = getMontoAporte(estudiante.id) > 0;
+        return filterStatus === 'with-aporte' ? hasAporte : !hasAporte;
+      });
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'name':
+          aValue = `${a.apellido}, ${a.nombre}`.toLowerCase();
+          bValue = `${b.apellido}, ${b.nombre}`.toLowerCase();
+          break;
+        case 'dni':
+          aValue = a.dni;
+          bValue = b.dni;
+          break;
+        case 'amount':
+          aValue = getMontoAporte(a.id);
+          bValue = getMontoAporte(b.id);
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  };
+
+  const getPaginatedStudents = () => {
+    const filtered = getFilteredStudents();
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filtered.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = () => {
+    return Math.ceil(getFilteredStudents().length / pageSize);
+  };
+
+  // Bulk actions
+  const handleSelectAll = () => {
+    const currentStudents = getPaginatedStudents();
+    if (selectedStudents.size === currentStudents.length) {
+      setSelectedStudents(new Set());
+    } else {
+      setSelectedStudents(new Set(currentStudents.map(s => s.id)));
+    }
+  };
+
+  const handleStudentSelection = (studentId: string) => {
+    const newSelected = new Set(selectedStudents);
+    if (newSelected.has(studentId)) {
+      newSelected.delete(studentId);
+    } else {
+      newSelected.add(studentId);
+    }
+    setSelectedStudents(newSelected);
+  };
+
+  const applyBulkAmount = () => {
+    const amount = parseFloat(bulkAmount) || 0;
+    if (amount >= 0) {
+      selectedStudents.forEach(studentId => {
+        updateMontoAporte(studentId, amount);
+      });
+      setSelectedStudents(new Set());
+      setBulkAmount('');
+      setShowBulkActions(false);
+      setSuccess(`Monto aplicado a ${selectedStudents.size} estudiantes`);
+    }
+  };
+
+  const copyFromPreviousMonth = async () => {
+    // This would require an API call to get previous month's data
+    setError('Funcionalidad en desarrollo');
+  };
+
+  const clearAllAmounts = () => {
+    setAportes([]);
+    setSelectedStudents(new Set());
+    setSuccess('Todos los montos han sido limpiados');
+  };
+
   const periodo = getPeriodoActual();
 
   return (
@@ -386,18 +529,19 @@ export default function AportesPage() {
         </Alert>
       )}
 
-      {/* Tabla de Aportes */}
+      {/* Advanced Search and Filters */}
       {periodoSeleccionado && isMesHabilitado(mesSeleccionado) && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold">
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-green-600" />
                   Aportes - {MESES[mesSeleccionado - 1]} {anioSeleccionado}
-                </h2>
-                <p className="text-sm text-muted-foreground">
+                </CardTitle>
+                <CardDescription>
                   Los aportes son <strong>voluntarios</strong> y contribuyen al fondo común del curso
-                </p>
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="flex items-center gap-1">
@@ -419,66 +563,311 @@ export default function AportesPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin" />
-                <span className="ml-2">Cargando estudiantes...</span>
+          <CardContent className="space-y-6">
+            {/* Search and Filter Controls */}
+            <div className="space-y-4">
+              {/* Search Bar */}
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar por nombre, apellido o DNI..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                
+                {/* Filters */}
+                <div className="flex gap-2">
+                  <Select value={filterStatus} onValueChange={(value: any) => setFilterStatus(value)}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos los estudiantes</SelectItem>
+                      <SelectItem value="with-aporte">Con aporte</SelectItem>
+                      <SelectItem value="without-aporte">Sin aporte</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Ordenar por nombre</SelectItem>
+                      <SelectItem value="dni">Ordenar por DNI</SelectItem>
+                      <SelectItem value="amount">Ordenar por monto</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  >
+                    {sortOrder === 'asc' ? '↑' : '↓'}
+                  </Button>
+                </div>
               </div>
-            ) : estudiantes.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No hay estudiantes matriculados en este período
+
+              {/* Action Bar */}
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {getFilteredStudents().length} estudiantes encontrados
+                    {selectedStudents.size > 0 && ` • ${selectedStudents.size} seleccionados`}
+                  </span>
+                  
+                  {selectedStudents.size > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowBulkActions(!showBulkActions)}
+                    >
+                      <MoreHorizontal className="w-4 h-4 mr-2" />
+                      Acciones Masivas
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyFromPreviousMonth}
+                    disabled={loading}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar Mes Anterior
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={clearAllAmounts}
+                    disabled={aportes.length === 0}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Limpiar Todo
+                  </Button>
+                  
+                  <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(parseInt(value))}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="25">25 por página</SelectItem>
+                      <SelectItem value="50">50 por página</SelectItem>
+                      <SelectItem value="100">100 por página</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Bulk Actions Panel */}
+              {showBulkActions && selectedStudents.size > 0 && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      Aplicar monto a {selectedStudents.size} estudiantes seleccionados:
+                    </span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={bulkAmount}
+                      onChange={(e) => setBulkAmount(e.target.value)}
+                      placeholder="0.00"
+                      className="w-32"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={applyBulkAmount}
+                      disabled={!bulkAmount}
+                    >
+                      Aplicar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowBulkActions(false)}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Students Table/Cards */}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <span className="ml-3 text-gray-600 dark:text-gray-300">Cargando estudiantes...</span>
+              </div>
+            ) : getFilteredStudents().length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {searchTerm ? 'No se encontraron estudiantes' : 'No hay estudiantes matriculados'}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {searchTerm 
+                    ? 'Intenta con otros términos de búsqueda.'
+                    : 'No hay estudiantes matriculados en este período.'
+                  }
+                </p>
               </div>
             ) : (
-              <div className="space-y-2">
-                {/* Encabezados */}
-                <div className="grid grid-cols-4 gap-4 p-3 bg-muted rounded-lg font-medium text-sm">
-                  <div>Estudiante</div>
-                  <div>DNI</div>
-                  <div>Monto ($)</div>
-                  <div>Estado</div>
+              <div className="space-y-4">
+                {/* Table Header */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                      <tr>
+                        <th className="w-12 px-4 py-3 text-left">
+                          <input
+                            type="checkbox"
+                            checked={selectedStudents.size === getPaginatedStudents().length && getPaginatedStudents().length > 0}
+                            onChange={handleSelectAll}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Estudiante
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          DNI
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Monto ($)
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          Estado
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                      {getPaginatedStudents().map(estudiante => {
+                        const montoActual = getMontoAporte(estudiante.id);
+                        const tieneAporte = montoActual > 0;
+                        const isSelected = selectedStudents.has(estudiante.id);
+
+                        return (
+                          <tr 
+                            key={estudiante.id}
+                            className={`hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+                              isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                            }`}
+                          >
+                            <td className="px-4 py-4">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleStudentSelection(estudiante.id)}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              />
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mr-3">
+                                  <Users className="w-4 h-4 text-white" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                    {estudiante.apellido}, {estudiante.nombre}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <Badge variant="outline" className="text-xs">
+                                {estudiante.dni}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-4">
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={montoActual || ''}
+                                onChange={(e) => {
+                                  const valor = parseFloat(e.target.value) || 0;
+                                  updateMontoAporte(estudiante.id, valor);
+                                }}
+                                placeholder="0.00"
+                                className="w-32"
+                              />
+                            </td>
+                            <td className="px-4 py-4">
+                              {tieneAporte ? (
+                                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Con aporte
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary">
+                                  <XCircle className="w-3 h-3 mr-1" />
+                                  Sin aporte
+                                </Badge>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
 
-                {/* Filas de estudiantes */}
-                {estudiantes.map(estudiante => {
-                  const montoActual = getMontoAporte(estudiante.id);
-                  const tieneAporte = montoActual > 0;
-
-                  return (
-                    <div 
-                      key={estudiante.id} 
-                      className="grid grid-cols-4 gap-4 p-3 border rounded-lg hover:bg-muted/50"
-                    >
-                      <div className="font-medium">
-                        {estudiante.apellido}, {estudiante.nombre}
-                      </div>
-                      <div className="text-muted-foreground">
-                        {estudiante.dni}
-                      </div>
-                      <div>
-                        <Input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={montoActual || ''}
-                          onChange={(e) => {
-                            const valor = parseFloat(e.target.value) || 0;
-                            updateMontoAporte(estudiante.id, valor);
-                          }}
-                          placeholder="0.00"
-                          className="w-full"
-                        />
-                      </div>
-                      <div>
-                        {tieneAporte ? (
-                          <Badge variant="default">Con aporte</Badge>
-                        ) : (
-                          <Badge variant="secondary">Sin aporte</Badge>
-                        )}
-                      </div>
+                {/* Pagination */}
+                {getTotalPages() > 1 && (
+                  <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      Mostrando {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, getFilteredStudents().length)} de {getFilteredStudents().length} estudiantes
                     </div>
-                  );
-                })}
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Anterior
+                      </Button>
+                      
+                      <div className="flex items-center space-x-1">
+                        {Array.from({ length: Math.min(5, getTotalPages()) }, (_, i) => {
+                          const pageNum = Math.max(1, Math.min(getTotalPages() - 4, currentPage - 2)) + i;
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={pageNum === currentPage ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              className="w-8 h-8 p-0"
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === getTotalPages()}
+                      >
+                        Siguiente
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
