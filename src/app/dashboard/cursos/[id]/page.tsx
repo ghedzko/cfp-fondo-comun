@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Breadcrumb } from '@/components/breadcrumb';
+import { useCurso } from '@/hooks/useCursos';
+import { usePeriodos } from '@/hooks/usePeriodos';
 import { 
   ArrowLeft, 
   Plus, 
@@ -23,7 +24,10 @@ import {
   Settings,
   MapPin,
   Award,
-  Activity
+  Activity,
+  AlertCircle,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { getAreaByCode } from '@/lib/nomenclador';
@@ -62,34 +66,26 @@ export default function CursoDetailPage() {
   const params = useParams();
   const cursoId = params.id as string;
   
-  const [curso, setCurso] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  // ✅ Usando TanStack Query en lugar de useState + useEffect
+  const { 
+    data: cursoData, 
+    isLoading: cursoLoading, 
+    error: cursoError,
+    refetch: refetchCurso 
+  } = useCurso(cursoId);
 
-  useEffect(() => {
-    if (cursoId) {
-      fetchCurso();
-    }
-  }, [cursoId]);
+  const { 
+    data: periodosData, 
+    isLoading: periodosLoading, 
+    error: periodosError,
+    refetch: refetchPeriodos 
+  } = usePeriodos(cursoId);
 
-  const fetchCurso = async () => {
-    try {
-      const response = await fetch(`/api/cursos/${cursoId}`, {
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setCurso(data.course);
-      } else {
-        setError('Curso no encontrado');
-      }
-    } catch (err) {
-      setError('Error al cargar el curso');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Extract data from TanStack Query responses
+  const curso = cursoData?.course;
+  const periodos = periodosData?.periods || [];
+  const isLoading = cursoLoading || periodosLoading;
+  const error = cursoError || periodosError;
 
   const handleLogout = async () => {
     await logout();
@@ -110,7 +106,7 @@ export default function CursoDetailPage() {
     }).format(amount);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="max-w-md">
@@ -120,7 +116,7 @@ export default function CursoDetailPage() {
               Cargando curso...
             </h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Obteniendo información del curso
+              Obteniendo información del curso y períodos
             </p>
           </CardContent>
         </Card>
@@ -133,19 +129,25 @@ export default function CursoDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="p-6 text-center">
-            <Activity className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Error
+              Error al cargar curso
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              {error || 'Curso no encontrado'}
+              {error?.message || 'Curso no encontrado'}
             </p>
-            <Link href="/dashboard/cursos">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver a Cursos
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => { refetchCurso(); refetchPeriodos(); }} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Reintentar
               </Button>
-            </Link>
+              <Link href="/dashboard/cursos">
+                <Button variant="outline">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Volver
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -153,8 +155,8 @@ export default function CursoDetailPage() {
   }
 
   // Calculate stats
-  const totalEnrollments = curso.periods.reduce((sum, period) => sum + period._count.enrollments, 0);
-  const activePeriods = curso.periods.filter(p => p.isActive).length;
+  const totalEnrollments = periodos.reduce((sum: number, period: any) => sum + period._count.enrollments, 0);
+  const activePeriods = periodos.filter((p: any) => p.isActive).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -409,7 +411,7 @@ export default function CursoDetailPage() {
                   Gestiona las diferentes cursadas e instancias de este curso
                 </CardDescription>
               </div>
-              {isAdmin && curso.periods.length > 0 && (
+              {isAdmin && periodos.length > 0 && (
                 <Link href={`/dashboard/cursos/${curso.id}/nuevo-periodo`}>
                   <Button className="bg-green-600 hover:bg-green-700 text-white">
                     <Plus className="w-4 h-4 mr-2" />
@@ -421,7 +423,7 @@ export default function CursoDetailPage() {
           </CardHeader>
           
           <CardContent>
-            {curso.periods.length === 0 ? (
+            {periodos.length === 0 ? (
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -441,7 +443,7 @@ export default function CursoDetailPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {curso.periods.map((period: CoursePeriod) => (
+                {periodos.map((period: any) => (
                   <Card key={period.id} className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md hover:shadow-xl hover:-translate-y-1">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
