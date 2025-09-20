@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { useRouter } from 'next/navigation';
+import { useImportEstudiantes, useDownloadTemplate } from '@/hooks/useEstudiantes';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,22 +58,18 @@ export default function ImportarEstudiantesPage() {
   const [csvData, setCsvData] = useState<CsvStudent[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [importing, setImporting] = useState(false);
   const [error, setError] = useState<string>('');
-  const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [skipDuplicates, setSkipDuplicates] = useState(true);
+
+  // ✅ Usando TanStack Query hooks
+  const importMutation = useImportEstudiantes();
+  const downloadTemplateMutation = useDownloadTemplate();
 
   const downloadTemplate = async () => {
     try {
-      const response = await fetch('/api/estudiantes/import', {
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        const csv = convertToCSV(data.template);
-        downloadCSV(csv, 'plantilla_estudiantes.csv');
-      }
+      const template = await downloadTemplateMutation.mutateAsync();
+      const csv = convertToCSV(template);
+      downloadCSV(csv, 'plantilla_estudiantes.csv');
     } catch (error) {
       console.error('Error downloading template:', error);
       setError('Error al descargar la plantilla');
@@ -153,7 +150,7 @@ export default function ImportarEstudiantesPage() {
           setError('No se encontraron estudiantes válidos en el archivo');
         } else {
           setCsvData(parsed);
-          setImportResult(null);
+          importMutation.reset(); // Reset previous results
         }
       } catch (error) {
         setError('Error al procesar el archivo CSV');
@@ -195,39 +192,21 @@ export default function ImportarEstudiantesPage() {
   const handleImport = async () => {
     if (csvData.length === 0) return;
 
-    setImporting(true);
     setError('');
 
     try {
-      const response = await fetch('/api/estudiantes/import', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          csvData,
-          skipDuplicates,
-        }),
+      const result = await importMutation.mutateAsync({
+        csvData,
+        skipDuplicates,
       });
-
-      const result = await response.json();
       
-      if (response.ok) {
-        setImportResult(result);
-        if (result.success && result.imported > 0) {
-          // Clear CSV data after successful import
-          setCsvData([]);
-        }
-      } else {
-        setError(result.error || 'Error al importar estudiantes');
+      if (result.success && result.imported > 0) {
+        // Clear CSV data after successful import
+        setCsvData([]);
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      setError('Error al importar estudiantes');
-    } finally {
-      setImporting(false);
+      setError(error.message || 'Error al importar estudiantes');
     }
   };
 
@@ -446,15 +425,15 @@ export default function ImportarEstudiantesPage() {
               <div className="flex justify-end">
                 <Button 
                   onClick={handleImport} 
-                  disabled={importing}
+                  disabled={importMutation.isPending}
                   className="flex items-center gap-2"
                 >
-                  {importing ? (
+                  {importMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Upload className="w-4 h-4" />
                   )}
-                  {importing ? 'Importando...' : 'Importar Estudiantes'}
+                  {importMutation.isPending ? 'Importando...' : 'Importar Estudiantes'}
                 </Button>
               </div>
             </div>
@@ -463,11 +442,11 @@ export default function ImportarEstudiantesPage() {
       )}
 
       {/* Import Results */}
-      {importResult && (
+      {importMutation.data && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {importResult.success ? (
+              {importMutation.data.success ? (
                 <CheckCircle className="w-5 h-5 text-green-600" />
               ) : (
                 <AlertCircle className="w-5 h-5 text-red-600" />
@@ -480,32 +459,32 @@ export default function ImportarEstudiantesPage() {
               {/* Summary */}
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{importResult.imported}</div>
+                  <div className="text-2xl font-bold text-green-600">{importMutation.data.imported}</div>
                   <div className="text-sm text-green-700 dark:text-green-300">Importados</div>
                 </div>
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600">{importResult.skipped}</div>
+                  <div className="text-2xl font-bold text-yellow-600">{importMutation.data.skipped}</div>
                   <div className="text-sm text-yellow-700 dark:text-yellow-300">Omitidos</div>
                 </div>
                 <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">{importResult.errors.length}</div>
+                  <div className="text-2xl font-bold text-red-600">{importMutation.data.errors.length}</div>
                   <div className="text-sm text-red-700 dark:text-red-300">Errores</div>
                 </div>
               </div>
 
               {/* Duplicates */}
-              {importResult.duplicates.length > 0 && (
+              {importMutation.data.duplicates.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Estudiantes Duplicados:</h3>
                   <div className="space-y-1 text-sm">
-                    {importResult.duplicates.slice(0, 5).map((dup, index) => (
+                    {importMutation.data.duplicates.slice(0, 5).map((dup, index) => (
                       <div key={index} className="text-yellow-700 dark:text-yellow-300">
                         Fila {dup.row}: {dup.dni} - Ya existe: {dup.existingStudent.firstName} {dup.existingStudent.lastName}
                       </div>
                     ))}
-                    {importResult.duplicates.length > 5 && (
+                    {importMutation.data.duplicates.length > 5 && (
                       <div className="text-sm text-gray-500">
-                        ... y {importResult.duplicates.length - 5} duplicados más
+                        ... y {importMutation.data.duplicates.length - 5} duplicados más
                       </div>
                     )}
                   </div>
@@ -513,18 +492,18 @@ export default function ImportarEstudiantesPage() {
               )}
 
               {/* Errors */}
-              {importResult.errors.length > 0 && (
+              {importMutation.data.errors.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Errores:</h3>
                   <div className="space-y-1 text-sm">
-                    {importResult.errors.slice(0, 5).map((error, index) => (
+                    {importMutation.data.errors.slice(0, 5).map((error, index) => (
                       <div key={index} className="text-red-700 dark:text-red-300">
                         Fila {error.row}: {error.dni} - {error.error}
                       </div>
                     ))}
-                    {importResult.errors.length > 5 && (
+                    {importMutation.data.errors.length > 5 && (
                       <div className="text-sm text-gray-500">
-                        ... y {importResult.errors.length - 5} errores más
+                        ... y {importMutation.data.errors.length - 5} errores más
                       </div>
                     )}
                   </div>
@@ -532,7 +511,7 @@ export default function ImportarEstudiantesPage() {
               )}
 
               {/* Success Actions */}
-              {importResult.success && importResult.imported > 0 && (
+              {importMutation.data.success && importMutation.data.imported > 0 && (
                 <div className="flex justify-end">
                   <Link href="/dashboard/estudiantes">
                     <Button>

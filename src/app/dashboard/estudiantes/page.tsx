@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useEstudiantes } from '@/hooks/useEstudiantes';
 import { 
   Search, 
   Plus, 
@@ -23,95 +24,50 @@ import {
   Phone,
   Mail,
   IdCard,
-  Filter
+  Filter,
+  AlertCircle,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 
-interface Student {
-  id: string;
-  dni: string;
-  firstName: string;
-  lastName: string;
-  email?: string;
-  phone?: string;
-  birthDate?: string;
-  createdAt: string;
-  enrollments: Array<{
-    id: string;
-    status: string;
-    coursePeriod: {
-      name: string;
-      course: {
-        name: string;
-      };
-    };
-  }>;
-  _count: {
-    contributions: number;
-  };
-}
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  pages: number;
-}
-
 export default function EstudiantesPage() {
   const { user, logout, isAdmin } = useAuth();
-  const [estudiantes, setEstudiantes] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [pagination, setPagination] = useState<PaginationInfo>({
-    page: 1,
-    limit: 10,
-    total: 0,
-    pages: 0,
-  });
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchEstudiantes = async (search = '', page = 1) => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        search,
-        page: page.toString(),
-        limit: '10',
-      });
-
-      const response = await fetch(`/api/estudiantes?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setEstudiantes(data.students || []);
-        setPagination(data.pagination);
-      }
-    } catch (error) {
-      console.error('Error fetching students:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!loading && user) {
-      fetchEstudiantes();
-    }
-  }, [loading, user]);
+  // ✅ Usando TanStack Query en lugar de useState + useEffect
+  const { 
+    data: estudiantesData, 
+    isLoading, 
+    error,
+    refetch 
+  } = useEstudiantes(searchTerm, currentPage, 10);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchEstudiantes(searchTerm, 1);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchEstudiantes(searchTerm, newPage);
+    setCurrentPage(newPage);
   };
 
   const handleLogout = async () => {
     await logout();
   };
 
-  if (loading) {
+  // Extract data from TanStack Query response
+  const estudiantes = estudiantesData?.students || [];
+  const pagination = estudiantesData?.pagination || {
+    page: 1,
+    limit: 10,
+    total: 0,
+    pages: 0,
+  };
+
+  // Loading state
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <Card className="max-w-md">
@@ -129,11 +85,33 @@ export default function EstudiantesPage() {
     );
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="p-6 text-center">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Error al cargar estudiantes
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              {error.message}
+            </p>
+            <Button onClick={() => refetch()} variant="outline">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reintentar
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Calculate stats
-  const totalEnrollments = estudiantes.reduce((sum, student) => sum + student.enrollments.length, 0);
-  const totalContributions = estudiantes.reduce((sum, student) => sum + student._count.contributions, 0);
-  const activeStudents = estudiantes.filter(student => 
-    student.enrollments.some(enrollment => enrollment.status === 'ACTIVE')
+  const totalEnrollments = estudiantes.reduce((sum: number, student: any) => sum + student.enrollments.length, 0);
+  const activeStudents = estudiantes.filter((student: any) => 
+    student.enrollments.some((enrollment: any) => enrollment.status === 'ACTIVE')
   ).length;
 
   return (
@@ -229,7 +207,7 @@ export default function EstudiantesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-orange-100 text-sm font-medium">Total Aportes</p>
-                  <p className="text-3xl font-bold">{totalContributions}</p>
+                  <p className="text-3xl font-bold">{totalEnrollments}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-orange-200" />
               </div>
@@ -288,7 +266,7 @@ export default function EstudiantesPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {estudiantes.map((student: Student) => (
+              {estudiantes.map((student: any) => (
                 <Card key={student.id} className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md hover:shadow-xl hover:-translate-y-1">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -360,7 +338,7 @@ export default function EstudiantesPage() {
                       <div className="mb-4">
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Cursos actuales:</p>
                         <div className="flex flex-wrap gap-1">
-                          {student.enrollments.slice(0, 2).map((enrollment) => (
+                          {student.enrollments.slice(0, 2).map((enrollment: any) => (
                             <Badge 
                               key={enrollment.id} 
                               variant={enrollment.status === 'ACTIVE' ? 'default' : 'secondary'}
